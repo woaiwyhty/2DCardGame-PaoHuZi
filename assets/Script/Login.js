@@ -37,5 +37,30 @@ cc.Class({
 
     },
 
+    onWxLoginClicked() {
+        
+        jsb.reflection.callStaticMethod("org/cocos2dx/javascript/AppActivity","wxLogin","()V");
+        this.schedule(function(){
+           var wxLoginSuccess = jsb.reflection.callStaticMethod("org/cocos2dx/javascript/AppActivity","wxLoginIsSuccess","()Z");
+           console.log("is success " + wxLoginSuccess);
+           if(wxLoginSuccess){
+               console.log("2222222222222222222222222222");
+               //获得授权信息
+               var autoInfo = jsb.reflection.callStaticMethod("org/cocos2dx/javascript/AppActivity","getWxAutoMessage","()Ljava/lang/String;");
+               var jsonInfo = JSON.parse(autoInfo);
+               console.log("jsonInfo is " + jsonInfo);
+               console.log("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$" + autoInfo);
+               //如果登录成功的话将授权信息发送给后端
+               console.log("autoInfo is " + autoInfo);
+               //关闭所有计数器
+               this.unscheduleAllCallbacks(); 
+               if(autoInfo != ""){
+                    //this.sendRequestToWXServer(autoInfo);
+               }
+               
+           }
+        }, 0.5);
+    },
+
     // update (dt) {},
 });

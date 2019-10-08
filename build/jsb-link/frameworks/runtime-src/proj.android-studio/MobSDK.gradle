@@ -1,0 +1,15 @@
+MobSDK {
+    appKey "2c772181fd874"
+    appSecret "b3db7cd413294f28f25b102228130aac"
+
+    ShareSDK {
+        devInfo {
+            Wechat {
+                appId "wxb83de12e9ce883db"
+                appSecret "3177bac63e4f94e5129f19e186e192ad"
+                enable true
+            }
+        }
+    }
+
+}

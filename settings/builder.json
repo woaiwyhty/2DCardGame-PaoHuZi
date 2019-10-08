@@ -24,10 +24,10 @@
   "mergeStartScene": false,
   "optimizeHotUpdate": false,
   "orientation": {
-    "landscapeLeft": true,
+    "landscapeLeft": false,
     "landscapeRight": true,
-    "portrait": true,
-    "upsideDown": true
+    "portrait": false,
+    "upsideDown": false
   },
   "packageName": "org.cocos2d.PaoHuZi",
   "qqplay": {

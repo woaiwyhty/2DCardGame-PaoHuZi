@@ -623,8 +623,8 @@
       "__id__": 2
     },
     "component": "",
-    "_componentId": "",
-    "handler": "",
+    "_componentId": "a982fjVKdJCPLQYUy78iWqV",
+    "handler": "onWxLoginClicked",
     "customEventData": ""
   },
   {
@@ -821,7 +821,7 @@
     },
     "_position": {
       "__type__": "cc.Vec3",
-      "x": 0,
+      "x": 2,
       "y": 0,
       "z": 0
     },
@@ -945,7 +945,7 @@
     },
     "_position": {
       "__type__": "cc.Vec3",
-      "x": 0,
+      "x": 2,
       "y": 0,
       "z": 0
     },

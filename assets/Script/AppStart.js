@@ -39,7 +39,7 @@ cc.Class({
         //cc.director.loadScene("Loading");
         this.scheduleOnce(function() {
             // 这里的 this 指向 component
-            cc.director.loadScene("Loading");
+            cc.director.loadScene("Login");
         }, 2);
     },
 
