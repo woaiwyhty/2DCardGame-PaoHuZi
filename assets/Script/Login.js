@@ -44,7 +44,6 @@ cc.Class({
            var wxLoginSuccess = jsb.reflection.callStaticMethod("org/cocos2dx/javascript/AppActivity","wxLoginIsSuccess","()Z");
            console.log("is success " + wxLoginSuccess);
            if(wxLoginSuccess){
-               console.log("2222222222222222222222222222");
                //获得授权信息
                var autoInfo = jsb.reflection.callStaticMethod("org/cocos2dx/javascript/AppActivity","getWxAutoMessage","()Ljava/lang/String;");
                var jsonInfo = JSON.parse(autoInfo);
@@ -55,6 +54,7 @@ cc.Class({
                //关闭所有计数器
                this.unscheduleAllCallbacks(); 
                if(autoInfo != ""){
+                   // need to send info to server
                     //this.sendRequestToWXServer(autoInfo);
                }
                
