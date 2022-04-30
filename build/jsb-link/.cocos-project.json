@@ -1,7 +1,7 @@
 {
-  "engine_version": "2.1.2",
+  "engine_version": "2.4.9",
   "has_native": true,
   "project_type": "js",
   "projectName": "PaoHuZi",
-  "packageName": "org.cocos2d.PaoHuZi"
+  "packageName": "org.cocos2d.demo"
 }

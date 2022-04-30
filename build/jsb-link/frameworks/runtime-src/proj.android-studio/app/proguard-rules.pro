@@ -24,6 +24,13 @@
 -keep class org.apache.http.** { *; }
 -dontwarn org.apache.http.**
 
+# Proguard okhttp for release
+-keep class okhttp3.** { *; }
+-dontwarn okhttp3.**
+
+-keep class okio.** { *; }
+-dontwarn okio.**
+
 # Proguard Android Webivew for release. you can comment if you are not using a webview
 -keep public class android.net.http.SslError
 -keep public class android.webkit.WebViewClient
@@ -35,15 +42,3 @@
 # keep anysdk for release. you can comment if you are not using anysdk
 -keep public class com.anysdk.** { *; }
 -dontwarn com.anysdk.**
-
--keep class cn.sharesdk.**{*;}
--keep class com.sina.**{*;}
--keep class **.R$* {*;}
--keep class **.R{*;}
--keep class com.mob.**{*;}
--keep class m.framework.**{*;}
--dontwarn cn.sharesdk.**
--dontwarn com.sina.**
--dontwarn com.mob.**
--dontwarn **.R$*
-

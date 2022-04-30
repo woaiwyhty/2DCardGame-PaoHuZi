@@ -1,15 +1,21 @@
 {
-  "ver": "2.3.1",
+  "ver": "2.3.7",
   "uuid": "ad9740c6-4e5e-414b-9244-008367ff8517",
+  "importer": "texture",
   "type": "sprite",
   "wrapMode": "clamp",
   "filterMode": "bilinear",
   "premultiplyAlpha": false,
+  "genMipmaps": false,
+  "packable": true,
+  "width": 1280,
+  "height": 720,
   "platformSettings": {},
   "subMetas": {
     "UIFriends_019": {
-      "ver": "1.0.4",
+      "ver": "1.0.6",
       "uuid": "6f56a58f-97f3-44fd-b838-65c5cea22a58",
+      "importer": "sprite-frame",
       "rawTextureUuid": "ad9740c6-4e5e-414b-9244-008367ff8517",
       "trimType": "auto",
       "trimThreshold": 1,

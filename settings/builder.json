@@ -5,7 +5,8 @@
     "pathPattern": "",
     "recordPath": "",
     "scheme": "https",
-    "skipRecord": false
+    "skipRecord": false,
+    "packageName": "org.cocos2d.demo"
   },
   "appBundle": false,
   "baidugame": {
@@ -35,7 +36,7 @@
     "orientation": "portrait",
     "zip": false
   },
-  "startScene": "80556817-9078-45e7-b625-5d91e8297d2f",
+  "startScene": "19a56641-7c14-4549-a37a-7a2c653b40d1",
   "title": "PaoHuZi",
   "webOrientation": "auto",
   "wechatgame": {
@@ -46,5 +47,31 @@
     "subContext": ""
   },
   "xxteaKey": "a9d8a98b-8086-45",
-  "zipCompressJs": true
+  "zipCompressJs": true,
+  "mainCompressionType": "default",
+  "mainIsRemote": false,
+  "nativeMd5Cache": true,
+  "android": {
+    "packageName": "org.cocos2d.demo",
+    "REMOTE_SERVER_ROOT": ""
+  },
+  "ios": {
+    "packageName": "org.cocos2d.demo",
+    "REMOTE_SERVER_ROOT": "",
+    "ios_enable_jit": true
+  },
+  "mac": {
+    "packageName": "org.cocos2d.demo",
+    "REMOTE_SERVER_ROOT": "",
+    "width": 1280,
+    "height": 720
+  },
+  "win32": {
+    "REMOTE_SERVER_ROOT": "",
+    "width": 1280,
+    "height": 720
+  },
+  "agreements": {
+    "20200904180755": false
+  }
 }

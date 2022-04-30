@@ -1,0 +1,2 @@
+E:\Cocos2dProjects\PaoHuZi\build\jsb-link\frameworks\runtime-src\proj.android-studio\instantapp\jni\Android.mk
+E:\Cocos2dProjects\PaoHuZi\build\jsb-link\frameworks\runtime-src\proj.android-studio\instantapp\jni\Application.mk

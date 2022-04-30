@@ -23,12 +23,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ****************************************************************************/
 package org.cocos2dx.javascript;
-import com.mob.MobApplication;
-import com.mob.MobSDK;
-import cn.sharesdk.framework.Platform;
-import cn.sharesdk.framework.ShareSDK;
-import cn.sharesdk.wechat.friends.Wechat;
-import cn.sharesdk.framework.PlatformActionListener;
+
 import org.cocos2dx.lib.Cocos2dxActivity;
 import org.cocos2dx.lib.Cocos2dxGLSurfaceView;
 
@@ -36,65 +31,24 @@ import android.os.Bundle;
 
 import android.content.Intent;
 import android.content.res.Configuration;
-import java.util.HashMap;
-
 
 public class AppActivity extends Cocos2dxActivity {
-    private static boolean isWxLoginSuccess;
-    private static String wxAutoMessage;
-    private static Platform wechat;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        // Workaround in https://stackoverflow.com/questions/16283079/re-launch-of-activity-on-home-button-but-only-the-first-time/16447508
+        // Workaround in
+        // https://stackoverflow.com/questions/16283079/re-launch-of-activity-on-home-button-but-only-the-first-time/16447508
         if (!isTaskRoot()) {
             // Android launched another instance of the root activity into an existing task
-            //  so just quietly finish and go away, dropping the user back into the activity
-            //  at the top of the stack (ie: the last state of this task)
+            // so just quietly finish and go away, dropping the user back into the activity
+            // at the top of the stack (ie: the last state of this task)
             // Don't need to finish it again since it's finished in super.onCreate .
             return;
         }
         // DO OTHER INITIALIZATION BELOW
-
         SDKWrapper.getInstance().init(this);
-        wechat = ShareSDK.getPlatform(Wechat.NAME);
-    }
 
-    public static void wxLogin() {
-
-        wechat.setPlatformActionListener(new PlatformActionListener() {
-            @Override
-            public void onComplete(Platform platform, int i, HashMap<String, Object> hashMap) {
-                wxAutoMessage = platform.getDb().exportData();
-                isWxLoginSuccess = true;
-                System.out.println(platform.getDb().exportData());
-                System.out.println("--------------<<<<<<<<<<<<<<<<<<<----------------");
-            }
-            @Override
-            public void onError(Platform platform, int i, Throwable throwable) {
-                throwable.printStackTrace();
-            }
-            @Override
-            public void onCancel(Platform platform, int i) {
-                System.out.println("已经取消操作");
-            }
-        });
-
-        wechat.authorize();
-        Platform wechatPlatform = ShareSDK.getPlatform(Wechat.NAME);
-        System.out.println("<<<<---------------->>>>wechatPlatFrom is " + wechatPlatform);
-
-    }
-
-    public static boolean wxLoginIsSuccess(){
-        System.out.println("微信是否登录成功：" + isWxLoginSuccess);
-        return isWxLoginSuccess;
-    }
-
-    public static String getWxAutoMessage(){
-        System.out.println("微信认证信息是：" + wxAutoMessage);
-        return wxAutoMessage;
     }
 
     @Override
@@ -124,6 +78,12 @@ public class AppActivity extends Cocos2dxActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
+
+        // Workaround in https://stackoverflow.com/questions/16283079/re-launch-of-activity-on-home-button-but-only-the-first-time/16447508
+        if (!isTaskRoot()) {
+            return;
+        }
+
         SDKWrapper.getInstance().onDestroy();
 
     }
@@ -151,7 +111,7 @@ public class AppActivity extends Cocos2dxActivity {
         super.onStop();
         SDKWrapper.getInstance().onStop();
     }
-        
+
     @Override
     public void onBackPressed() {
         SDKWrapper.getInstance().onBackPressed();

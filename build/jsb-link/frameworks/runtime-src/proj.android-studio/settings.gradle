@@ -1,4 +1,4 @@
-include ':libcocos2dx'
-project(':libcocos2dx').projectDir = new File('E:/CocosCreator/resources/cocos2d-x/cocos/platform/android/libcocos2dx')
+include ':libcocos2dx',':instantapp'
+project(':libcocos2dx').projectDir = new File('E:/CocosDashboard/resources/.editors/Creator/2.4.9/resources/cocos2d-x/cocos/platform/android/libcocos2dx')
 include ':PaoHuZi'
 project(':PaoHuZi').projectDir = new File(settingsDir, 'app')
