@@ -38,7 +38,9 @@ cc.Class({
     },
 
     onTravellerLogin() {
-        cc.director.loadScene("RoomChoice");
+        cc.director.loadScene("CreateRole");
+
+        // cc.director.loadScene("RoomChoice");
     },
 
     onWxLoginClicked() {

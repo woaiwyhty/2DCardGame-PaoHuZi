@@ -1,0 +1,23 @@
+{
+  "name": "PaoHuZi",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/woaiwyhty/2DCardGame-PaoHuZi.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/woaiwyhty/2DCardGame-PaoHuZi/issues"
+  },
+  "homepage": "https://github.com/woaiwyhty/2DCardGame-PaoHuZi#readme",
+  "devDependencies": {
+    "eslint": "^8.14.0"
+  }
+}

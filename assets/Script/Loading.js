@@ -27,14 +27,18 @@ cc.Class({
     initFrameworks: function() {
         cc.utils = {};
         cc.utils.http = require("HTTPUtil");
+        cc.utils.userInfo = {
+            name: "",
+            travellerMode: false,
+        };
     },
 
     onServerOn: function(ret){
-        console.log(ret);
+        cc.director.loadScene("Login");
     },
 
     onServerOff: function(ret){
-        console.log("server is down!");
+        console.log("server is down!", ret);
         
         this.tipLabel.string = "连接服务器失败!";
         setTimeout(() => {
