@@ -12,6 +12,9 @@ cc.Class({
     extends: cc.Component,
 
     properties: {
+        username: cc.EditBox,
+        password: cc.EditBox,
+        status: cc.Label,
         // foo: {
         //     // ATTRIBUTES:
         //     default: null,        // The default value will be used only when the component attaching
@@ -38,9 +41,29 @@ cc.Class({
     },
 
     onTravellerLogin() {
-        cc.director.loadScene("CreateRole");
+        var account = cc.sys.localStorage.getItem("account");
+        if (account == null){
+            account = Date.now();
+            cc.sys.localStorage.setItem("account", account);
+        }
 
-        // cc.director.loadScene("RoomChoice");
+        var travellerLoginCallback = function(ret) {
+            if (ret.errcode === 1) {
+                cc.director.loadScene("CreateRole");
+            } else if (ret.errcode === 0) {
+                cc.director.loadScene("RoomChoice");
+            }
+        }
+        cc.utils.userInfo.username = account;
+        cc.utils.http.sendRequest("/guestLogin", {username: account}, travellerLoginCallback);
+    },
+
+    onUsernameLogin() {
+        if (this.username.string.length < 6 || this.password.string.length < 6) {
+            this.status.string = "帐号或密码太短!";
+            return;
+        }
+        this.status.string = "正在登录...";
     },
 
     onWxLoginClicked() {

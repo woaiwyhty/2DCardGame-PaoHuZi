@@ -28,7 +28,8 @@ cc.Class({
         cc.utils = {};
         cc.utils.http = require("HTTPUtil");
         cc.utils.userInfo = {
-            name: "",
+            username: "",
+            nickname: "",
             travellerMode: false,
         };
     },
