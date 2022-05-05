@@ -32,6 +32,8 @@ cc.Class({
             nickname: "",
             travellerMode: false,
         };
+        let utilsMain = require("Utils");
+        cc.utils.main = new utilsMain();
     },
 
     onServerOn: function(ret){
