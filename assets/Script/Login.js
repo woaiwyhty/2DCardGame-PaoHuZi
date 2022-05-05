@@ -34,7 +34,9 @@ cc.Class({
 
     // LIFE-CYCLE CALLBACKS:
 
-    // onLoad () {},
+    onLoad () {
+        cc.utils.main.setFitScreenMode();
+    },
 
     start () {
 

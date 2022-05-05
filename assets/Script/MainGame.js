@@ -7,7 +7,7 @@ cc.Class({
   
       // use this for initialization
       onLoad: function () {
-            cc.utils.main.setFitSreenMode();
+            cc.utils.main.setFitScreenMode();
             var size = cc.view.getFrameSize();
             var w = size.width;
             var h = size.height;

@@ -13,8 +13,9 @@ cc.Class({
 
       // use this for initialization
       onLoad: function () {
-          this.selected6Rounds = false;
-          this.on6RoundsSelected();
+            cc.utils.main.setFitScreenMode();
+            this.selected6Rounds = false;
+            this.on6RoundsSelected();
       },
 
       onCreateRoomClicked: function() {

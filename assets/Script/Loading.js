@@ -20,6 +20,7 @@ cc.Class({
     // use this for initialization
     onLoad: function () {
         this.initFrameworks();
+        cc.utils.main.setFitScreenMode();
         console.log(this.tipLabel.string);
         cc.utils.http.sendRequest("/isServerOn",{}, this.onServerOn, null, false, this.onServerOff.bind(this));
     },

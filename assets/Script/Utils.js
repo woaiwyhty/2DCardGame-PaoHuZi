@@ -50,7 +50,7 @@ cc.Class({
           }, node);
       },
   
-      setFitSreenMode:function(){
+      setFitScreenMode:function(){
           var node = cc.find('Canvas');
           var size = cc.view.getFrameSize();
           var w = size.width;
