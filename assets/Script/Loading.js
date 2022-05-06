@@ -31,6 +31,7 @@ cc.Class({
         cc.utils.userInfo = {
             username: "",
             nickname: "",
+            token: "",
             travellerMode: false,
         };
         let utilsMain = require("Utils");

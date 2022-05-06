@@ -53,9 +53,9 @@ cc.Class({
             if (ret.errcode === 1) {
                 cc.director.loadScene("CreateRole");
             } else if (ret.errcode === 0) {
-                cc.director.loadScene("PaohuZiGame");
-
-                // cc.director.loadScene("RoomChoice");
+                // cc.director.loadScene("PaohuZiGame");
+                cc.utils.userInfo.token = ret.token;
+                cc.director.loadScene("RoomChoice");
             }
         }
         cc.utils.userInfo.username = account;

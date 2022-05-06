@@ -59,6 +59,7 @@ cc.Class({
 
         var guestSignupCallback = function(ret) {
             if (ret.errcode === 0) {
+                cc.utils.userInfo.token = ret.token;
                 cc.director.loadScene("RoomChoice");
             }
         };

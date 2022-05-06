@@ -78,16 +78,16 @@
         "__id__": 7
       },
       {
-        "__id__": 10
+        "__id__": 11
       }
     ],
     "_active": true,
     "_components": [
       {
-        "__id__": 13
+        "__id__": 14
       },
       {
-        "__id__": 14
+        "__id__": 15
       }
     ],
     "_prefab": null,
@@ -359,6 +359,9 @@
     "_components": [
       {
         "__id__": 9
+      },
+      {
+        "__id__": 10
       }
     ],
     "_prefab": null,
@@ -442,6 +445,17 @@
     "_id": "8cBPifmSlJIbPK8j+q6k3+"
   },
   {
+    "__type__": "85828i1gn9MEoZl2e+F39PS",
+    "_name": "",
+    "_objFlags": 0,
+    "node": {
+      "__id__": 8
+    },
+    "_enabled": true,
+    "scaleMethod": 1,
+    "_id": "15i9m/+oVJp5VrwSBb2Rfs"
+  },
+  {
     "__type__": "cc.Node",
     "_name": "fangchenmiLabel",
     "_objFlags": 0,
@@ -452,10 +466,10 @@
     "_active": true,
     "_components": [
       {
-        "__id__": 11
+        "__id__": 12
       },
       {
-        "__id__": 12
+        "__id__": 13
       }
     ],
     "_prefab": null,
@@ -511,7 +525,7 @@
     "_name": "",
     "_objFlags": 0,
     "node": {
-      "__id__": 10
+      "__id__": 11
     },
     "_enabled": true,
     "_materials": [
@@ -544,7 +558,7 @@
     "_name": "",
     "_objFlags": 0,
     "node": {
-      "__id__": 10
+      "__id__": 11
     },
     "_enabled": true,
     "alignMode": 0,
