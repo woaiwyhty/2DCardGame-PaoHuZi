@@ -38,9 +38,7 @@ cc.Class({
             let createRoomCallback = (ret) => {
                   console.log(ret);
                   if (ret.errcode === 0) {
-                        cc.utils.room_id = ret.room_id;
-                        console.log(cc.utils.room_id);
-                        cc.director.loadScene("PaohuZiGame");
+                        this.joinRoom();
                   } else {
                         cc.utils.alert.show("提示", ret.errmsg);
                   }
@@ -51,7 +49,13 @@ cc.Class({
             }
             cc.utils.http.sendRequest("/createRoom", 
                   { username: cc.utils.userInfo.username, token: cc.utils.userInfo.token, num_of_games: num_of_games }, 
-                  createRoomCallback);
+                  createRoomCallback.bind(this));
+      },
+
+      joinRoom: function() {
+            cc.utils.room_id = ret.room_id;
+            
+            cc.director.loadScene("PaohuZiGame");
       },
 
       on6RoundsSelected: function() {

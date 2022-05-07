@@ -12,7 +12,6 @@ cc.Class({
             this.roomIdLabel.string = cc.utils.room_id;
       },
 
-
       update: function() {
             let minutes = Math.floor(Date.now()/1000/60);
             if(this._lastMinute != minutes){
