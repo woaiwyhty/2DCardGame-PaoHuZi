@@ -27,20 +27,36 @@ cc.Class({
         this.onResetClicked();
     },
     
-    onInputFinished: function(roomId){
-        // cc.vv.userMgr.enterRoom(roomId,function(ret){
-        //     if(ret.errcode == 0){
-        //         this.node.active = false;
-        //     }
-        //     else{
-        //         var content = "房间["+ roomId +"]不存在，请重新输入!";
-        //         if(ret.errcode == 4){
-        //             content = "房间["+ roomId + "]已满!";
-        //         }
-        //         cc.vv.alert.show("提示",content);
-        //         this.onResetClicked();
-        //     }
-        // }.bind(this)); 
+    onInputFinished: function(roomId) {
+        let joinRoomCallback = (ret) => {
+            if (ret.errcode == 0){
+                this.node.active = false;
+                cc.utils.room_id = ret.room_id;
+                cc.director.loadScene("PaohuZiGame");
+            }
+            else {
+                let content = "";
+                if (ret.errcode === 1) {
+                    content = "房间[" + roomId + "]不存在，请重新输入!";
+                } else if (ret.errcode === 2) {
+                    content = "房间[" + roomId + "]已满!";
+                } else {
+                    content = ret.errmsg;
+                }
+                cc.utils.alert.show("提示", content);
+                this.onResetClicked();
+            }
+        };
+        cc.utils.http.sendRequest(
+            "/joinRoom", 
+            { 
+                username: cc.utils.userInfo.username, 
+                token: cc.utils.userInfo.token,
+                room_id: roomId,
+            }, 
+            joinRoomCallback.bind(this)
+        );
+
     },
     
     onInput: function(num){
@@ -93,4 +109,12 @@ cc.Class({
         }
         this._inputIndex = 0;
     },
+
+    parseRoomID: function(){
+        let str = "";
+        for(let i = 0; i < this.nums.length; ++i){
+            str += this.nums[i].string;
+        }
+        return parseInt(str);
+    }
 });

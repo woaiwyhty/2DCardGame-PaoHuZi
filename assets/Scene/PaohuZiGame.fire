@@ -3835,6 +3835,12 @@
       "__id__": 2
     },
     "_enabled": true,
+    "timeLabel": {
+      "__id__": 15
+    },
+    "roomIdLabel": {
+      "__id__": 19
+    },
     "_id": "5cC3VyA1xGAZw250ub63iE"
   }
 ]

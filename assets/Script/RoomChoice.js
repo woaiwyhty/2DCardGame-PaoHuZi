@@ -38,7 +38,7 @@ cc.Class({
             let createRoomCallback = (ret) => {
                   console.log(ret);
                   if (ret.errcode === 0) {
-                        this.joinRoom();
+                        this.joinRoom(ret.room_id);
                   } else {
                         cc.utils.alert.show("提示", ret.errmsg);
                   }
@@ -52,8 +52,8 @@ cc.Class({
                   createRoomCallback.bind(this));
       },
 
-      joinRoom: function() {
-            cc.utils.room_id = ret.room_id;
+      joinRoom: function(room_id) {
+            cc.utils.room_id = room_id;
             
             cc.director.loadScene("PaohuZiGame");
       },
