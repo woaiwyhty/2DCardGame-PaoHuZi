@@ -28,6 +28,12 @@ cc.Class({
     initFrameworks: function() {
         cc.utils = {};
         cc.utils.http = require("HTTPUtil");
+        cc.utils.net = require("Net");
+        cc.utils.net.ip = "127.0.0.1:9001";
+
+        let gameNetworkingManager = require("GameNetworkingManager");
+        cc.utils.gameNetworkingManager = new gameNetworkingManager();
+        cc.utils.gameNetworkingManager.initEventHandlers();
         cc.utils.userInfo = {
             username: "",
             nickname: "",

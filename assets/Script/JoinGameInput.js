@@ -31,8 +31,10 @@ cc.Class({
         let joinRoomCallback = (ret) => {
             if (ret.errcode == 0){
                 this.node.active = false;
-                cc.utils.room_id = ret.room_id;
-                cc.director.loadScene("PaohuZiGame");
+                cc.utils.joinRoom(roomId);
+                // cc.utils.room_id = ret.room_id;
+                // window.io.co
+                // cc.director.loadScene("PaohuZiGame");
             }
             else {
                 let content = "";
@@ -40,6 +42,8 @@ cc.Class({
                     content = "房间[" + roomId + "]不存在，请重新输入!";
                 } else if (ret.errcode === 2) {
                     content = "房间[" + roomId + "]已满!";
+                } else if (ret.errcode === 3) {
+                    content = "您已经在别的房间!";
                 } else {
                     content = ret.errmsg;
                 }

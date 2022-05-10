@@ -2,6 +2,7 @@ cc.Class({
       extends: cc.Component,
   
       properties: {
+            waitingConnection: cc.Node,
             joinGameWindow: cc.Node,
             createRoomWindow: cc.Node,
             checkbox6Rounds: cc.Sprite,
@@ -13,9 +14,25 @@ cc.Class({
 
       // use this for initialization
       onLoad: function () {
+            cc.utils.joinRoom = this.joinRoom;
+            // this.waitingConnection.active = false;
             cc.utils.main.setFitScreenMode();
+            this.initEventHandlers();
+            
             this.selected6Rounds = false;
             this.on6RoundsSelected();
+      },
+
+      initEventHandlers: function() {
+            cc.utils.gameNetworkingManager.dataEventHandler = this.node;
+            this.node.on('login_result', function (data) {
+                  console.log('login_result arrived', data);
+                  if (data.errcode === 0) {
+                        cc.utils.room_id = data.room_id;
+                        cc.utils.wc.hide();
+                        cc.director.loadScene("PaohuZiGame");
+                  }
+            });
       },
 
       onCreateRoomClicked: function() {
@@ -53,9 +70,14 @@ cc.Class({
       },
 
       joinRoom: function(room_id) {
-            cc.utils.room_id = room_id;
-            
-            cc.director.loadScene("PaohuZiGame");
+            cc.utils.gameNetworkingManager.connectToGameServer({
+                  username: cc.utils.userInfo.username,
+                  token: cc.utils.userInfo.token,
+                  room_id: room_id,
+                  time: Date.now(),
+            });
+            // cc.utils.room_id = room_id;
+            // cc.director.loadScene("PaohuZiGame");
       },
 
       on6RoundsSelected: function() {

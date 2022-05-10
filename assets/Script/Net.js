@@ -38,7 +38,7 @@ if(window.io == null){
                   'force new connection': true,
                   'transports':['websocket', 'polling']
               }
-              this.sio = window.io.connect(this.ip,opts);
+              this.sio = window.io.connect(this.ip, opts);
               this.sio.on('reconnect',function(){
                   console.log('reconnection');
               });

@@ -10,6 +10,14 @@ cc.Class({
       onLoad: function () {
             cc.utils.main.setFitScreenMode();
             this.roomIdLabel.string = cc.utils.room_id;
+            this.initEventHandlers();
+      },
+
+      initEventHandlers: function() {
+            cc.utils.gameNetworkingManager.dataEventHandler = this.node;
+            this.node.on('login_result', function () {
+                  console.log('login_result arrived');
+            });
       },
 
       update: function() {
