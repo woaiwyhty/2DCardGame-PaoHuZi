@@ -38,7 +38,7 @@
   },
   "startScene": "8da5204a-2b63-4f3b-861b-90102c1ade9a",
   "title": "PaoHuZi",
-  "webOrientation": "auto",
+  "webOrientation": "landscape",
   "wechatgame": {
     "REMOTE_SERVER_ROOT": "",
     "appid": "wx6ac3f5090a6b99c5",

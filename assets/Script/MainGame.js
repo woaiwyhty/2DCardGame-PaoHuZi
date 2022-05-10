@@ -15,9 +15,24 @@ cc.Class({
 
       initEventHandlers: function() {
             cc.utils.gameNetworkingManager.dataEventHandler = this.node;
-            this.node.on('login_result', function () {
-                  console.log('login_result arrived');
+            this.node.on('exit_result', function (data) {
+                  console.log('exit_result arrived');
+                  if (data.errcode === 0) {
+                        cc.utils.net.close();
+                        cc.utils.room_id = null;
+                        // cc.director.loadScene('RoomChoice');
+                  } else {
+                        cc.utils.wc.hide();
+                  }
             });
+            this.node.on('disconnect', function (data) {
+                  console.log('disconnect arrived');
+                  cc.director.loadScene('RoomChoice');
+            });
+      },
+
+      onReturnToLobbyClicked: function() {
+            cc.utils.gameNetworkingManager.exitToGameServer();
       },
 
       update: function() {

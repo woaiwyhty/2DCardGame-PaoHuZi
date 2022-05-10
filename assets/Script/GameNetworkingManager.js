@@ -49,14 +49,21 @@ cc.Class({
       initEventHandlers: function() {
             let self = this;
             cc.utils.net.addHandler("login_result",function(data){
-                console.log(data);
                 self.dispatchEvent('login_result', data);
+            });
+
+            cc.utils.net.addHandler("exit_result",function(data){
+                  self.dispatchEvent('exit_result', data);
+            });
+
+            cc.utils.net.addHandler("disconnect",function(data){
+                  self.dispatchEvent('disconnect', data);
             });
       },
       
       connectToGameServer: function(data){
             this.dissoveData = null;
-            console.log(cc.utils.net.ip);
+            // console.log(cc.utils.net.ip);
     
             let onConnectOK = function(){
                 console.log("onConnectOK");
@@ -76,6 +83,18 @@ cc.Class({
 
             cc.utils.wc.show("正在加入房间");
             cc.utils.net.connect(onConnectOK, onConnectFailed);
+      },
+
+      exitToGameServer: function() {
+            let data = {
+                  username: cc.utils.userInfo.username,
+                  token: cc.utils.userInfo.token,
+                  room_id: cc.utils.room_id,
+                  time: Date.now()
+            }
+
+            cc.utils.wc.show("正在退出房间");
+            cc.utils.net.send("exit", data);
       },
 
 
