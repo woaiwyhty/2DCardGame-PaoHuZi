@@ -1,7 +1,13 @@
-if(window.io == null){
-      window.io = require("socket-io");
-  }
+
+// if (cc.sys.isNative) {
+//     window.io = SocketIO;
+// } else {
+//     window.io = require("Socket-io");
+// }
    
+if(window.io == null){
+    window.io = require("socket-io");
+}
   var Global = cc.Class({
       extends: cc.Component,
       statics: {
@@ -42,10 +48,12 @@ if(window.io == null){
               this.sio.on('reconnect',function(){
                   console.log('reconnection');
               });
+
               this.sio.on('connect',function(data){
                   self.sio.connected = true;
+                  this.startHearbeat();
                   fnConnect(data);
-              });
+              }.bind(this));
               
               this.sio.on('disconnect',function(data){
                   console.log("disconnect");
@@ -70,7 +78,7 @@ if(window.io == null){
                   }
               }
               
-              this.startHearbeat();
+              
           },
           
           startHearbeat:function(){
@@ -96,6 +104,7 @@ if(window.io == null){
                   setInterval(function(){
                       if(self.sio){
                           if(Date.now() - self.lastRecieveTime > 10000){
+                              console.log("omg... trying to close ws");
                               self.close();
                           }         
                       }
@@ -103,6 +112,7 @@ if(window.io == null){
               }   
           },
           send:function(event,data){
+            console.log("sio send", event, data, this.sio.connected);
               if(this.sio.connected){
                   if(data != null && (typeof(data) == "object")){
                       data = JSON.stringify(data);
@@ -111,6 +121,7 @@ if(window.io == null){
                   if(data == null){
                       data = '';
                   }
+                  console.log("data sent out");
                   this.sio.emit(event,data);                
               }
           },

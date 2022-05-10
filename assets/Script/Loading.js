@@ -30,6 +30,7 @@ cc.Class({
         cc.utils.http = require("HTTPUtil");
         cc.utils.net = require("Net");
         cc.utils.net.ip = "127.0.0.1:9001";
+        console.log(window.io,cc.utils.net);
 
         let gameNetworkingManager = require("GameNetworkingManager");
         cc.utils.gameNetworkingManager = new gameNetworkingManager();
