@@ -1,0 +1,38 @@
+{
+  "ver": "2.3.7",
+  "uuid": "eb5bc195-4690-4251-a187-72ac7d330483",
+  "importer": "texture",
+  "type": "sprite",
+  "wrapMode": "clamp",
+  "filterMode": "bilinear",
+  "premultiplyAlpha": false,
+  "genMipmaps": false,
+  "packable": true,
+  "width": 59,
+  "height": 32,
+  "platformSettings": {},
+  "subMetas": {
+    "game_beilu": {
+      "ver": "1.0.6",
+      "uuid": "823663ab-8263-445a-adcd-8e68efad9ae0",
+      "importer": "sprite-frame",
+      "rawTextureUuid": "eb5bc195-4690-4251-a187-72ac7d330483",
+      "trimType": "auto",
+      "trimThreshold": 1,
+      "rotated": false,
+      "offsetX": 0,
+      "offsetY": 0,
+      "trimX": 0,
+      "trimY": 0,
+      "width": 59,
+      "height": 32,
+      "rawWidth": 59,
+      "rawHeight": 32,
+      "borderTop": 0,
+      "borderBottom": 0,
+      "borderLeft": 0,
+      "borderRight": 0,
+      "subMetas": {}
+    }
+  }
+}

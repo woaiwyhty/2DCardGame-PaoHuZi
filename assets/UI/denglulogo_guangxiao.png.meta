@@ -1,0 +1,38 @@
+{
+  "ver": "2.3.7",
+  "uuid": "309c22fe-4241-4f51-84dc-78c95630e536",
+  "importer": "texture",
+  "type": "sprite",
+  "wrapMode": "clamp",
+  "filterMode": "bilinear",
+  "premultiplyAlpha": false,
+  "genMipmaps": false,
+  "packable": true,
+  "width": 597,
+  "height": 467,
+  "platformSettings": {},
+  "subMetas": {
+    "denglulogo_guangxiao": {
+      "ver": "1.0.6",
+      "uuid": "e0f8dc51-a133-4d52-8c03-79e89bb6991e",
+      "importer": "sprite-frame",
+      "rawTextureUuid": "309c22fe-4241-4f51-84dc-78c95630e536",
+      "trimType": "auto",
+      "trimThreshold": 1,
+      "rotated": false,
+      "offsetX": 0,
+      "offsetY": 0,
+      "trimX": 0,
+      "trimY": 0,
+      "width": 597,
+      "height": 467,
+      "rawWidth": 597,
+      "rawHeight": 467,
+      "borderTop": 0,
+      "borderBottom": 0,
+      "borderLeft": 0,
+      "borderRight": 0,
+      "subMetas": {}
+    }
+  }
+}

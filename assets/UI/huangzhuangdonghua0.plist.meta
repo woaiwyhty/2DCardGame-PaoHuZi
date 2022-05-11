@@ -1,0 +1,36 @@
+{
+  "ver": "1.2.6",
+  "uuid": "cc5e83c8-58c3-45b4-b35b-82b52592d106",
+  "importer": "sprite-atlas",
+  "rawTextureUuid": "3eb2a30e-3df6-42d7-96ea-e71fe2a1b2f8",
+  "size": {
+    "width": 2048,
+    "height": 1024
+  },
+  "type": "Texture Packer",
+  "subMetas": {
+    "huangzhuang.png": {
+      "ver": "1.0.6",
+      "uuid": "6dc30e48-219a-4934-be32-9824ff3502b7",
+      "importer": "sprite-frame",
+      "rawTextureUuid": "3eb2a30e-3df6-42d7-96ea-e71fe2a1b2f8",
+      "trimType": "auto",
+      "trimThreshold": 1,
+      "rotated": false,
+      "offsetX": 0,
+      "offsetY": 0,
+      "trimX": 0,
+      "trimY": 0,
+      "width": 272,
+      "height": 163,
+      "rawWidth": 272,
+      "rawHeight": 163,
+      "borderTop": 0,
+      "borderBottom": 0,
+      "borderLeft": 0,
+      "borderRight": 0,
+      "spriteType": "normal",
+      "subMetas": {}
+    }
+  }
+}

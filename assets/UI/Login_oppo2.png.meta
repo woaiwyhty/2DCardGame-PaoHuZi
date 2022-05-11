@@ -1,0 +1,38 @@
+{
+  "ver": "2.3.7",
+  "uuid": "9ccfde45-b17d-4dc1-af40-ca9cbfab0fe2",
+  "importer": "texture",
+  "type": "sprite",
+  "wrapMode": "clamp",
+  "filterMode": "bilinear",
+  "premultiplyAlpha": false,
+  "genMipmaps": false,
+  "packable": true,
+  "width": 300,
+  "height": 103,
+  "platformSettings": {},
+  "subMetas": {
+    "Login_oppo2": {
+      "ver": "1.0.6",
+      "uuid": "9e2f4ad5-167d-44fb-8dec-e1fbd47de300",
+      "importer": "sprite-frame",
+      "rawTextureUuid": "9ccfde45-b17d-4dc1-af40-ca9cbfab0fe2",
+      "trimType": "auto",
+      "trimThreshold": 1,
+      "rotated": false,
+      "offsetX": -2,
+      "offsetY": -3,
+      "trimX": 1,
+      "trimY": 6,
+      "width": 294,
+      "height": 97,
+      "rawWidth": 300,
+      "rawHeight": 103,
+      "borderTop": 0,
+      "borderBottom": 0,
+      "borderLeft": 0,
+      "borderRight": 0,
+      "subMetas": {}
+    }
+  }
+}

@@ -1,0 +1,38 @@
+{
+  "ver": "2.3.7",
+  "uuid": "5dfe2ba6-dacc-43cd-909a-c0cdd43d2b92",
+  "importer": "texture",
+  "type": "sprite",
+  "wrapMode": "clamp",
+  "filterMode": "bilinear",
+  "premultiplyAlpha": false,
+  "genMipmaps": false,
+  "packable": true,
+  "width": 290,
+  "height": 93,
+  "platformSettings": {},
+  "subMetas": {
+    "Login_huawei1": {
+      "ver": "1.0.6",
+      "uuid": "3af39937-6019-4717-ba7f-960dcca0ba73",
+      "importer": "sprite-frame",
+      "rawTextureUuid": "5dfe2ba6-dacc-43cd-909a-c0cdd43d2b92",
+      "trimType": "auto",
+      "trimThreshold": 1,
+      "rotated": false,
+      "offsetX": 0,
+      "offsetY": 0.5,
+      "trimX": 1,
+      "trimY": 0,
+      "width": 288,
+      "height": 92,
+      "rawWidth": 290,
+      "rawHeight": 93,
+      "borderTop": 0,
+      "borderBottom": 0,
+      "borderLeft": 0,
+      "borderRight": 0,
+      "subMetas": {}
+    }
+  }
+}

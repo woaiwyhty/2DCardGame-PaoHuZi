@@ -24,9 +24,9 @@ cc.Class({
 
       initCardSetView: function() {
             this.backCards = [];
-            this.baseCardNode = cc.find("Canvas/Game/CardSet/CardBlind");
-            this.cardSetNode = cc.find("Canvas/Game/CardSet");
-            this.remainNumofCardNode = cc.find("Canvas/Game/CardSet/remainNumofCardLabel").getComponent(cc.Node);
+            this.baseCardNode = cc.find("Canvas/Game/CardSetEffect/CardBlind");
+            this.cardSetNode = cc.find("Canvas/Game/CardSetEffect");
+            this.remainNumofCardNode = cc.find("Canvas/Game/CardSetEffect/remainNumofCardLabel").getComponent(cc.Node);
             let original_pos = this.baseCardNode.getPosition();
 
             for (let i = 0; i < 9; ++i) {

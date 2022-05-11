@@ -1,0 +1,59 @@
+{
+  "ver": "1.2.6",
+  "uuid": "be08a680-9efe-4d73-ac69-c6d01c7161b2",
+  "importer": "sprite-atlas",
+  "rawTextureUuid": "a92b804c-7298-4486-9636-eec52c449041",
+  "size": {
+    "width": 1024,
+    "height": 1024
+  },
+  "type": "Texture Packer",
+  "subMetas": {
+    "tehuitubiao_wenzi.png": {
+      "ver": "1.0.6",
+      "uuid": "4762f1b5-5396-491b-8d07-b1c41893a6a5",
+      "importer": "sprite-frame",
+      "rawTextureUuid": "a92b804c-7298-4486-9636-eec52c449041",
+      "trimType": "auto",
+      "trimThreshold": 1,
+      "rotated": false,
+      "offsetX": 0,
+      "offsetY": 0,
+      "trimX": 0,
+      "trimY": 0,
+      "width": 88,
+      "height": 30,
+      "rawWidth": 88,
+      "rawHeight": 30,
+      "borderTop": 0,
+      "borderBottom": 0,
+      "borderLeft": 0,
+      "borderRight": 0,
+      "spriteType": "normal",
+      "subMetas": {}
+    },
+    "tehuitubiao_lihe.png": {
+      "ver": "1.0.6",
+      "uuid": "902a1590-78a3-4f86-957e-7b2330f4b53f",
+      "importer": "sprite-frame",
+      "rawTextureUuid": "a92b804c-7298-4486-9636-eec52c449041",
+      "trimType": "auto",
+      "trimThreshold": 1,
+      "rotated": false,
+      "offsetX": 0,
+      "offsetY": 0,
+      "trimX": 90,
+      "trimY": 0,
+      "width": 79,
+      "height": 78,
+      "rawWidth": 79,
+      "rawHeight": 78,
+      "borderTop": 0,
+      "borderBottom": 0,
+      "borderLeft": 0,
+      "borderRight": 0,
+      "spriteType": "normal",
+      "subMetas": {}
+    }
+  }
+}

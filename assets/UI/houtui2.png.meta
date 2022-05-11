@@ -1,0 +1,38 @@
+{
+  "ver": "2.3.7",
+  "uuid": "33075175-21af-4dc4-aa4d-501711dc4ed8",
+  "importer": "texture",
+  "type": "sprite",
+  "wrapMode": "clamp",
+  "filterMode": "bilinear",
+  "premultiplyAlpha": false,
+  "genMipmaps": false,
+  "packable": true,
+  "width": 11,
+  "height": 21,
+  "platformSettings": {},
+  "subMetas": {
+    "houtui2": {
+      "ver": "1.0.6",
+      "uuid": "f319ba71-be0c-425c-a03e-e6f98d0c999f",
+      "importer": "sprite-frame",
+      "rawTextureUuid": "33075175-21af-4dc4-aa4d-501711dc4ed8",
+      "trimType": "auto",
+      "trimThreshold": 1,
+      "rotated": false,
+      "offsetX": 0,
+      "offsetY": 0,
+      "trimX": 0,
+      "trimY": 0,
+      "width": 11,
+      "height": 21,
+      "rawWidth": 11,
+      "rawHeight": 21,
+      "borderTop": 0,
+      "borderBottom": 0,
+      "borderLeft": 0,
+      "borderRight": 0,
+      "subMetas": {}
+    }
+  }
+}

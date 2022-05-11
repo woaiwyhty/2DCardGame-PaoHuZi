@@ -1,0 +1,38 @@
+{
+  "ver": "2.3.7",
+  "uuid": "4330bc11-d224-4da4-bfe7-00380093be62",
+  "importer": "texture",
+  "type": "sprite",
+  "wrapMode": "clamp",
+  "filterMode": "bilinear",
+  "premultiplyAlpha": false,
+  "genMipmaps": false,
+  "packable": true,
+  "width": 152,
+  "height": 152,
+  "platformSettings": {},
+  "subMetas": {
+    "AppIcon76x76@2x~ipad": {
+      "ver": "1.0.6",
+      "uuid": "f6bd8163-0e53-4f9a-8750-27b491204695",
+      "importer": "sprite-frame",
+      "rawTextureUuid": "4330bc11-d224-4da4-bfe7-00380093be62",
+      "trimType": "auto",
+      "trimThreshold": 1,
+      "rotated": false,
+      "offsetX": 0,
+      "offsetY": 0,
+      "trimX": 0,
+      "trimY": 0,
+      "width": 152,
+      "height": 152,
+      "rawWidth": 152,
+      "rawHeight": 152,
+      "borderTop": 0,
+      "borderBottom": 0,
+      "borderLeft": 0,
+      "borderRight": 0,
+      "subMetas": {}
+    }
+  }
+}

@@ -1,0 +1,38 @@
+{
+  "ver": "2.3.7",
+  "uuid": "0d8546c6-8b4f-4a60-80fc-ec722c18c715",
+  "importer": "texture",
+  "type": "sprite",
+  "wrapMode": "clamp",
+  "filterMode": "bilinear",
+  "premultiplyAlpha": false,
+  "genMipmaps": false,
+  "packable": true,
+  "width": 300,
+  "height": 103,
+  "platformSettings": {},
+  "subMetas": {
+    "Login_Nduo2": {
+      "ver": "1.0.6",
+      "uuid": "b8d2b39b-c81b-45fd-aaac-b865ca04c06a",
+      "importer": "sprite-frame",
+      "rawTextureUuid": "0d8546c6-8b4f-4a60-80fc-ec722c18c715",
+      "trimType": "auto",
+      "trimThreshold": 1,
+      "rotated": false,
+      "offsetX": -2.5,
+      "offsetY": -3,
+      "trimX": 0,
+      "trimY": 6,
+      "width": 295,
+      "height": 97,
+      "rawWidth": 300,
+      "rawHeight": 103,
+      "borderTop": 0,
+      "borderBottom": 0,
+      "borderLeft": 0,
+      "borderRight": 0,
+      "subMetas": {}
+    }
+  }
+}

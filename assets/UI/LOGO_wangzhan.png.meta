@@ -1,0 +1,38 @@
+{
+  "ver": "2.3.7",
+  "uuid": "c592cf3e-ac6b-4630-b3aa-cb1327897de0",
+  "importer": "texture",
+  "type": "sprite",
+  "wrapMode": "clamp",
+  "filterMode": "bilinear",
+  "premultiplyAlpha": false,
+  "genMipmaps": false,
+  "packable": true,
+  "width": 204,
+  "height": 19,
+  "platformSettings": {},
+  "subMetas": {
+    "LOGO_wangzhan": {
+      "ver": "1.0.6",
+      "uuid": "2f39dcce-3621-489c-94db-0dbf77a362e8",
+      "importer": "sprite-frame",
+      "rawTextureUuid": "c592cf3e-ac6b-4630-b3aa-cb1327897de0",
+      "trimType": "auto",
+      "trimThreshold": 1,
+      "rotated": false,
+      "offsetX": 0,
+      "offsetY": 0,
+      "trimX": 0,
+      "trimY": 0,
+      "width": 204,
+      "height": 19,
+      "rawWidth": 204,
+      "rawHeight": 19,
+      "borderTop": 0,
+      "borderBottom": 0,
+      "borderLeft": 0,
+      "borderRight": 0,
+      "subMetas": {}
+    }
+  }
+}

@@ -1,0 +1,38 @@
+{
+  "ver": "2.3.7",
+  "uuid": "f08f1a8f-39a6-43e2-9c95-f234795888bd",
+  "importer": "texture",
+  "type": "sprite",
+  "wrapMode": "clamp",
+  "filterMode": "bilinear",
+  "premultiplyAlpha": false,
+  "genMipmaps": false,
+  "packable": true,
+  "width": 1280,
+  "height": 720,
+  "platformSettings": {},
+  "subMetas": {
+    "nduo_logo": {
+      "ver": "1.0.6",
+      "uuid": "13a7ce5b-8faa-4e1f-8920-f79a010de716",
+      "importer": "sprite-frame",
+      "rawTextureUuid": "f08f1a8f-39a6-43e2-9c95-f234795888bd",
+      "trimType": "auto",
+      "trimThreshold": 1,
+      "rotated": false,
+      "offsetX": 0,
+      "offsetY": 0,
+      "trimX": 0,
+      "trimY": 0,
+      "width": 1280,
+      "height": 720,
+      "rawWidth": 1280,
+      "rawHeight": 720,
+      "borderTop": 0,
+      "borderBottom": 0,
+      "borderLeft": 0,
+      "borderRight": 0,
+      "subMetas": {}
+    }
+  }
+}
