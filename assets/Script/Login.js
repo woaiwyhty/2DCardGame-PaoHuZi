@@ -55,10 +55,11 @@ cc.Class({
             } else if (ret.errcode === 0) {
                 // cc.director.loadScene("PaohuZiGame");
                 cc.utils.userInfo.token = ret.token;
+                cc.utils.userInfo.nickname = ret.nickname;
                 cc.director.loadScene("RoomChoice");
             }
         }
-        cc.utils.userInfo.username = account;
+        cc.utils.userInfo.username = account.toString();
         cc.utils.http.sendRequest("/guestLogin", {username: account}, travellerLoginCallback);
     },
 

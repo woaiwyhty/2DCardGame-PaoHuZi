@@ -112,7 +112,7 @@ if(window.io == null){
               }   
           },
           send:function(event,data){
-            console.log("sio send", event, data, this.sio.connected);
+            // console.log("sio send", event, data, this.sio.connected);
               if(this.sio.connected){
                   if(data != null && (typeof(data) == "object")){
                       data = JSON.stringify(data);
@@ -121,7 +121,7 @@ if(window.io == null){
                   if(data == null){
                       data = '';
                   }
-                  console.log("data sent out");
+                //   console.log("data sent out");
                   this.sio.emit(event,data);                
               }
           },

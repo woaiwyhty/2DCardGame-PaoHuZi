@@ -4,13 +4,67 @@ cc.Class({
       properties: {
             timeLabel: cc.Label,
             roomIdLabel: cc.Label,
+            remainNumOfGamesLabel: cc.Label,
       },
   
       // use this for initialization
       onLoad: function () {
             cc.utils.main.setFitScreenMode();
-            this.roomIdLabel.string = cc.utils.room_id;
-            this.initEventHandlers();
+            this.roomIdLabel.string = cc.utils.roomInfo.room_id;
+            this.initSeatView();
+            this.initEventHandlers();    
+      },
+      
+      setSeatInfo: function(seatClientSideId, emptySeat, username = "", xi = 0, score = 0, online = true) {
+            if (emptySeat) {
+                  console.log("empty seat, ", seatClientSideId)
+                  this.seats[seatClientSideId].icon.spriteFrame = this.seatNobodyIcon;
+                  this.seats[seatClientSideId].ready.active = false;
+                  this.seats[seatClientSideId].offline.active = false;
+            } else {
+                  this.seats[seatClientSideId].icon.spriteFrame = this.seatIcon;
+                  this.seats[seatClientSideId].ready.active = true;
+                  this.seats[seatClientSideId].offline.active = !online;
+            }
+            this.seats[seatClientSideId].name.string = username;
+            this.seats[seatClientSideId].xi.string = xi.toString();
+            this.seats[seatClientSideId].score.string = score.toString();
+      },
+
+      initSeatView: function() {
+            console.log("initSeatView was called!!!");
+            this.seats = [];
+            for (let i = 1; i < 4; ++i) {
+                  this.seats.push({
+                        icon: cc.find("Canvas/Players/seat" + i.toString() + "/PlayerIcon").getComponent(cc.Sprite),
+                        offline: cc.find("Canvas/Players/seat" + i.toString() + "/offline"),
+                        name: cc.find("Canvas/Players/seat" + i.toString() + "/nameLabel").getComponent(cc.Label),
+                        score: cc.find("Canvas/Players/seat" + i.toString() + "/scoreLabel").getComponent(cc.Label),
+                        xi: cc.find("Canvas/Players/seat" + i.toString() + "/xi/xiLabel").getComponent(cc.Label),
+                        ready: cc.find("Canvas/Players/seat" + i.toString() + "/ready"),
+                  })
+            }
+            this.seatNobodyIcon = this.seats[1].icon.spriteFrame;
+            this.seatIcon = this.seats[0].icon.spriteFrame;
+            this.setSeatInfo(1, false, cc.utils.userInfo.nickname, 0, 0, true);
+            this.nextPlayerId = cc.utils.roomInfo.my_seat_id + 1;
+            if (this.nextPlayerId >= 3) {
+                  this.nextPlayerId = 0;
+            }
+            this.prevPlayerId = cc.utils.roomInfo.my_seat_id - 1;
+            if (this.prevPlayerId < 0) {
+                  this.prevPlayerId = 2;
+            }
+            this.setSeatInfo(2, true);
+            this.setSeatInfo(0, true);
+            for (let i = 0; i < cc.utils.roomInfo.other_players.length; ++i) {
+                  let info = cc.utils.roomInfo.other_players[i];
+                  if (info.seat_id === this.nextPlayerId) {
+                        this.setSeatInfo(2, false, info.nickname, 0, 0, true);
+                  } else {
+                        this.setSeatInfo(0, false, info.nickname, 0, 0, true);
+                  }
+            }
       },
 
       initEventHandlers: function() {
@@ -19,7 +73,7 @@ cc.Class({
                   console.log('exit_result arrived');
                   if (data.errcode === 0) {
                         cc.utils.net.close();
-                        cc.utils.room_id = null;
+                        cc.utils.roomInfo = null;
                         // cc.director.loadScene('RoomChoice');
                   } else {
                         cc.utils.wc.hide();
@@ -29,6 +83,21 @@ cc.Class({
                   console.log('disconnect arrived');
                   cc.director.loadScene('RoomChoice');
             });
+            this.node.on('new_player_entered_room', function (data) {
+                  if (data.seat_id === this.nextPlayerId) {
+                        this.setSeatInfo(2, false, data.nickname, 0, data.score, data.online);
+                  } else {
+                        this.setSeatInfo(0, false, data.nickname, 0, data.score, data.online);
+                  }
+            }.bind(this));
+            this.node.on('other_player_exit', function (data) {
+                  console.log("other_player_exit", data)
+                  if (data.seat_id === this.nextPlayerId) {
+                        this.setSeatInfo(2, true);
+                  } else {
+                        this.setSeatInfo(0, true);
+                  }
+            }.bind(this));
       },
 
       onReturnToLobbyClicked: function() {

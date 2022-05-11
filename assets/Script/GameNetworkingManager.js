@@ -59,6 +59,13 @@ cc.Class({
             cc.utils.net.addHandler("disconnect",function(data){
                   self.dispatchEvent('disconnect', data);
             });
+
+            cc.utils.net.addHandler("new_player_entered_room",function(data){
+                  self.dispatchEvent('new_player_entered_room', data);
+            });
+            cc.utils.net.addHandler("other_player_exit",function(data){
+                  self.dispatchEvent('other_player_exit', data);
+            });
       },
       
       connectToGameServer: function(data){
@@ -89,7 +96,7 @@ cc.Class({
             let data = {
                   username: cc.utils.userInfo.username,
                   token: cc.utils.userInfo.token,
-                  room_id: cc.utils.room_id,
+                  room_id: cc.utils.roomInfo.room_id,
                   time: Date.now()
             }
 

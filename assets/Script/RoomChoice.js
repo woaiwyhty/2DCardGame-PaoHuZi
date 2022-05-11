@@ -28,7 +28,11 @@ cc.Class({
             this.node.on('login_result', function (data) {
                   console.log('login_result arrived', data);
                   if (data.errcode === 0) {
-                        cc.utils.room_id = data.room_id;
+                        cc.utils.roomInfo = {
+                              room_id: data.room_id,
+                              my_seat_id: data.seat_id,
+                              other_players: data.other_players,
+                        }
                         cc.utils.wc.hide();
                         cc.director.loadScene("PaohuZiGame");
                   }
