@@ -5,6 +5,8 @@ cc.Class({
             timeLabel: cc.Label,
             roomIdLabel: cc.Label,
             remainNumOfGamesLabel: cc.Label,
+            delayMSLabel: cc.Label,
+            delayMSNode: cc.Node,
       },
   
       // use this for initialization
@@ -12,7 +14,11 @@ cc.Class({
             cc.utils.main.setFitScreenMode();
             this.roomIdLabel.string = cc.utils.roomInfo.room_id;
             this.initSeatView();
-            this.initEventHandlers();    
+            this.initEventHandlers();
+
+            this.red = new cc.Color(205,0,0);
+            this.green = new cc.Color(0,205,0);
+            this.yellow = new cc.Color(255,200,0); 
       },
       
       setSeatInfo: function(seatClientSideId, emptySeat, username = "", xi = 0, score = 0, online = true) {
@@ -107,15 +113,30 @@ cc.Class({
       update: function() {
             let minutes = Math.floor(Date.now()/1000/60);
             if(this._lastMinute != minutes){
-                this._lastMinute = minutes;
-                let date = new Date();
-                let h = date.getHours();
-                h = h < 10 ? "0" + h : h;
-                
-                let m = date.getMinutes();
-                m = m < 10 ? "0" + m : m;
-                this.timeLabel.string = "" + h + ":" + m;             
-            } 
+                  this._lastMinute = minutes;
+                  let date = new Date();
+                  let h = date.getHours();
+                  h = h < 10 ? "0" + h : h;
+                  
+                  let m = date.getMinutes();
+                  m = m < 10 ? "0" + m : m;
+                  this.timeLabel.string = "" + h + ":" + m;             
+            }
+            if (cc.utils.net.delayMS != null){
+                  this.delayMSLabel.string = cc.utils.net.delayMS + 'ms';
+                  if (cc.utils.net.delayMS > 800){
+                        delay.color = this.red;
+                  }
+                  else if(cc.utils.net.delayMS > 300){
+                        this.delayMSNode.color = this.yellow;
+                  }
+                  else {
+                        this.delayMSNode.color = this.green;
+                  }
+            } else {
+                  this.delayMSLabel.string = 'N/A';
+                  this.delayMSNode.color = this.red;
+            }
       },
   });
     
