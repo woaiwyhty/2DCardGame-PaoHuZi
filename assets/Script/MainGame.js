@@ -15,15 +15,30 @@ cc.Class({
             this.roomIdLabel.string = cc.utils.roomInfo.room_id;
             this.initSeatView();
             this.initEventHandlers();
+            this.initCardSetView();
 
             this.red = new cc.Color(205,0,0);
             this.green = new cc.Color(0,205,0);
             this.yellow = new cc.Color(255,200,0); 
       },
+
+      initCardSetView: function() {
+            this.backCards = [];
+            this.baseCardNode = cc.find("Canvas/Game/CardSet/CardBlind");
+            this.cardSetNode = cc.find("Canvas/Game/CardSet");
+            this.remainNumofCardNode = cc.find("Canvas/Game/CardSet/remainNumofCardLabel").getComponent(cc.Node);
+            let original_pos = this.baseCardNode.getPosition();
+
+            for (let i = 0; i < 9; ++i) {
+                  this.backCards.push(cc.instantiate(this.baseCardNode));
+                  this.backCards[i].parent = this.cardSetNode;
+                  this.backCards[i].setPosition(original_pos.x, original_pos.y + i * 2);
+                  this.backCards[i].active = true;
+            }
+      },
       
       setSeatInfo: function(seatClientSideId, emptySeat, username = "", xi = 0, score = 0, online = true) {
             if (emptySeat) {
-                  console.log("empty seat, ", seatClientSideId)
                   this.seats[seatClientSideId].icon.spriteFrame = this.seatNobodyIcon;
                   this.seats[seatClientSideId].ready.active = false;
                   this.seats[seatClientSideId].offline.active = false;
@@ -38,7 +53,6 @@ cc.Class({
       },
 
       initSeatView: function() {
-            console.log("initSeatView was called!!!");
             this.seats = [];
             for (let i = 1; i < 4; ++i) {
                   this.seats.push({
