@@ -169,12 +169,20 @@ cc.Class({
 
             this.cardsOnMyHandNode = cc.find("Canvas/Game/CardsOnMyHand");
             this.cardFullWidth = 65;
+            this.cardSmallWidth = 40;
             this.cardsAlreadyUsedMySelfNode = cc.find("Canvas/Game/CardsAlreadyUsedMySelf");
             this.cardsAlreadyUsedPrevNode = cc.find("Canvas/Game/CardsAlreadyUsedPrev");
             this.cardsAlreadyUsedNextNode = cc.find("Canvas/Game/CardsAlreadyUsedNext");
             this.cardsAlreadyUsedMySelf = [];
             this.cardsAlreadyUsedPrev = [];
             this.cardsAlreadyUsedNext = [];
+
+            this.cardsDiscardedMySelfNode = cc.find("Canvas/Game/CardsDiscardedMySelf");
+            this.cardsDiscardedPrevNode = cc.find("Canvas/Game/CardsDiscardedPrev");
+            this.cardsDiscardedNextNode = cc.find("Canvas/Game/CardsDiscardedNext");
+            this.cardsDiscardedMySelf = [];
+            this.cardsDiscardedPrev = [];
+            this.cardsDiscardedNext = [];
 
             let testCards = cc.utils.gameAlgo.dealWhenGameStarts();
             console.log("testedCards  ", testCards)
@@ -193,6 +201,15 @@ cc.Class({
             this.addUsedCards(this.cardsAlreadyUsedNext, this.cardsAlreadyUsedNextNode, ['d2', 'd7', 'd10'], 'chi', 0, true);
             this.addUsedCards(this.cardsAlreadyUsedNext, this.cardsAlreadyUsedNextNode, ['x1', 'x1', 'x1', 'x1'], 'chi', 0, true);
 
+            this.addDiscardedCard(this.cardsDiscardedMySelf, this.cardsDiscardedMySelfNode, 'x5', true);
+            this.addDiscardedCard(this.cardsDiscardedMySelf, this.cardsDiscardedMySelfNode, 'd3', true);
+   
+            this.addDiscardedCard(this.cardsDiscardedPrev, this.cardsDiscardedPrevNode, 'x5', false);
+            this.addDiscardedCard(this.cardsDiscardedPrev, this.cardsDiscardedPrevNode, 'd3', false);
+ 
+            this.addDiscardedCard(this.cardsDiscardedNext, this.cardsDiscardedNextNode, 'x5', true);
+            this.addDiscardedCard(this.cardsDiscardedNext, this.cardsDiscardedNextNode, 'd3', true);
+ 
       },
 
       renderCardsOnHand: function(cardGroups) {
@@ -227,12 +244,26 @@ cc.Class({
                   }
             }
       },
+
+      addDiscardedCard: function(target, parentNode, card, addToLeft = false) {
+            let node = null;
+            let offSetx = 30 + (target.length * this.cardSmallWidth), offSety = 0;
+            if (addToLeft === true) {
+                  offSetx = -30 - (target.length * this.cardSmallWidth);
+            }
+            node = cc.instantiate(this.cardsSmall.get(card));
+            node.parent = parentNode;
+            node.x = offSetx;
+            node.y = offSety;
+            node.active = true;
+            target.push(node);
+      },
       
       addUsedCards: function(target, parentNode, cards, type, xi, addToLeft = false) {
             let nodes = [];
-            let offSetx = 30 + (target.length * 48), offSety = 0;
+            let offSetx = 30 + (target.length * this.cardSmallWidth), offSety = 0;
             if (addToLeft === true) {
-                  offSetx = -30 - (target.length * 48);
+                  offSetx = -30 - (target.length * this.cardSmallWidth);
             }
             for (card of cards) {
                   nodes.push(cc.instantiate(this.cardsSmall.get(card)));
@@ -240,7 +271,7 @@ cc.Class({
                   nodes[nodes.length - 1].x = offSetx;
                   nodes[nodes.length - 1].y = offSety;
                   nodes[nodes.length - 1].active = true;
-                  offSety += 48;
+                  offSety += this.cardSmallWidth;
             }
             target.push({
                   nodes: nodes,
@@ -277,6 +308,9 @@ cc.Class({
                   })
             }
             this.seatNobodyIcon = this.seats[1].icon.spriteFrame;
+            this.seatNobodyIcon.width = 74;
+            this.seatNobodyIcon.height = 74;
+
             this.seatIcon = this.seats[0].icon.spriteFrame;
             this.setSeatInfo(1, false, cc.utils.userInfo.nickname, 0, 0, true);
             this.nextPlayerId = cc.utils.roomInfo.my_seat_id + 1;
