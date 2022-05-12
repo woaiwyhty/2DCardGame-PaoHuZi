@@ -19,6 +19,20 @@ cc.Class({
             groups.push(tempMap);
       },
 
+      filterEmptyGroup: function(cardGroups) {
+            let newGroup = [];
+            for (cardGroup of cardGroups) {
+                  let sum = 0;
+                  for (const [key, value] of cardGroup.entries()) {
+                        sum += value;
+                  }
+                  if (sum > 0) {
+                        newGroup.push(cardGroup);
+                  }
+            }
+            return newGroup;
+      },
+
       groupCards: function(cardSet) {
             // all keys must be inserted, sth like: x1: 0.
             // if there is no specific card, just set the value to be 0.
