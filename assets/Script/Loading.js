@@ -43,6 +43,9 @@ cc.Class({
         };
         let utilsMain = require("Utils");
         cc.utils.main = new utilsMain();
+
+        let gameAlgo = require("GameAlgorithm");
+        cc.utils.gameAlgo = new gameAlgo();
     },
 
     onServerOn: function(ret){
