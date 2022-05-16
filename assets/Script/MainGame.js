@@ -212,7 +212,8 @@ cc.Class({
             this.addDiscardedCard(this.cardsDiscardedNext, this.cardsDiscardedNextNode, 'x5', true);
             this.addDiscardedCard(this.cardsDiscardedNext, this.cardsDiscardedNextNode, 'd3', true);
  
-            this.dealHoleCard('x5', 1);
+            // this.dealHoleCard('x5', 1);
+            this.shootCardOthers('x7', 2, false);
       },
 
       dealHoleCard: function(card, destSeatId) {
@@ -249,7 +250,7 @@ cc.Class({
             this.shootCardFrame.parent = cardNode;
             this.shootCardFrame.width = 65;
             this.shootCardFrame.height = 194;
-            this.shootCardFrame.x = 0, this.dealCardFrame.y = 0;
+            this.shootCardFrame.x = 0, this.shootCardFrame.y = 0;
             this.shootCardFrame.active = true;
 
             let pos = this.cardSetNode.convertToWorldSpaceAR(cc.v2(0, 0));
@@ -267,6 +268,35 @@ cc.Class({
                   this.renderCardsOnHand(this.cardGroups);
             })
             .start()
+      },
+
+      shootCardOthers: function(card, seatId, leftToRight = true) {
+            let targetX = -130;
+
+            let node = cc.instantiate(this.cardsFull.get(card));
+            node.interactable = false;
+            node.parent = this.seats[seatId].self;
+
+            node.width = 65;
+            node.height = 194;
+            node.x = 100, node.y = 0; 
+            node.scaleX = 0.1, node.scaleY = 0.1;
+            node.active = true;
+            this.shootCardFrame.parent = node;
+            this.shootCardFrame.width = 65;
+            this.shootCardFrame.height = 194;
+            this.shootCardFrame.x = 0, this.shootCardFrame.y = 0;
+            this.shootCardFrame.active = true;
+
+            if (!leftToRight) {
+                  targetX = 130;
+            }
+            let pos = this.cardSetNode.convertToWorldSpaceAR(cc.v2(0, 0));
+            let localPos = this.seats[seatId].self.convertToNodeSpaceAR(cc.v2(pos.x + targetX, pos.y))
+            cc.utils.gameAudio.playCardOutEffect(card);
+            cc.tween(node)
+            .to(0.4, { position: localPos, scale: 0.8  })
+            .start();
       },
 
       renderCardsOnHand: function(cardGroups) {
@@ -363,6 +393,7 @@ cc.Class({
                         score: cc.find("Canvas/Players/seat" + i.toString() + "/scoreLabel").getComponent(cc.Label),
                         xi: cc.find("Canvas/Players/seat" + i.toString() + "/xi/xiLabel").getComponent(cc.Label),
                         ready: cc.find("Canvas/Players/seat" + i.toString() + "/ready"),
+                        self: cc.find("Canvas/Players/seat" +  i.toString()),
                   })
             }
             this.seatNobodyIcon = this.seats[1].icon.spriteFrame;
