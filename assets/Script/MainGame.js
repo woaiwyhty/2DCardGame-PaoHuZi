@@ -23,6 +23,7 @@ cc.Class({
             this.initSeatView();
             this.initEventHandlers();
             this.initCardSetView();
+            this.initActionsView();
       },
 
       determinePossibleMerge: function(endPosx, endPosy) {
@@ -212,8 +213,8 @@ cc.Class({
             this.addDiscardedCard(this.cardsDiscardedNext, this.cardsDiscardedNextNode, 'x5', true);
             this.addDiscardedCard(this.cardsDiscardedNext, this.cardsDiscardedNextNode, 'd3', true);
  
-            // this.dealHoleCard('x5', 1);
-            this.shootCardOthers('x7', 2, false);
+            this.dealHoleCard('x5', 1);
+            // this.shootCardOthers('x7', 2, false);
       },
 
       dealHoleCard: function(card, destSeatId) {
@@ -297,6 +298,25 @@ cc.Class({
             cc.tween(node)
             .to(0.4, { position: localPos, scale: 0.8  })
             .start();
+      },
+
+      initActionsView: function() {
+            this.actionsNode = cc.find("Canvas/Game/Actions");
+            this.buttonsNode = new Map();
+            this.buttonsNode.set('peng', cc.find("Canvas/Game/Actions/peng"));
+            this.buttonsNode.set('chi', cc.find("Canvas/Game/Actions/chi"));
+            this.buttonsNode.set('guo', cc.find("Canvas/Game/Actions/guo"));
+
+            this.renderActionsList(['peng', 'guo']);
+      },
+
+      renderActionsList: function(buttons) {
+            let currentX = -80;
+            for (let i = buttons.length - 1; i >= 0; --i) {
+                  this.buttonsNode.get(buttons[i]).x = currentX;
+                  this.buttonsNode.get(buttons[i]).active = true;
+                  currentX -= 130;
+            }
       },
 
       renderCardsOnHand: function(cardGroups) {
