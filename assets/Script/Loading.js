@@ -46,6 +46,10 @@ cc.Class({
 
         let gameAlgo = require("GameAlgorithm");
         cc.utils.gameAlgo = new gameAlgo();
+
+        let gameAudio = require("GameAudioEffect");
+        cc.utils.gameAudio = new gameAudio();
+        cc.utils.gameAudio.initAudios();
     },
 
     onServerOn: function(ret){

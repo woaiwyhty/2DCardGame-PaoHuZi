@@ -84,7 +84,7 @@ cc.Class({
                   node.opacity = 255;
                   
                   if (event.getLocationY() >= 320) {
-                  //     this.shoot(node.mjId);
+                        this.shootCardOnHand(node.name, node);
                   } else {
                         let possibleDrug = this.determinePossibleMerge(event.getLocationX(), event.getLocationY());
                         if (possibleDrug !== -1) {
@@ -104,8 +104,7 @@ cc.Class({
                   this.determinePossibleMerge(event);
 
                   if (event.getLocationY() >= 320) {
-                        
-                  //     this.shoot(node.mjId);
+                        this.shootCardOnHand(node.name, node);
                   } else {
                         let possibleDrug = this.determinePossibleMerge(event.getLocationX(), event.getLocationY());
                         if (possibleDrug !== -1) {
@@ -139,6 +138,9 @@ cc.Class({
       },
 
       initCardSetView: function() {
+            this.dealCardFrame = cc.find("Canvas/Game/DealCardFrame");
+            this.shootCardFrame = cc.find("Canvas/Game/ShootCardFrame");
+
             this.backCards = [];
             this.baseCardNode = cc.find("Canvas/Game/CardSetEffect/CardBlind");
             this.cardSetNode = cc.find("Canvas/Game/CardSetEffect");
@@ -210,6 +212,61 @@ cc.Class({
             this.addDiscardedCard(this.cardsDiscardedNext, this.cardsDiscardedNextNode, 'x5', true);
             this.addDiscardedCard(this.cardsDiscardedNext, this.cardsDiscardedNextNode, 'd3', true);
  
+            this.dealHoleCard('x5', 1);
+      },
+
+      dealHoleCard: function(card, destSeatId) {
+            let node = cc.instantiate(this.cardsFull.get(card));
+            this.dealCardFrame.parent = node;
+            this.dealCardFrame.width = 65;
+            this.dealCardFrame.height = 194;
+            this.dealCardFrame.x = 0, this.dealCardFrame.y = 0;
+            this.dealCardFrame.active = true;
+            node.interactable = false;
+            node.parent = this.cardSetNode;
+            node.width = 65;
+            node.height = 194;
+            node.x = 0, node.y = 0; 
+            node.scaleX = 0.1, node.scaleY = 0.1;
+            let targetX = 0, targetY = 0;
+            if (destSeatId === 0) {
+                  targetY = -100;
+            } else if (destSeatId === 1) {
+                  targetX = -130;
+            } else {
+                  targetX = 130;
+            }
+            cc.utils.gameAudio.playCardOutEffect(card);
+            cc.tween(node)
+            .to(0.4, { position: cc.v2(targetX, targetY), scale: 0.8  })
+            .start()
+      },
+
+      shootCardOnHand: function(card, cardNode) {
+            // TODO: check if it is allowed to shoot the target card
+            // TODO: communicate with the server
+            let targetX = 0, targetY = -100;
+            this.shootCardFrame.parent = cardNode;
+            this.shootCardFrame.width = 65;
+            this.shootCardFrame.height = 194;
+            this.shootCardFrame.x = 0, this.dealCardFrame.y = 0;
+            this.shootCardFrame.active = true;
+
+            let pos = this.cardSetNode.convertToWorldSpaceAR(cc.v2(0, 0));
+            cc.utils.gameAudio.playCardOutEffect(card);
+            cc.tween(cardNode)
+            .to(0.4, { position: cc.v2(targetX, pos.y + targetY), scale: 0.8  })
+            .call(() => {
+                  this.cardGroups[cardNode.bucket].set(
+                        card, 
+                        this.cardGroups[cardNode.bucket].get(card) - 1
+                  );
+                  this.cardGroups = cc.utils.gameAlgo.filterEmptyGroup(this.cardGroups);
+                  this.cardGroupsNodes[cardNode.bucket].splice(cardNode.innerIndex, 1);
+                  this.clearAllCardNodes();
+                  this.renderCardsOnHand(this.cardGroups);
+            })
+            .start()
       },
 
       renderCardsOnHand: function(cardGroups) {
@@ -233,6 +290,7 @@ cc.Class({
                         nodes[j].active = true;
                         currentY += 60;
                         nodes[j].bucket = i - 1;
+                        nodes[j].innerIndex = j;
                   }
                   this.cardGroupsNodes.push(nodes);
                   currentX += this.cardFullWidth;
