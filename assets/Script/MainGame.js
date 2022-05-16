@@ -414,6 +414,11 @@ cc.Class({
                         xi: cc.find("Canvas/Players/seat" + i.toString() + "/xi/xiLabel").getComponent(cc.Label),
                         ready: cc.find("Canvas/Players/seat" + i.toString() + "/ready"),
                         self: cc.find("Canvas/Players/seat" +  i.toString()),
+                        peng: cc.find("Canvas/Players/seat" + i.toString() + "/peng"),
+                        chi: cc.find("Canvas/Players/seat" + i.toString() + "/chi"),
+                        ti: cc.find("Canvas/Players/seat" + i.toString() + "/ti"),
+                        wei: cc.find("Canvas/Players/seat" + i.toString() + "/wei"),
+                        pao: cc.find("Canvas/Players/seat" + i.toString() + "/pao"),
                   })
             }
             this.seatNobodyIcon = this.seats[1].icon.spriteFrame;
