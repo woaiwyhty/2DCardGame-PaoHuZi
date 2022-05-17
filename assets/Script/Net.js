@@ -112,7 +112,7 @@ if(window.io == null){
               }   
           },
           send:function(event,data){
-            // console.log("sio send", event, data, this.sio.connected);
+            console.log("sio send", event, data, this.sio.connected);
               if(this.sio.connected){
                   if(data != null && (typeof(data) == "object")){
                       data = JSON.stringify(data);

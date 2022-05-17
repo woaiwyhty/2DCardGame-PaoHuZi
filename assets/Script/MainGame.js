@@ -24,6 +24,8 @@ cc.Class({
             this.initEventHandlers();
             this.initCardSetView();
             this.initActionsView();
+
+            cc.utils.gameNetworkingManager.checkIfGameReady();
       },
 
       determinePossibleMerge: function(endPosx, endPosy) {
@@ -187,33 +189,34 @@ cc.Class({
             this.cardsDiscardedPrev = [];
             this.cardsDiscardedNext = [];
 
-            let testCards = cc.utils.gameAlgo.dealWhenGameStarts();
-            console.log("testedCards  ", testCards)
-            let cardGroups = cc.utils.gameAlgo.groupCards(testCards);
-            this.renderCardsOnHand(cardGroups);
+            // cc.utils.gameAudio.dealCardWhenGameStartEffect();
+            // let testCards = cc.utils.gameAlgo.dealWhenGameStarts();
+            // console.log("testedCards  ", testCards)
+            // let cardGroups = cc.utils.gameAlgo.groupCards(testCards);
+            // this.renderCardsOnHand(cardGroups);
 
-            this.addUsedCards(this.cardsAlreadyUsedMySelf, this.cardsAlreadyUsedMySelfNode, ['d1', 'd2', 'd3'], 'chi', 0);
-            this.addUsedCards(this.cardsAlreadyUsedMySelf, this.cardsAlreadyUsedMySelfNode, ['d2', 'd7', 'd10'], 'chi', 0);
-            this.addUsedCards(this.cardsAlreadyUsedMySelf, this.cardsAlreadyUsedMySelfNode, ['x1', 'x1', 'x1', 'x1'], 'chi', 0);
+            // this.addUsedCards(this.cardsAlreadyUsedMySelf, this.cardsAlreadyUsedMySelfNode, ['d1', 'd2', 'd3'], 'chi', 0);
+            // this.addUsedCards(this.cardsAlreadyUsedMySelf, this.cardsAlreadyUsedMySelfNode, ['d2', 'd7', 'd10'], 'chi', 0);
+            // this.addUsedCards(this.cardsAlreadyUsedMySelf, this.cardsAlreadyUsedMySelfNode, ['x1', 'x1', 'x1', 'x1'], 'chi', 0);
 
-            this.addUsedCards(this.cardsAlreadyUsedPrev, this.cardsAlreadyUsedPrevNode, ['d1', 'd2', 'd3'], 'chi', 0);
-            this.addUsedCards(this.cardsAlreadyUsedPrev, this.cardsAlreadyUsedPrevNode, ['d2', 'd7', 'd10'], 'chi', 0);
-            this.addUsedCards(this.cardsAlreadyUsedPrev, this.cardsAlreadyUsedPrevNode, ['x1', 'x1', 'x1', 'x1'], 'chi', 0);
+            // this.addUsedCards(this.cardsAlreadyUsedPrev, this.cardsAlreadyUsedPrevNode, ['d1', 'd2', 'd3'], 'chi', 0);
+            // this.addUsedCards(this.cardsAlreadyUsedPrev, this.cardsAlreadyUsedPrevNode, ['d2', 'd7', 'd10'], 'chi', 0);
+            // this.addUsedCards(this.cardsAlreadyUsedPrev, this.cardsAlreadyUsedPrevNode, ['x1', 'x1', 'x1', 'x1'], 'chi', 0);
 
-            this.addUsedCards(this.cardsAlreadyUsedNext, this.cardsAlreadyUsedNextNode, ['d1', 'd2', 'd3'], 'chi', 0, true);
-            this.addUsedCards(this.cardsAlreadyUsedNext, this.cardsAlreadyUsedNextNode, ['d2', 'd7', 'd10'], 'chi', 0, true);
-            this.addUsedCards(this.cardsAlreadyUsedNext, this.cardsAlreadyUsedNextNode, ['x1', 'x1', 'x1', 'x1'], 'chi', 0, true);
+            // this.addUsedCards(this.cardsAlreadyUsedNext, this.cardsAlreadyUsedNextNode, ['d1', 'd2', 'd3'], 'chi', 0, true);
+            // this.addUsedCards(this.cardsAlreadyUsedNext, this.cardsAlreadyUsedNextNode, ['d2', 'd7', 'd10'], 'chi', 0, true);
+            // this.addUsedCards(this.cardsAlreadyUsedNext, this.cardsAlreadyUsedNextNode, ['x1', 'x1', 'x1', 'x1'], 'chi', 0, true);
 
-            this.addDiscardedCard(this.cardsDiscardedMySelf, this.cardsDiscardedMySelfNode, 'x5', true);
-            this.addDiscardedCard(this.cardsDiscardedMySelf, this.cardsDiscardedMySelfNode, 'd3', true);
+            // this.addDiscardedCard(this.cardsDiscardedMySelf, this.cardsDiscardedMySelfNode, 'x5', true);
+            // this.addDiscardedCard(this.cardsDiscardedMySelf, this.cardsDiscardedMySelfNode, 'd3', true);
    
-            this.addDiscardedCard(this.cardsDiscardedPrev, this.cardsDiscardedPrevNode, 'x5', false);
-            this.addDiscardedCard(this.cardsDiscardedPrev, this.cardsDiscardedPrevNode, 'd3', false);
+            // this.addDiscardedCard(this.cardsDiscardedPrev, this.cardsDiscardedPrevNode, 'x5', false);
+            // this.addDiscardedCard(this.cardsDiscardedPrev, this.cardsDiscardedPrevNode, 'd3', false);
  
-            this.addDiscardedCard(this.cardsDiscardedNext, this.cardsDiscardedNextNode, 'x5', true);
-            this.addDiscardedCard(this.cardsDiscardedNext, this.cardsDiscardedNextNode, 'd3', true);
+            // this.addDiscardedCard(this.cardsDiscardedNext, this.cardsDiscardedNextNode, 'x5', true);
+            // this.addDiscardedCard(this.cardsDiscardedNext, this.cardsDiscardedNextNode, 'd3', true);
  
-            this.dealHoleCard('x5', 1);
+            // this.dealHoleCard('x5', 1);
             // this.shootCardOthers('x7', 2, false);
       },
 
@@ -404,6 +407,7 @@ cc.Class({
       },
 
       initSeatView: function() {
+            this.exitButton = cc.find("Canvas/Players/exitButton");
             this.seats = [];
             for (let i = 1; i < 4; ++i) {
                   this.seats.push({
@@ -477,6 +481,20 @@ cc.Class({
                   } else {
                         this.setSeatInfo(0, true);
                   }
+            }.bind(this));
+
+            this.node.on('game_start', function (data) {
+                  console.log("game_start", data);
+                  this.exitButton.active = false;
+                  cc.utils.gameNetworkingManager.askForCardsOnHand();
+            }.bind(this));
+
+            this.node.on('cardsOnHand_result', function (data) {
+                  cc.utils.wc.hide();
+                  console.log("cardsOnHand_result", data);
+                  let cardGroups = cc.utils.gameAlgo.groupCards(data.cardsOnHand);
+                  this.renderCardsOnHand(cardGroups);
+                  cc.utils.gameAudio.dealCardWhenGameStartEffect();
             }.bind(this));
       },
 

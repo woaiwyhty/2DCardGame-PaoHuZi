@@ -66,6 +66,32 @@ cc.Class({
             cc.utils.net.addHandler("other_player_exit",function(data){
                   self.dispatchEvent('other_player_exit', data);
             });
+            cc.utils.net.addHandler("game_start", function(data) {
+                  console.log("game_start received!!!  ", data);
+                  if (data.errcode === 0) {
+                        self.dispatchEvent('game_start', data);
+                  }
+            });
+            cc.utils.net.addHandler("cardsOnHand_result", function(data){
+                  console.log("cardsOnHand_result received!!!  ", data);
+
+                  if (data.errcode === 0) {
+                        let cardMap = new Map();
+                        for (let i = 1; i <= 20; ++i) {
+                              let key = 'x' + i.toString();
+                              if (i > 10) {
+                                    key = 'd' + (i - 10).toString();
+                              }
+                              cardMap.set(key, 0);
+                        }
+                        for (card of data.cardsOnHand) {
+                              cardMap.set(card, cardMap.get(card) + 1);
+                        }
+                        data.cardsOnHand = cardMap;
+                        self.dispatchEvent('cardsOnHand_result', data);
+                  }
+                  
+            });
       },
       
       connectToGameServer: function(data){
@@ -104,6 +130,28 @@ cc.Class({
             cc.utils.net.send("exit", data);
       },
 
+      checkIfGameReady: function() {
+            console.log("checkIfGameReady is called!");
+            let data = {
+                  username: cc.utils.userInfo.username,
+                  token: cc.utils.userInfo.token,
+                  room_id: cc.utils.roomInfo.room_id,
+            }
+
+            cc.utils.net.send("ifGameReady", data);
+      },
+
+      askForCardsOnHand: function() {
+            console.log("askForCardsOnHand is called!");
+            let data = {
+                  username: cc.utils.userInfo.username,
+                  token: cc.utils.userInfo.token,
+                  time: Date.now()
+            }
+
+            cc.utils.wc.show("正在开始游戏");
+            cc.utils.net.send("cardsOnHand", data);
+      },
 
   
       // called every frame, uncomment this function to activate update callback
