@@ -190,10 +190,10 @@ cc.Class({
             this.cardsDiscardedNext = [];
 
             // cc.utils.gameAudio.dealCardWhenGameStartEffect();
-            // let testCards = cc.utils.gameAlgo.dealWhenGameStarts();
-            // console.log("testedCards  ", testCards)
-            // let cardGroups = cc.utils.gameAlgo.groupCards(testCards);
-            // this.renderCardsOnHand(cardGroups);
+            let testCards = cc.utils.gameAlgo.dealWhenGameStarts();
+            console.log("testedCards  ", testCards)
+            let cardGroups = cc.utils.gameAlgo.groupCards(testCards);
+            this.renderCardsOnHand(cardGroups);
 
             // this.addUsedCards(this.cardsAlreadyUsedMySelf, this.cardsAlreadyUsedMySelfNode, ['d1', 'd2', 'd3'], 'chi', 0);
             // this.addUsedCards(this.cardsAlreadyUsedMySelf, this.cardsAlreadyUsedMySelfNode, ['d2', 'd7', 'd10'], 'chi', 0);
@@ -423,8 +423,15 @@ cc.Class({
                         ti: cc.find("Canvas/Players/seat" + i.toString() + "/ti"),
                         wei: cc.find("Canvas/Players/seat" + i.toString() + "/wei"),
                         pao: cc.find("Canvas/Players/seat" + i.toString() + "/pao"),
+                        timerBg: cc.find("Canvas/Players/seat" + i.toString() + "/timerBg"),
+                        timerLabel: cc.find("Canvas/Players/seat" + i.toString() + "/timeLabel"),
                   })
             }
+
+            this.seats[1].timerBg = cc.find("Canvas/Game/CardsOnMyHand/timerBg"),
+            this.seats[1].timerLabel = cc.find("Canvas/Game/CardsOnMyHand/timerLabel"),
+            
+
             this.seatNobodyIcon = this.seats[1].icon.spriteFrame;
             this.seatNobodyIcon.width = 74;
             this.seatNobodyIcon.height = 74;
