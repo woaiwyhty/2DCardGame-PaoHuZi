@@ -492,6 +492,9 @@ cc.Class({
             this.node.on('cardsOnHand_result', function (data) {
                   cc.utils.wc.hide();
                   console.log("cardsOnHand_result", data);
+                  for (let i = 0; i < 3; ++i) {
+                        this.seats[i].ready.active = false;
+                  }
                   let cardGroups = cc.utils.gameAlgo.groupCards(data.cardsOnHand);
                   this.renderCardsOnHand(cardGroups);
                   cc.utils.gameAudio.dealCardWhenGameStartEffect();
