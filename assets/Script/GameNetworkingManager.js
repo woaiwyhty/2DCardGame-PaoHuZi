@@ -79,7 +79,14 @@ cc.Class({
                         data.cardsOnHand = new Map(data.cardsOnHand);
                         self.dispatchEvent('cardsOnHand_result', data);
                   }
-                  
+            });
+            cc.utils.net.addHandler("other_player_action", function(data){
+                  console.log("other_player_action received!!!  ", data);
+
+                  if (data.errcode === 0) {
+                        data.cardsOnHand = new Map(data.cardsOnHand);
+                        self.dispatchEvent('other_player_action', data);
+                  }
             });
       },
       
@@ -142,13 +149,14 @@ cc.Class({
             cc.utils.net.send("cardsOnHand", data);
       },
 
-      takeNormalAction: function(type, opCard, cards) {
+      takeNormalAction: function(type, opCard, cards, needsHide = false) {
             console.log("takeNormalAction is called!");
             let data = {
                   username: cc.utils.userInfo.username,
                   token: cc.utils.userInfo.token,
                   opCard: opCard,
                   cards: cards,
+                  needsHide: needsHide,
                   time: Date.now(),
             }
 

@@ -506,16 +506,39 @@ cc.Class({
                   if (tiResult.length > 0) {
                         cc.utils.gameAudio.actionsEffect('ti');
                         for (ti of tiResult) {
-                              this.takeNormalAction('ti', ti, ['back', 'back', 'back', ti]);
+                              // cc.utils.gameNetworkingManager.takeNormalAction('ti', ti, ['back', 'back', 'back', ti], true);
+                              this.takeNormalAction('ti', ti, ['back', 'back', 'back', ti], true);
                         }
                   }
                   let cardGroups = cc.utils.gameAlgo.groupCards(this.cardsOnHand);
                   this.renderCardsOnHand(cardGroups);
                   cc.utils.gameAudio.dealCardWhenGameStartEffect();
             }.bind(this));
+            this.node.on('other_player_action', function (data) {
+                  console.log(this.nextPlayerId, this.prevPlayerId);
+                  let target = this.cardsAlreadyUsedPrev;
+                  let targetNode = this.cardsAlreadyUsedPrevNode;
+                  let addToLeft = false;
+                  let local_op_seat_id = 0;
+                  if (data.op_seat_id === this.nextPlayerId) {
+                        target = this.cardsAlreadyUsedNext;
+                        targetNode = this.cardsAlreadyUsedNextNode;
+                        addToLeft = true;
+                        local_op_seat_id = 2;
+                  }
+                  this.seats[local_op_seat_id].xi.string = data.xi.toString();
+                  this.addUsedCards(
+                        target, 
+                        targetNode, 
+                        data.cards, 
+                        data.type,
+                        0,
+                        addToLeft
+                  ); // xi doesn't matter on other players side, so set it be 0.
+            }.bind(this));
       },
 
-      takeNormalAction: function(type, opCard, cards) {
+      takeNormalAction: function(type, opCard, cards, needsHide = false) {
             this.seats[1][type].active = true;
             this.scheduleOnce(function() {
                   this.seats[1][type].active = false;
@@ -530,6 +553,8 @@ cc.Class({
                   cards, 
                   type, xi
             );
+            
+            cc.utils.gameNetworkingManager.takeNormalAction(type, opCard, cards, needsHide);
       },
 
       onReturnToLobbyClicked: function() {
