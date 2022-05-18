@@ -54,6 +54,12 @@ cc.Class({
             }
       },
 
+      actionsEffect: function(action) {
+            if (this.audioClipsMap.has('v_' + action)) {
+                  cc.audioEngine.play(this.audioClipsMap.get('v_' + action), false, 1);
+            }
+      },
+
       dealCardWhenGameStartEffect: function() {
             if (this.audioClipsMap.has('runcard')) {
                   let count = 0;

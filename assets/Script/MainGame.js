@@ -190,10 +190,10 @@ cc.Class({
             this.cardsDiscardedNext = [];
 
             // cc.utils.gameAudio.dealCardWhenGameStartEffect();
-            let testCards = cc.utils.gameAlgo.dealWhenGameStarts();
-            console.log("testedCards  ", testCards)
-            let cardGroups = cc.utils.gameAlgo.groupCards(testCards);
-            this.renderCardsOnHand(cardGroups);
+            // let testCards = cc.utils.gameAlgo.dealWhenGameStarts();
+            // console.log("testedCards  ", testCards)
+            // let cardGroups = cc.utils.gameAlgo.groupCards(testCards);
+            // this.renderCardsOnHand(cardGroups);
 
             // this.addUsedCards(this.cardsAlreadyUsedMySelf, this.cardsAlreadyUsedMySelfNode, ['d1', 'd2', 'd3'], 'chi', 0);
             // this.addUsedCards(this.cardsAlreadyUsedMySelf, this.cardsAlreadyUsedMySelfNode, ['d2', 'd7', 'd10'], 'chi', 0);
@@ -418,20 +418,19 @@ cc.Class({
                         xi: cc.find("Canvas/Players/seat" + i.toString() + "/xi/xiLabel").getComponent(cc.Label),
                         ready: cc.find("Canvas/Players/seat" + i.toString() + "/ready"),
                         self: cc.find("Canvas/Players/seat" +  i.toString()),
-                        peng: cc.find("Canvas/Players/seat" + i.toString() + "/peng"),
-                        chi: cc.find("Canvas/Players/seat" + i.toString() + "/chi"),
-                        ti: cc.find("Canvas/Players/seat" + i.toString() + "/ti"),
-                        wei: cc.find("Canvas/Players/seat" + i.toString() + "/wei"),
-                        pao: cc.find("Canvas/Players/seat" + i.toString() + "/pao"),
+                        'peng': cc.find("Canvas/Players/seat" + i.toString() + "/peng"),
+                        'chi': cc.find("Canvas/Players/seat" + i.toString() + "/chi"),
+                        'ti': cc.find("Canvas/Players/seat" + i.toString() + "/ti"),
+                        'wei': cc.find("Canvas/Players/seat" + i.toString() + "/wei"),
+                        'pao': cc.find("Canvas/Players/seat" + i.toString() + "/pao"),
                         timerBg: cc.find("Canvas/Players/seat" + i.toString() + "/timerBg"),
                         timerLabel: cc.find("Canvas/Players/seat" + i.toString() + "/timeLabel"),
-                  })
+                  });
             }
 
             this.seats[1].timerBg = cc.find("Canvas/Game/CardsOnMyHand/timerBg"),
             this.seats[1].timerLabel = cc.find("Canvas/Game/CardsOnMyHand/timerLabel"),
             
-
             this.seatNobodyIcon = this.seats[1].icon.spriteFrame;
             this.seatNobodyIcon.width = 74;
             this.seatNobodyIcon.height = 74;
@@ -502,10 +501,35 @@ cc.Class({
                   for (let i = 0; i < 3; ++i) {
                         this.seats[i].ready.active = false;
                   }
-                  let cardGroups = cc.utils.gameAlgo.groupCards(data.cardsOnHand);
+                  this.cardsOnHand = data.cardsOnHand;
+                  let tiResult = cc.utils.gameAlgo.checkTi(this.cardsOnHand);
+                  if (tiResult.length > 0) {
+                        cc.utils.gameAudio.actionsEffect('ti');
+                        for (ti of tiResult) {
+                              this.takeNormalAction('ti', ti, ['back', 'back', 'back', ti]);
+                        }
+                  }
+                  let cardGroups = cc.utils.gameAlgo.groupCards(this.cardsOnHand);
                   this.renderCardsOnHand(cardGroups);
                   cc.utils.gameAudio.dealCardWhenGameStartEffect();
             }.bind(this));
+      },
+
+      takeNormalAction: function(type, opCard, cards) {
+            this.seats[1][type].active = true;
+            this.scheduleOnce(function() {
+                  this.seats[1][type].active = false;
+            }.bind(this), 1);
+            let xi = cc.utils.gameAlgo.calculateXi(type, opCard);
+            cc.utils.userInfo.currentXi += xi;
+            this.seats[1].xi.string = cc.utils.userInfo.currentXi.toString();
+            this.cardsOnHand.set(opCard, 0);
+            this.addUsedCards(
+                  this.cardsAlreadyUsedMySelf, 
+                  this.cardsAlreadyUsedMySelfNode, 
+                  cards, 
+                  type, xi
+            );
       },
 
       onReturnToLobbyClicked: function() {

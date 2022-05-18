@@ -1,3 +1,15 @@
+const xiArray = {
+      'da_peng': 3,
+      'da_wei': 6,
+      'da_pao': 9,
+      'da_ti': 12,
+      'xiao_wei': 3,
+      'xiao_pao': 6,
+      'xiao_peng': 1,
+      'xiao_ti': 9,
+      'xiao_sp_chi': 3,
+      'da_sp_chi': 6,
+};
 cc.Class({
       extends: cc.Component,
   
@@ -68,9 +80,11 @@ cc.Class({
                         tempCardSet.set(keyXiao, 0);
                         tempCardSet.set(keyDa, 0);
                   } else {
-                        this.addToGroup(groups, [[keyXiao, numXiao], [keyDa, numDa]])
-                        tempCardSet.set(keyXiao, 0);
-                        tempCardSet.set(keyDa, 0);
+                        if (numXiao + numDa >= 2) {
+                              this.addToGroup(groups, [[keyXiao, numXiao], [keyDa, numDa]])
+                              tempCardSet.set(keyXiao, 0);
+                              tempCardSet.set(keyDa, 0);
+                        }
                   }
             }
 
@@ -99,6 +113,7 @@ cc.Class({
                   }
             }
 
+            let current = [];
             // all remaining
             for (let i = 1; i <= 20; ++i) {
                   let key = 'x' + i.toString();
@@ -108,9 +123,17 @@ cc.Class({
 
                   let num = tempCardSet.get(key);
                   if (num > 0) {
-                        this.addToGroup(groups, [[key, num]]);
+                        current.push([key, num]);
+                        if (current.length === 2) {
+                              this.addToGroup(groups, current);
+                              current = [];
+                        }
                         tempCardSet.set(key, 0);
                   }
+            }
+            if (current.length !== 0) {
+                  this.addToGroup(groups, current);
+                  current = [];
             }
             return groups;
       },
@@ -150,6 +173,26 @@ cc.Class({
                   cardSetMap.set(cards[i], cardSetMap.get(cards[i]) + 1);
             }
             return cardSetMap;
+      },
+
+      calculateXi: function(type, card) {
+            let key;
+            // TODO: implement xi for chi
+            if (card[0] === 'x') {
+                  return xiArray['xiao_' + type];
+            } else {
+                  return xiArray['da_' + type];
+            }
+      },
+
+      checkTi: function(cards) {
+            let tiResult = [];
+            for (const [key, value] of cards.entries()) {
+                  if (value === 4) {
+                        tiResult.push(key);
+                  }
+            }
+            return tiResult;
       },
 });
   

@@ -153,6 +153,10 @@ cc.Class({
             cc.utils.net.send("cardsOnHand", data);
       },
 
+      takeNormalAction: function() {
+
+      },
+
   
       // called every frame, uncomment this function to activate update callback
       // update: function (dt) {

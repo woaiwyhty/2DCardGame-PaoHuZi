@@ -39,6 +39,8 @@ cc.Class({
             username: "",
             nickname: "",
             token: "",
+            currentXi: 0,
+            currentScore: 0,
             travellerMode: false,
         };
         let utilsMain = require("Utils");
