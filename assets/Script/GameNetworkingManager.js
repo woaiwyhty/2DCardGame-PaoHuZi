@@ -76,18 +76,7 @@ cc.Class({
                   console.log("cardsOnHand_result received!!!  ", data);
 
                   if (data.errcode === 0) {
-                        let cardMap = new Map();
-                        for (let i = 1; i <= 20; ++i) {
-                              let key = 'x' + i.toString();
-                              if (i > 10) {
-                                    key = 'd' + (i - 10).toString();
-                              }
-                              cardMap.set(key, 0);
-                        }
-                        for (card of data.cardsOnHand) {
-                              cardMap.set(card, cardMap.get(card) + 1);
-                        }
-                        data.cardsOnHand = cardMap;
+                        data.cardsOnHand = new Map(data.cardsOnHand);
                         self.dispatchEvent('cardsOnHand_result', data);
                   }
                   
@@ -153,8 +142,17 @@ cc.Class({
             cc.utils.net.send("cardsOnHand", data);
       },
 
-      takeNormalAction: function() {
+      takeNormalAction: function(type, opCard, cards) {
+            console.log("takeNormalAction is called!");
+            let data = {
+                  username: cc.utils.userInfo.username,
+                  token: cc.utils.userInfo.token,
+                  opCard: opCard,
+                  cards: cards,
+                  time: Date.now(),
+            }
 
+            cc.utils.net.send(type, data);
       },
 
   
