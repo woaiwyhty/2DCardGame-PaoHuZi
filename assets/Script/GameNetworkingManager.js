@@ -88,6 +88,13 @@ cc.Class({
                         self.dispatchEvent('other_player_action', data);
                   }
             });
+            cc.utils.net.addHandler("need_shoot", function(data){
+                  console.log("need_shoot received!!!  ", data);
+
+                  if (data.errcode === 0) {
+                        self.dispatchEvent('need_shoot', data);
+                  }
+            });
       },
       
       connectToGameServer: function(data){

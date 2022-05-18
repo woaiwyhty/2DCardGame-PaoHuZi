@@ -310,7 +310,7 @@ cc.Class({
             this.buttonsNode.set('chi', cc.find("Canvas/Game/Actions/chi"));
             this.buttonsNode.set('guo', cc.find("Canvas/Game/Actions/guo"));
 
-            this.renderActionsList(['peng', 'guo']);
+            // this.renderActionsList(['peng', 'guo']);
       },
 
       renderActionsList: function(buttons) {
@@ -424,7 +424,7 @@ cc.Class({
                         'wei': cc.find("Canvas/Players/seat" + i.toString() + "/wei"),
                         'pao': cc.find("Canvas/Players/seat" + i.toString() + "/pao"),
                         timerBg: cc.find("Canvas/Players/seat" + i.toString() + "/timerBg"),
-                        timerLabel: cc.find("Canvas/Players/seat" + i.toString() + "/timeLabel"),
+                        timerLabel: cc.find("Canvas/Players/seat" + i.toString() + "/timerLabel"),
                   });
             }
 
@@ -536,6 +536,9 @@ cc.Class({
                         addToLeft
                   ); // xi doesn't matter on other players side, so set it be 0.
             }.bind(this));
+            this.node.on('need_shoot', function (data) {
+                  this.showTimer(data.op_seat_id);
+            }.bind(this));
       },
 
       takeNormalAction: function(type, opCard, cards, needsHide = false) {
@@ -559,6 +562,34 @@ cc.Class({
 
       onReturnToLobbyClicked: function() {
             cc.utils.gameNetworkingManager.exitToGameServer();
+      },
+
+      showTimer: function(remote_seat_id) {
+            let timerBg = this.seats[1].timerBg;
+            let timerLabel = this.seats[1].timerLabel;
+            if (remote_seat_id === this.prevPlayerId) {
+                  timerBg = this.seats[0].timerBg;
+                  timerLabel = this.seats[0].timerLabel;            
+            } else if (remote_seat_id === this.nextPlayerId) {
+                  timerBg = this.seats[2].timerBg;
+                  timerLabel = this.seats[2].timerLabel;      
+            }
+
+            timerBg.active = true;
+            timerLabel.active = true;
+            let label = timerLabel.getComponent(cc.Label);
+            label.string = '30';
+            let currentTime = 30;
+            this.schedule(function() {
+                  // 这里的 this 指向 component
+                  currentTime -= 1;
+                  label.string = currentTime.toString();
+                  if (currentTime === 0) {
+                        // TODO: random shoot a card or pass the operation
+                        timerBg.active = false;
+                        timerLabel.active = false;
+                  } 
+            }, 1, 29, 1);
       },
 
       update: function() {
