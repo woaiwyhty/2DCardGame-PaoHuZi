@@ -279,8 +279,7 @@ cc.Class({
             })
             .start()
             cc.utils.gameNetworkingManager.shootCard('onHand', card);
-            this.seats[1].timerBg.active = false;
-            this.seats[1].timerLabel.active = false;
+            this.hiderTimer(cc.utils.roomInfo.my_seat_id);
             this.currentState = 0; // IDLE
       },
 
@@ -319,6 +318,7 @@ cc.Class({
             this.buttonsNode.set('peng', cc.find("Canvas/Game/Actions/peng"));
             this.buttonsNode.set('chi', cc.find("Canvas/Game/Actions/chi"));
             this.buttonsNode.set('guo', cc.find("Canvas/Game/Actions/guo"));
+            this.buttonsNode.set('hu', cc.find("Canvas/Game/Actions/hu"));
 
             // this.renderActionsList(['peng', 'guo']);
       },
@@ -433,6 +433,7 @@ cc.Class({
                         'chi': cc.find("Canvas/Players/seat" + i.toString() + "/chi"),
                         'ti': cc.find("Canvas/Players/seat" + i.toString() + "/ti"),
                         'wei': cc.find("Canvas/Players/seat" + i.toString() + "/wei"),
+                        'hu': cc.find("Canvas/Players/seat" + i.toString() + "/hu"),
                         'pao': cc.find("Canvas/Players/seat" + i.toString() + "/pao"),
                         timerBg: cc.find("Canvas/Players/seat" + i.toString() + "/timerBg"),
                         timerLabel: cc.find("Canvas/Players/seat" + i.toString() + "/timerLabel"),
@@ -503,12 +504,59 @@ cc.Class({
             this.node.on('game_start', function (data) {
                   console.log("game_start", data);
                   this.exitButton.active = false;
-                  cc.utils.gameNetworkingManager.askForCardsOnHand();
+                  cc.utils.roomInfo.number_of_wang = data.number_of_wang;
+                  cc.utils.roomInfo.current_played_games = data.current_played_games;
+                  cc.utils.roomInfo.total_games = data.total_games;
+
+                  for (let i = 0; i < 3; ++i) {
+                        this.seats[i].ready.active = false;
+                  }
+                  this.cardsOnHand = data.cardsOnHand;
+                  let cardGroups = cc.utils.gameAlgo.groupCards(this.cardsOnHand);
+                  this.renderCardsOnHand(cardGroups);
+                  cc.utils.gameAudio.dealCardWhenGameStartEffect();
+
+                  if (cc.utils.roomInfo.my_seat_id === 0) {
+                        // zhuang jia
+                        if (data.tianHuResult) {
+                              cc.utils.roomInfo.huResult = data.tianHuResult;
+                              this.currentState = 2; // wait for tianhu decision
+                              this.showTimer(cc.utils.roomInfo.my_seat_id);
+                              this.renderActionsList(['hu', 'guo']);
+                        } else {
+                              cc.utils.gameNetworkingManager.tianhuResult();
+                        }
+                  }
+                  // cc.utils.gameNetworkingManager.askForCardsOnHand();
             }.bind(this));
 
+            this.node.on('check_dihu', function (data) {
+                  let huResult = cc.utils.gameAlgo.checkHu([], data.cardsOnHand, data.card21st);
+                  this.currentSession = data.sessionKey;
+                  if (huResult) {
+                        cc.utils.roomInfo.huResult = huResult;
+                        this.renderActionsList(['hu', 'guo']);
+                        this.showTimer(cc.utils.roomInfo.my_seat_id);
+                  } else {
+                        cc.utils.gameNetworkingManager.takeNormalAction('guo', null, null, false, data.sessionKey);
+                  }
+            });
+
             this.node.on('cardsOnHand_result', function (data) {
+                  cc.utils.roomInfo.session_key = data.sessionKey;
                   cc.utils.wc.hide();
                   console.log("cardsOnHand_result", data);
+                  let currentCard = data.card21st;
+                  if (cc.utils.roomInfo.my_seat_id === 0) {
+                        currentCard = null;
+                  }
+                  let huResult = cc.utils.gameAlgo.checkHu([], data.cardsOnHand, currentCard);
+                  if (huResult) {
+                        cc.utils.roomInfo.huResult = huResult;
+                        this.renderActionsList(['hu', 'guo']);
+                        this.showTimer(cc.utils.roomInfo.my_seat_id);
+                  }
+
                   for (let i = 0; i < 3; ++i) {
                         this.seats[i].ready.active = false;
                   }
@@ -524,6 +572,8 @@ cc.Class({
                   let cardGroups = cc.utils.gameAlgo.groupCards(this.cardsOnHand);
                   this.renderCardsOnHand(cardGroups);
                   cc.utils.gameAudio.dealCardWhenGameStartEffect();
+                  // check tian/di hu
+                  
             }.bind(this));
             this.node.on('other_player_action', function (data) {
                   console.log(this.nextPlayerId, this.prevPlayerId);
@@ -548,7 +598,9 @@ cc.Class({
                   ); // xi doesn't matter on other players side, so set it be 0.
             }.bind(this));
             this.node.on('need_shoot', function (data) {
-                  this.currentState = 1; // need shoot
+                  if (data.op_seat_id === cc.utils.roomInfo.my_seat_id) {
+                        this.currentState = 1; // need shoot
+                  }
                   this.showTimer(data.op_seat_id);
             }.bind(this));
             this.node.on('other_player_shoot', function (data) {
@@ -558,6 +610,14 @@ cc.Class({
                   this.seats[local_seat_id].timerBg.active = false;
                   this.seats[local_seat_id].timerLabel.active = false;
             }.bind(this));
+      },
+
+      takeHuAction: function() {
+            cc.utils.gameAudio.actionsEffect('hu');
+            this.seats[1]['hu'].active = true;
+            this.scheduleOnce(function() {
+                  this.seats[1]['hu'].active = false;
+            }.bind(this), 1);
       },
 
       takeNormalAction: function(type, opCard, cards, needsHide = false) {
@@ -581,6 +641,21 @@ cc.Class({
 
       onReturnToLobbyClicked: function() {
             cc.utils.gameNetworkingManager.exitToGameServer();
+      },
+
+      hiderTimer: function(remote_seat_id) {
+            let timerBg = this.seats[1].timerBg;
+            let timerLabel = this.seats[1].timerLabel;
+            if (remote_seat_id === this.prevPlayerId) {
+                  timerBg = this.seats[0].timerBg;
+                  timerLabel = this.seats[0].timerLabel;            
+            } else if (remote_seat_id === this.nextPlayerId) {
+                  timerBg = this.seats[2].timerBg;
+                  timerLabel = this.seats[2].timerLabel;      
+            }
+
+            timerBg.active = false;
+            timerLabel.active = false;
       },
 
       showTimer: function(remote_seat_id) {
@@ -638,6 +713,38 @@ cc.Class({
                   this.delayMSLabel.string = 'N/A';
                   this.delayMSNode.color = this.red;
             }
+      },
+
+      onHuClicked: function() {
+            this.hiderTimer(cc.utils.roomInfo.my_seat_id);
+            if (this.currentState === 2) {
+                  cc.utils.gameNetworkingManager.tianhuResult(cc.utils.roomInfo.huResult);
+                  // show tianhu checkout
+                  this.takeHuAction();
+                  return;
+            }
+            cc.utils.gameNetworkingManager.takeHuAction(cc.utils.roomInfo.huResult, this.currentSession, cc.utils.roomInfo.my_seat_id);
+      },
+      
+      onGuoClicked: function() {
+            this.hiderTimer(cc.utils.roomInfo.my_seat_id);
+
+            if (this.currentState === 2) {
+                  // pass for tianhu
+                  cc.utils.gameNetworkingManager.tianhuResult();
+                  return;
+            }
+            cc.utils.gameNetworkingManager.takeNormalAction('guo', null, null, false, this.sessionKey);
+      },
+
+      onPengClicked: function() {
+            this.hiderTimer(cc.utils.roomInfo.my_seat_id);
+
+      },
+      
+      onChiClicked: function() {
+            this.hiderTimer(cc.utils.roomInfo.my_seat_id);
+
       },
   });
     

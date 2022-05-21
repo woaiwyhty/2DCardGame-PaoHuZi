@@ -102,6 +102,13 @@ cc.Class({
                         self.dispatchEvent('other_player_shoot', data);
                   }
             });
+            cc.utils.net.addHandler("check_dihu", function(data){
+                  console.log("check_dihu received!!!  ", data);
+
+                  if (data.errcode === 0) {
+                        self.dispatchEvent('check_dihu', data);
+                  }
+            });
       },
       
       connectToGameServer: function(data){
@@ -163,7 +170,21 @@ cc.Class({
             cc.utils.net.send("cardsOnHand", data);
       },
 
-      takeNormalAction: function(type, opCard, cards, needsHide = false) {
+      takeHuAction: function(huResult, sessionKey, seat_id) {
+            let data = {
+                  status: huResult.status,
+                  fan: huResult.fan,
+                  xi: huResult.xi,
+                  tun: huResult.tun,
+                  huInfo: huResult.huInfo,
+                  cardsGroups: huResult.cardsGroups,
+                  sessionKey: sessionKey,
+                  seat_id: seat_id,
+            }
+            cc.utils.net.send('hu', data);
+      },
+
+      takeNormalAction: function(type, opCard, cards, needsHide = false, sessionKey = null) {
             console.log("takeNormalAction is called!");
             let data = {
                   username: cc.utils.userInfo.username,
@@ -171,6 +192,7 @@ cc.Class({
                   opCard: opCard,
                   cards: cards,
                   needsHide: needsHide,
+                  sessionKey: sessionKey,
                   time: Date.now(),
             }
 
@@ -183,11 +205,21 @@ cc.Class({
                   opCard: opCard,
                   type: type,
                   time: Date.now(),
-            }
+            };
 
             cc.utils.net.send('shootCard', data);
       },
 
+      tianhuResult: function(huResult) {
+            let data = huResult;
+            if (!huResult) {
+                  data = {
+                        status: false,
+                  }
+            }
+
+            cc.utils.net.send('tianhu_result', data);
+      },
   
       // called every frame, uncomment this function to activate update callback
       // update: function (dt) {

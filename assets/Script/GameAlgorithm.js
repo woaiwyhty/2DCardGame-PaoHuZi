@@ -487,6 +487,7 @@ cc.Class({
                 fan: fan,
                 tun: parseInt((sumOfXi - 12) / 3),
                 xi: sumOfXi,
+                cardsGroups: all,
                 huInfo: huInfo,
             }
         },
