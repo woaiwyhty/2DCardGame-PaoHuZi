@@ -62,7 +62,7 @@ cc.Class({
         cardsOnHand.set('x6', 1);
         cardsOnHand.set('d8', 2);
     
-        console.log(cc.utils.gameAlgo.checkHu(cardsAlreadyUsed, cardsOnHand));
+        // console.log(cc.utils.gameAlgo.checkHu(cardsAlreadyUsed, cardsOnHand));
     },
 
     initFrameworks: function() {

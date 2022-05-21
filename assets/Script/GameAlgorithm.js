@@ -578,7 +578,10 @@ cc.Class({
             if (currentCard) {
                 tempCardSet.set(card, tempCardSet.get(currentCard) + 1);
             }
-    
+            let sumOfCardOnHand = 0;
+            for (const a of cardsOnHand.entries()) {
+                  sumOfCardOnHand += a[1];
+            }
             let currentXi = 0, needJiang = false;
             for (cardsUsed of cardsAlreadyUsed) {
                 currentXi += cardsUsed.xi;
@@ -587,6 +590,10 @@ cc.Class({
                 }
             }
             let resultForJiangHu = this.checkHuHelper(cardsOnHand, needJiang, currentXi, cardsAlreadyUsed);
+            if (resultForJiangHu) {
+                  resultForJiangHu.huInfo.push("耍猴");
+                  resultForJiangHu.fan += 8;
+            }
             return resultForJiangHu;
         },
 });
