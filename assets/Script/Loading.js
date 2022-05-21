@@ -25,6 +25,46 @@ cc.Class({
         cc.utils.http.sendRequest("/isServerOn",{}, this.onServerOn, null, false, this.onServerOff.bind(this));
     },
 
+    testGameAlgorithm: function() {
+        let cardsOnHand = new Map();
+        for (let i = 1; i <= 20; ++i) {
+            let key = 'x' + i.toString();
+            if (i > 10) {
+                key = 'd' + (i - 10).toString();
+            }
+    
+            cardsOnHand.set(key, 0);
+        }
+    
+        let cardsAlreadyUsed = [
+            {
+                type: 'pao',
+                cards: ['back', 'back', 'back', 'd3'],
+                xi: 9,
+            },
+            {
+                type: 'ti',
+                cards: ['back', 'back', 'back', 'x3'],
+                xi: 9,
+            },
+            {
+                type: 'chi',
+                cards: ['d1', 'x1', 'x1'],
+                xi: 0,
+            },
+        ]
+    
+        cardsOnHand.set('d4', 2);
+        cardsOnHand.set('d5', 2);
+        cardsOnHand.set('d6', 2);
+        cardsOnHand.set('x4', 1);
+        cardsOnHand.set('x5', 1);
+        cardsOnHand.set('x6', 1);
+        cardsOnHand.set('d8', 2);
+    
+        console.log(cc.utils.gameAlgo.checkHu(cardsAlreadyUsed, cardsOnHand));
+    },
+
     initFrameworks: function() {
         cc.utils = {};
         cc.utils.http = require("HTTPUtil");
@@ -52,6 +92,8 @@ cc.Class({
         let gameAudio = require("GameAudioEffect");
         cc.utils.gameAudio = new gameAudio();
         cc.utils.gameAudio.initAudios();
+
+        this.testGameAlgorithm();
     },
 
     onServerOn: function(ret){

@@ -95,6 +95,13 @@ cc.Class({
                         self.dispatchEvent('need_shoot', data);
                   }
             });
+            cc.utils.net.addHandler("other_player_shoot", function(data){
+                  console.log("other_player_shoot received!!!  ", data);
+
+                  if (data.errcode === 0) {
+                        self.dispatchEvent('other_player_shoot', data);
+                  }
+            });
       },
       
       connectToGameServer: function(data){
@@ -168,6 +175,17 @@ cc.Class({
             }
 
             cc.utils.net.send(type, data);
+      },
+
+      shootCard: function(type, opCard) {
+            console.log("shootCard is called!");
+            let data = {
+                  opCard: opCard,
+                  type: type,
+                  time: Date.now(),
+            }
+
+            cc.utils.net.send('shootCard', data);
       },
 
   

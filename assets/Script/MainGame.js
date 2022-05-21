@@ -217,7 +217,7 @@ cc.Class({
             // this.addDiscardedCard(this.cardsDiscardedNext, this.cardsDiscardedNextNode, 'd3', true);
  
             // this.dealHoleCard('x5', 1);
-            // this.shootCardOthers('x7', 2, false);
+            // this.shootCardOthers('x7', 0, true);
       },
 
       dealHoleCard: function(card, destSeatId) {
@@ -250,6 +250,10 @@ cc.Class({
       shootCardOnHand: function(card, cardNode) {
             // TODO: check if it is allowed to shoot the target card
             // TODO: communicate with the server
+            if (!cc.utils.gameAlgo.checkValidForShoot(card, this.cardsOnHand)) {
+                  return;
+            }
+
             let targetX = 0, targetY = -100;
             this.shootCardFrame.parent = cardNode;
             this.shootCardFrame.width = 65;
@@ -272,6 +276,9 @@ cc.Class({
                   this.renderCardsOnHand(this.cardGroups);
             })
             .start()
+            cc.utils.gameNetworkingManager.shootCard('onHand', card);
+            this.seats[1].timerBg.active = false;
+            this.seats[1].timerLabel.active = false;
       },
 
       shootCardOthers: function(card, seatId, leftToRight = true) {
@@ -385,6 +392,7 @@ cc.Class({
                   offSety += this.cardSmallWidth;
             }
             target.push({
+                  cards: cards,
                   nodes: nodes,
                   type: type,
                   xi: xi,
@@ -538,6 +546,13 @@ cc.Class({
             }.bind(this));
             this.node.on('need_shoot', function (data) {
                   this.showTimer(data.op_seat_id);
+            }.bind(this));
+            this.node.on('other_player_shoot', function (data) {
+                  let leftToRight = data.op_seat_id === this.prevPlayerId;
+                  let local_seat_id = data.op_seat_id === this.nextPlayerId ? 2 : 0;
+                  this.shootCardOthers(data.opCard, local_seat_id, leftToRight);
+                  this.seats[local_seat_id].timerBg.active = false;
+                  this.seats[local_seat_id].timerLabel.active = false;
             }.bind(this));
       },
 
