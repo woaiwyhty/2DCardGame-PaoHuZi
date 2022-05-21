@@ -87,7 +87,9 @@ cc.Class({
                   node.opacity = 255;
                   
                   if (event.getLocationY() >= 320) {
-                        this.shootCardOnHand(node.name, node);
+                        if (this.currentState === 1) {
+                              this.shootCardOnHand(node.name, node);
+                        }
                   } else {
                         let possibleDrug = this.determinePossibleMerge(event.getLocationX(), event.getLocationY());
                         if (possibleDrug !== -1) {
@@ -107,7 +109,9 @@ cc.Class({
                   this.determinePossibleMerge(event);
 
                   if (event.getLocationY() >= 320) {
-                        this.shootCardOnHand(node.name, node);
+                        if (this.currentState === 1) {
+                              this.shootCardOnHand(node.name, node);
+                        }
                   } else {
                         let possibleDrug = this.determinePossibleMerge(event.getLocationX(), event.getLocationY());
                         if (possibleDrug !== -1) {
@@ -248,8 +252,6 @@ cc.Class({
       },
 
       shootCardOnHand: function(card, cardNode) {
-            // TODO: check if it is allowed to shoot the target card
-            // TODO: communicate with the server
             if (!cc.utils.gameAlgo.checkValidForShoot(card, this.cardsOnHand)) {
                   return;
             }
@@ -279,6 +281,7 @@ cc.Class({
             cc.utils.gameNetworkingManager.shootCard('onHand', card);
             this.seats[1].timerBg.active = false;
             this.seats[1].timerLabel.active = false;
+            this.currentState = 0; // IDLE
       },
 
       shootCardOthers: function(card, seatId, leftToRight = true) {
@@ -545,6 +548,7 @@ cc.Class({
                   ); // xi doesn't matter on other players side, so set it be 0.
             }.bind(this));
             this.node.on('need_shoot', function (data) {
+                  this.currentState = 1; // need shoot
                   this.showTimer(data.op_seat_id);
             }.bind(this));
             this.node.on('other_player_shoot', function (data) {
