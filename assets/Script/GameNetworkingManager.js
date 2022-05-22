@@ -84,8 +84,14 @@ cc.Class({
                   console.log("other_player_action received!!!  ", data);
 
                   if (data.errcode === 0) {
-                        data.cardsOnHand = new Map(data.cardsOnHand);
                         self.dispatchEvent('other_player_action', data);
+                  }
+            });
+            cc.utils.net.addHandler("other_player_hu", function(data){
+                  console.log("other_player_hu received!!!  ", data);
+
+                  if (data.errcode === 0) {
+                        self.dispatchEvent('other_player_hu', data);
                   }
             });
             cc.utils.net.addHandler("need_shoot", function(data){
@@ -107,6 +113,13 @@ cc.Class({
 
                   if (data.errcode === 0) {
                         self.dispatchEvent('check_dihu', data);
+                  }
+            });
+            cc.utils.net.addHandler("self_action_result", function(data){
+                  console.log("self_action_result received!!!  ", data);
+
+                  if (data.errcode === 0) {
+                        self.dispatchEvent('self_action_result', data);
                   }
             });
       },

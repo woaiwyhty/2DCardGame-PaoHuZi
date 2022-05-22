@@ -577,7 +577,7 @@ cc.Class({
                 JSON.stringify(Array.from(cardsOnHand))
             ));
             if (currentCard) {
-                tempCardSet.set(card, tempCardSet.get(currentCard) + 1);
+                tempCardSet.set(currentCard, tempCardSet.get(currentCard) + 1);
             }
             let sumOfCardOnHand = 0;
             for (const a of cardsOnHand.entries()) {

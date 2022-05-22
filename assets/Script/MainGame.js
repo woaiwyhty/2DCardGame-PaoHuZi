@@ -511,7 +511,7 @@ cc.Class({
                   for (let i = 0; i < 3; ++i) {
                         this.seats[i].ready.active = false;
                   }
-                  this.cardsOnHand = data.cardsOnHand;
+                  this.cardsOnHand = new Map(data.cardsOnHand);
                   let cardGroups = cc.utils.gameAlgo.groupCards(this.cardsOnHand);
                   this.renderCardsOnHand(cardGroups);
                   cc.utils.gameAudio.dealCardWhenGameStartEffect();
@@ -531,7 +531,7 @@ cc.Class({
             }.bind(this));
 
             this.node.on('check_dihu', function (data) {
-                  let huResult = cc.utils.gameAlgo.checkHu([], data.cardsOnHand, data.card21st);
+                  let huResult = cc.utils.gameAlgo.checkHu([], this.cardsOnHand, data.card21st);
                   this.currentSession = data.sessionKey;
                   if (huResult) {
                         cc.utils.roomInfo.huResult = huResult;
@@ -540,7 +540,7 @@ cc.Class({
                   } else {
                         cc.utils.gameNetworkingManager.takeNormalAction('guo', null, null, false, data.sessionKey);
                   }
-            });
+            }.bind(this));
 
             this.node.on('cardsOnHand_result', function (data) {
                   cc.utils.roomInfo.session_key = data.sessionKey;
@@ -574,6 +574,19 @@ cc.Class({
                   cc.utils.gameAudio.dealCardWhenGameStartEffect();
                   // check tian/di hu
                   
+            }.bind(this));
+            this.node.on('other_player_hu', function (data) {
+                  let local_seat_id = data.op_seat_id === this.nextPlayerId ? 2 : 0;
+                  cc.utils.gameAudio.actionsEffect('hu');
+                  this.seats[local_seat_id]['hu'].active = true;
+                  this.scheduleOnce(function() {
+                        this.seats[local_seat_id]['hu'].active = false;
+                  }.bind(this), 1);
+            }.bind(this));
+            this.node.on('self_action_result', function (data) {
+                  if (data.type === 'hu') {
+                        this.takeHuAction();
+                  }
             }.bind(this));
             this.node.on('other_player_action', function (data) {
                   console.log(this.nextPlayerId, this.prevPlayerId);
@@ -720,7 +733,7 @@ cc.Class({
             if (this.currentState === 2) {
                   cc.utils.gameNetworkingManager.tianhuResult(cc.utils.roomInfo.huResult);
                   // show tianhu checkout
-                  this.takeHuAction();
+                  // this.takeHuAction();
                   return;
             }
             cc.utils.gameNetworkingManager.takeHuAction(cc.utils.roomInfo.huResult, this.currentSession, cc.utils.roomInfo.my_seat_id);
