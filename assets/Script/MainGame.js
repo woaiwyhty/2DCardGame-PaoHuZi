@@ -324,6 +324,7 @@ cc.Class({
       },
 
       renderActionsList: function(buttons) {
+            this.actionsNode.active = true;
             let currentX = -80;
             for (let i = buttons.length - 1; i >= 0; --i) {
                   this.buttonsNode.get(buttons[i]).x = currentX;
@@ -625,7 +626,15 @@ cc.Class({
             }.bind(this));
       },
 
+      hideActionList: function() {
+            for (const [key, value] of this.buttonsNode.entries()) {
+                  value.active = false;
+            }
+            this.actionsNode.active = false;
+      },
+
       takeHuAction: function() {
+            this.hideActionList();
             cc.utils.gameAudio.actionsEffect('hu');
             this.seats[1]['hu'].active = true;
             this.scheduleOnce(function() {
@@ -729,17 +738,17 @@ cc.Class({
       },
 
       onHuClicked: function() {
+            this.hideActionList();
             this.hiderTimer(cc.utils.roomInfo.my_seat_id);
             if (this.currentState === 2) {
                   cc.utils.gameNetworkingManager.tianhuResult(cc.utils.roomInfo.huResult);
-                  // show tianhu checkout
-                  // this.takeHuAction();
                   return;
             }
             cc.utils.gameNetworkingManager.takeHuAction(cc.utils.roomInfo.huResult, this.currentSession, cc.utils.roomInfo.my_seat_id);
       },
       
       onGuoClicked: function() {
+            this.hideActionList();
             this.hiderTimer(cc.utils.roomInfo.my_seat_id);
 
             if (this.currentState === 2) {
@@ -751,11 +760,13 @@ cc.Class({
       },
 
       onPengClicked: function() {
+            this.hideActionList();
             this.hiderTimer(cc.utils.roomInfo.my_seat_id);
 
       },
       
       onChiClicked: function() {
+            this.hideActionList();
             this.hiderTimer(cc.utils.roomInfo.my_seat_id);
 
       },
