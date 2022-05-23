@@ -199,6 +199,9 @@ cc.Class({
             // let cardGroups = cc.utils.gameAlgo.groupCards(testCards);
             // this.renderCardsOnHand(cardGroups);
 
+            // this.addUsedCards(this.cardsAlreadyUsedMySelf, this.cardsAlreadyUsedMySelfNode, ['back', 'back', 'x1'], 'wei', 0, false, 0);
+            // this.addUsedCards(this.cardsAlreadyUsedMySelf, this.cardsAlreadyUsedMySelfNode, ['back', 'back', 'back', 'x1'], 'ti', 0, false, 1);
+
             // this.addUsedCards(this.cardsAlreadyUsedMySelf, this.cardsAlreadyUsedMySelfNode, ['d1', 'd2', 'd3'], 'chi', 0);
             // this.addUsedCards(this.cardsAlreadyUsedMySelf, this.cardsAlreadyUsedMySelfNode, ['d2', 'd7', 'd10'], 'chi', 0);
             // this.addUsedCards(this.cardsAlreadyUsedMySelf, this.cardsAlreadyUsedMySelfNode, ['x1', 'x1', 'x1', 'x1'], 'chi', 0);
@@ -381,26 +384,42 @@ cc.Class({
             target.push(node);
       },
       
-      addUsedCards: function(target, parentNode, cards, type, xi, addToLeft = false) {
-            let nodes = [];
-            let offSetx = 30 + (target.length * this.cardSmallWidth), offSety = 0;
-            if (addToLeft === true) {
-                  offSetx = -30 - (target.length * this.cardSmallWidth);
+      addUsedCards: function(target, parentNode, cards, type, xi, addToLeft = false, from_wei_or_peng = 0) {
+            if (from_wei_or_peng) {
+                  for (let usedCards of target) {
+                        if (['wei', 'peng'].indexOf(usedCards.type) >= 0
+                        && usedCards.cards[2] == cards[cards.length - 1]) {
+                              usedCards.nodes.push(cc.instantiate(this.cardsSmall.get(cards[cards.length - 1])));
+                              usedCards.nodes[usedCards.nodes.length - 1].parent = parentNode;
+                              usedCards.nodes[usedCards.nodes.length - 1].x = usedCards.nodes[usedCards.nodes.length - 2].x;
+                              usedCards.nodes[usedCards.nodes.length - 1].y = usedCards.nodes[usedCards.nodes.length - 2].y + this.cardSmallWidth;
+                              nodes[nodes.length - 1].active = true;
+                        }
+
+                        usedCards.type = type;
+                        usedCards.xi = xi;
+                  }
+            } else {
+                  let nodes = [];
+                  let offSetx = 30 + (target.length * this.cardSmallWidth), offSety = 0;
+                  if (addToLeft === true) {
+                        offSetx = -30 - (target.length * this.cardSmallWidth);
+                  }
+                  for (card of cards) {
+                        nodes.push(cc.instantiate(this.cardsSmall.get(card)));
+                        nodes[nodes.length - 1].parent = parentNode;
+                        nodes[nodes.length - 1].x = offSetx;
+                        nodes[nodes.length - 1].y = offSety;
+                        nodes[nodes.length - 1].active = true;
+                        offSety += this.cardSmallWidth;
+                  }
+                  target.push({
+                        cards: cards,
+                        nodes: nodes,
+                        type: type,
+                        xi: xi,
+                  });
             }
-            for (card of cards) {
-                  nodes.push(cc.instantiate(this.cardsSmall.get(card)));
-                  nodes[nodes.length - 1].parent = parentNode;
-                  nodes[nodes.length - 1].x = offSetx;
-                  nodes[nodes.length - 1].y = offSety;
-                  nodes[nodes.length - 1].active = true;
-                  offSety += this.cardSmallWidth;
-            }
-            target.push({
-                  cards: cards,
-                  nodes: nodes,
-                  type: type,
-                  xi: xi,
-            });
       },
       
       setSeatInfo: function(seatClientSideId, emptySeat, username = "", xi = 0, score = 0, online = true) {
@@ -513,6 +532,14 @@ cc.Class({
                         this.seats[i].ready.active = false;
                   }
                   this.cardsOnHand = new Map(data.cardsOnHand);
+                  let tiResult = cc.utils.gameAlgo.checkTi(this.cardsOnHand);
+                  if (tiResult.length > 0) {
+                        cc.utils.gameAudio.actionsEffect('ti');
+                        for (ti of tiResult) {
+                              // cc.utils.gameNetworkingManager.takeNormalAction('ti', ti, ['back', 'back', 'back', ti], true);
+                              this.takeNormalAction('ti', ti, ['back', 'back', 'back', ti], true);
+                        }
+                  }
                   let cardGroups = cc.utils.gameAlgo.groupCards(this.cardsOnHand);
                   this.renderCardsOnHand(cardGroups);
                   cc.utils.gameAudio.dealCardWhenGameStartEffect();
@@ -532,7 +559,7 @@ cc.Class({
             }.bind(this));
 
             this.node.on('check_dihu', function (data) {
-                  let huResult = cc.utils.gameAlgo.checkHu([], this.cardsOnHand, data.card21st);
+                  let huResult = cc.utils.gameAlgo.checkHu(this.cardsAlreadyUsedMySelf, this.cardsOnHand, data.card21st);
                   this.currentSession = data.sessionKey;
                   if (huResult) {
                         cc.utils.roomInfo.huResult = huResult;
@@ -543,39 +570,26 @@ cc.Class({
                   }
             }.bind(this));
 
-            this.node.on('cardsOnHand_result', function (data) {
-                  cc.utils.roomInfo.session_key = data.sessionKey;
-                  cc.utils.wc.hide();
-                  console.log("cardsOnHand_result", data);
-                  let currentCard = data.card21st;
-                  if (cc.utils.roomInfo.my_seat_id === 0) {
-                        currentCard = null;
+            this.node.on('dealed_card', function (data) {
+                  let local_seat_id = data.op_seat_id === this.nextPlayerId ? 2 : 0;
+                  if (data.op_seat_id === cc.utils.roomInfo.my_seat_id) {
+                        local_seat_id = 1;
                   }
-                  let huResult = cc.utils.gameAlgo.checkHu([], data.cardsOnHand, currentCard);
-                  if (huResult) {
-                        cc.utils.roomInfo.huResult = huResult;
-                        this.renderActionsList(['hu', 'guo']);
-                        this.showTimer(cc.utils.roomInfo.my_seat_id);
-                  }
-
-                  for (let i = 0; i < 3; ++i) {
-                        this.seats[i].ready.active = false;
-                  }
-                  this.cardsOnHand = data.cardsOnHand;
-                  let tiResult = cc.utils.gameAlgo.checkTi(this.cardsOnHand);
-                  if (tiResult.length > 0) {
-                        cc.utils.gameAudio.actionsEffect('ti');
-                        for (ti of tiResult) {
-                              // cc.utils.gameNetworkingManager.takeNormalAction('ti', ti, ['back', 'back', 'back', ti], true);
-                              this.takeNormalAction('ti', ti, ['back', 'back', 'back', ti], true);
+                  this.dealHoleCard(data.dealed_card, local_seat_id);
+                  if (data.ti_wei_pao_result.status === true) {
+                        this.sessionKey = data.sessionKey;
+                        if (data.ti_wei_pao_result.op_seat_id === cc.utils.room.my_seat_id) {
+                              this.takeNormalAction(
+                                    data.ti_wei_pao_result.type, 
+                                    data.ti_wei_pao_result.opCard, 
+                                    data.ti_wei_pao_result.cards, 
+                                    false,
+                                    data.ti_wei_pao_result.from_wei_or_peng,
+                              );
                         }
                   }
-                  let cardGroups = cc.utils.gameAlgo.groupCards(this.cardsOnHand);
-                  this.renderCardsOnHand(cardGroups);
-                  cc.utils.gameAudio.dealCardWhenGameStartEffect();
-                  // check tian/di hu
-                  
             }.bind(this));
+
             this.node.on('other_player_hu', function (data) {
                   let local_seat_id = data.op_seat_id === this.nextPlayerId ? 2 : 0;
                   cc.utils.gameAudio.actionsEffect('hu');
@@ -608,7 +622,8 @@ cc.Class({
                         data.cards, 
                         data.type,
                         0,
-                        addToLeft
+                        addToLeft,
+                        data.from_wei_or_peng
                   ); // xi doesn't matter on other players side, so set it be 0.
             }.bind(this));
             this.node.on('need_shoot', function (data) {
@@ -642,12 +657,20 @@ cc.Class({
             }.bind(this), 1);
       },
 
-      takeNormalAction: function(type, opCard, cards, needsHide = false) {
+      takeNormalAction: function(type, opCard, cards, needsHide = false, from_wei_or_peng = 0) {
             this.seats[1][type].active = true;
             this.scheduleOnce(function() {
                   this.seats[1][type].active = false;
             }.bind(this), 1);
             let xi = cc.utils.gameAlgo.calculateXi(type, opCard);
+            if (from_wei_or_peng) {
+                  for (let usedCards of target) {
+                        if (['wei', 'peng'].indexOf(type) >= 0
+                        && usedCards.cards[2] == cards[cards.length - 1]) {
+                              cc.utils.userInfo.currentXi -= usedCards.xi;
+                        }
+                  }
+            } 
             cc.utils.userInfo.currentXi += xi;
             this.seats[1].xi.string = cc.utils.userInfo.currentXi.toString();
             this.cardsOnHand.set(opCard, 0);
@@ -655,10 +678,11 @@ cc.Class({
                   this.cardsAlreadyUsedMySelf, 
                   this.cardsAlreadyUsedMySelfNode, 
                   cards, 
-                  type, xi
+                  type, xi, false, from_wei_or_peng
             );
-            
-            cc.utils.gameNetworkingManager.takeNormalAction(type, opCard, cards, needsHide);
+
+            cc.utils.gameNetworkingManager.takeNormalAction(type, opCard, cards, needsHide, this.sessionKey, from_wei_or_peng);
+            this.sessionKey = null;
       },
 
       onReturnToLobbyClicked: function() {

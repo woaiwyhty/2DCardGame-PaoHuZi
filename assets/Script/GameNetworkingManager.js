@@ -101,6 +101,13 @@ cc.Class({
                         self.dispatchEvent('need_shoot', data);
                   }
             });
+            cc.utils.net.addHandler("dealed_card", function(data){
+                  console.log("dealed_card received!!!  ", data);
+
+                  if (data.errcode === 0) {
+                        self.dispatchEvent('dealed_card', data);
+                  }
+            });
             cc.utils.net.addHandler("other_player_shoot", function(data){
                   console.log("other_player_shoot received!!!  ", data);
 
@@ -197,7 +204,7 @@ cc.Class({
             cc.utils.net.send('hu', data);
       },
 
-      takeNormalAction: function(type, opCard, cards, needsHide = false, sessionKey = null) {
+      takeNormalAction: function(type, opCard, cards, needsHide = false, sessionKey = null, from_wei_or_peng = 0) {
             console.log("takeNormalAction is called!");
             let data = {
                   username: cc.utils.userInfo.username,
@@ -206,6 +213,7 @@ cc.Class({
                   cards: cards,
                   needsHide: needsHide,
                   sessionKey: sessionKey,
+                  from_wei_or_peng: from_wei_or_peng,
                   time: Date.now(),
             }
 
