@@ -406,7 +406,11 @@ cc.Class({
                         offSetx = -30 - (target.length * this.cardSmallWidth);
                   }
                   for (card of cards) {
-                        nodes.push(cc.instantiate(this.cardsSmall.get(card)));
+                        if (type === 'wei') {
+                              nodes.push(cc.instantiate('back'));
+                        } else {
+                              nodes.push(cc.instantiate(this.cardsSmall.get(card)));
+                        }
                         nodes[nodes.length - 1].parent = parentNode;
                         nodes[nodes.length - 1].x = offSetx;
                         nodes[nodes.length - 1].y = offSety;
@@ -587,6 +591,8 @@ cc.Class({
                                     data.ti_wei_pao_result.from_wei_or_peng,
                               );
                         }
+                  } else {
+                        
                   }
             }.bind(this));
 
@@ -633,11 +639,43 @@ cc.Class({
                   this.showTimer(data.op_seat_id);
             }.bind(this));
             this.node.on('other_player_shoot', function (data) {
+                  this.sessionKey = data.sessionKey;
                   let leftToRight = data.op_seat_id === this.prevPlayerId;
                   let local_seat_id = data.op_seat_id === this.nextPlayerId ? 2 : 0;
                   this.shootCardOthers(data.opCard, local_seat_id, leftToRight);
                   this.seats[local_seat_id].timerBg.active = false;
                   this.seats[local_seat_id].timerLabel.active = false;
+
+                  // check if I can use the shooted card
+                  let paoResult = cc.utils.gameAlgo.checkPao(data.opCard, true, this.cardsOnHand, this.cardsAlreadyUsedMySelf);
+                  if (paoResult.status === true) {
+                        let from_wei_or_peng = paoResult.caseNumber - 1;
+                        this.takeNormalAction(
+                              'pao',
+                              data.opCard,
+                              [data.opCard, data.opCard, data.opCard, data.opCard],
+                              false,
+                              from_wei_or_peng
+                        );
+                        return;
+                  }
+                  let actionsList = [];
+                  if (data.op_seat_id === this.prevPlayerId) {
+                        // I am next player of shooted player, so chi is available
+                        // TODO: check chi
+                  }
+
+                  let pengResult = cc.utils.gameAlgo.checkPeng(data.opCard, this.cardsOnHand);
+                  if (pengResult) {
+                        actionsList.push('peng');
+                  }
+
+                  if (actionsList.length > 0) {
+                        actionsList.push('guo');
+                        this.renderActionsList(actionsList);
+                  } else {
+                        cc.utils.gameNetworkingManager.takeNormalAction('guo', null, null, false, this.sessionKey);
+                  }
             }.bind(this));
       },
 
@@ -792,7 +830,6 @@ cc.Class({
       onChiClicked: function() {
             this.hideActionList();
             this.hiderTimer(cc.utils.roomInfo.my_seat_id);
-
       },
   });
     

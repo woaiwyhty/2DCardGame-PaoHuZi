@@ -262,8 +262,7 @@ cc.Class({
             // case1: 3 cards on hand and other shooted/dealed one
             // case2: 3 wei cards and other shooted/dealed one
             // case3: 3 peng cards and others dealed one
-            let case1 = cardsOnHand.get(shootCard) === 3 ? -1 : -2;
-            if (cardsOnHand.get(shootCard) === 3) {
+            if (cardsOnHand.get(card) === 3) {
                 return {
                     status: true,
                     caseNumber: 1,
