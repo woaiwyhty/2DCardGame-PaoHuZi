@@ -228,12 +228,18 @@ cc.Class({
       },
 
       dealHoleCard: function(card, destSeatId) {
+            if (this.currentOnBoardCardNode) {
+                  this.currentOnBoardCardNode.destroy();
+                  this.currentOnBoardCardNode = null;
+            }
+
             let node = cc.instantiate(this.cardsFull.get(card));
             this.dealCardFrame.parent = node;
             this.dealCardFrame.width = 65;
             this.dealCardFrame.height = 194;
             this.dealCardFrame.x = 0, this.dealCardFrame.y = 0;
             this.dealCardFrame.active = true;
+            this.currentOnBoardCardNode = node;
             node.interactable = false;
             node.parent = this.cardSetNode;
             node.width = 65;
@@ -241,9 +247,9 @@ cc.Class({
             node.x = 0, node.y = 0; 
             node.scaleX = 0.1, node.scaleY = 0.1;
             let targetX = 0, targetY = 0;
-            if (destSeatId === 0) {
+            if (destSeatId === 1) {
                   targetY = -100;
-            } else if (destSeatId === 1) {
+            } else if (destSeatId === 0) {
                   targetX = -130;
             } else {
                   targetX = 130;
@@ -259,12 +265,18 @@ cc.Class({
                   return;
             }
 
+            if (this.currentOnBoardCardNode) {
+                  this.currentOnBoardCardNode.destroy();
+                  this.currentOnBoardCardNode = null;
+            }
+
             let targetX = 0, targetY = -100;
             this.shootCardFrame.parent = cardNode;
             this.shootCardFrame.width = 65;
             this.shootCardFrame.height = 194;
             this.shootCardFrame.x = 0, this.shootCardFrame.y = 0;
             this.shootCardFrame.active = true;
+            this.currentOnBoardCardNode = cardNode;
 
             let pos = this.cardSetNode.convertToWorldSpaceAR(cc.v2(0, 0));
             cc.utils.gameAudio.playCardOutEffect(card);
@@ -287,6 +299,11 @@ cc.Class({
       },
 
       shootCardOthers: function(card, seatId, leftToRight = true) {
+            if (this.currentOnBoardCardNode) {
+                  this.currentOnBoardCardNode.destroy();
+                  this.currentOnBoardCardNode = null;
+            }
+
             let targetX = -130;
 
             let node = cc.instantiate(this.cardsFull.get(card));
@@ -298,6 +315,7 @@ cc.Class({
             node.x = 100, node.y = 0; 
             node.scaleX = 0.1, node.scaleY = 0.1;
             node.active = true;
+            this.currentOnBoardCardNode = node;
             this.shootCardFrame.parent = node;
             this.shootCardFrame.width = 65;
             this.shootCardFrame.height = 194;
@@ -407,7 +425,7 @@ cc.Class({
                   }
                   for (card of cards) {
                         if (type === 'wei') {
-                              nodes.push(cc.instantiate('back'));
+                              nodes.push(cc.instantiate(this.cardsSmall.get('back')));
                         } else {
                               nodes.push(cc.instantiate(this.cardsSmall.get(card)));
                         }
@@ -550,7 +568,7 @@ cc.Class({
 
                   if (cc.utils.roomInfo.my_seat_id === 0) {
                         // zhuang jia
-                        if (data.tianHuResult) {
+                        if (data.tianHuResult && data.tianHuResult.status === true) {
                               cc.utils.roomInfo.huResult = data.tianHuResult;
                               this.currentState = 2; // wait for tianhu decision
                               this.showTimer(cc.utils.roomInfo.my_seat_id);
@@ -565,7 +583,7 @@ cc.Class({
             this.node.on('check_dihu', function (data) {
                   let huResult = cc.utils.gameAlgo.checkHu(this.cardsAlreadyUsedMySelf, this.cardsOnHand, data.card21st);
                   this.currentSession = data.sessionKey;
-                  if (huResult) {
+                  if (huResult && huResult.status === true) {
                         cc.utils.roomInfo.huResult = huResult;
                         this.renderActionsList(['hu', 'guo']);
                         this.showTimer(cc.utils.roomInfo.my_seat_id);
@@ -579,10 +597,11 @@ cc.Class({
                   if (data.op_seat_id === cc.utils.roomInfo.my_seat_id) {
                         local_seat_id = 1;
                   }
+                  console.log('dealed_card  ',  local_seat_id);
                   this.dealHoleCard(data.dealed_card, local_seat_id);
                   if (data.ti_wei_pao_result.status === true) {
                         this.sessionKey = data.sessionKey;
-                        if (data.ti_wei_pao_result.op_seat_id === cc.utils.room.my_seat_id) {
+                        if (data.ti_wei_pao_result.op_seat_id === cc.utils.roomInfo.my_seat_id) {
                               this.takeNormalAction(
                                     data.ti_wei_pao_result.type, 
                                     data.ti_wei_pao_result.opCard, 

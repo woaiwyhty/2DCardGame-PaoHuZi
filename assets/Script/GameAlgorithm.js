@@ -299,22 +299,28 @@ cc.Class({
                 finalResult.push(currentResult);
                 return;
             }
-            for (possibility of chiMap[card]) {
+            for (let possibility of chiMap[card]) {
                 let result = true;
-                for (oneCard of possibility) {
-                    if (!(cardsOnHand.get(oneCard) === 1 || cardsOnHand.get(oneCard) === 2)) {
+                for (let oneCard of possibility) {
+                    cardsOnHand.set(oneCard, cardsOnHand.get(oneCard) - 1);
+                }
+                for (let oneCard of possibility) {
+                    if (cardsOnHand.get(oneCard) < 0) {
                         result = false;
+                        for (let oneCard1 of possibility) {
+                            cardsOnHand.set(oneCard1, cardsOnHand.get(oneCard1) - 1);
+                        }
                         break;
                     }
                 }
                 if (result === true) {
                     let newResult = Array.from(currentResult);
                     newResult.push(possibility);
-                    for (oneCard of possibility) {
+                    for (let oneCard of possibility) {
                         cardsOnHand.set(oneCard, cardsOnHand.get(oneCard) - 1);
                     }
                     this.checkChiOnlyOnHandDfs(card, cardsOnHand, finalResult, newResult);
-                    for (oneCard of possibility) {
+                    for (let oneCard of possibility) {
                         cardsOnHand.set(oneCard, cardsOnHand.get(oneCard) + 1);
                     }
                 }
@@ -361,9 +367,15 @@ cc.Class({
     
                 for (let possibility of chiMap[card]) {
                     let result = true;
-                    for (oneCard of possibility) {
-                        if (!(cardsOnHand.get(oneCard) === 1 || cardsOnHand.get(oneCard) === 2)) {
+                    for (let oneCard of possibility) {
+                        cardsOnHand.set(oneCard, cardsOnHand.get(oneCard) - 1);
+                    }
+                    for (let oneCard of possibility) {
+                        if (cardsOnHand.get(oneCard) < 0) {
                             result = false;
+                            for (let oneCard1 of possibility) {
+                                cardsOnHand.set(oneCard1, cardsOnHand.get(oneCard1) - 1);
+                            }
                             break;
                         }
                     }
@@ -567,6 +579,11 @@ cc.Class({
                     }
                 }
             }
+            if (maxHu) {
+                return {
+                    status: false,
+                };
+            }
             return maxHu;
         },
     
@@ -590,7 +607,7 @@ cc.Class({
                 }
             }
             let resultForJiangHu = this.checkHuHelper(cardsOnHand, needJiang, currentXi, cardsAlreadyUsed);
-            if (resultForJiangHu) {
+            if (resultForJiangHu && sumOfCardOnHand === 1) {
                   resultForJiangHu.huInfo.push("耍猴");
                   resultForJiangHu.fan += 8;
             }
