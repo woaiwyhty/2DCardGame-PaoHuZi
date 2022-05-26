@@ -340,8 +340,18 @@ cc.Class({
             this.buttonsNode.set('chi', cc.find("Canvas/Game/Actions/chi"));
             this.buttonsNode.set('guo', cc.find("Canvas/Game/Actions/guo"));
             this.buttonsNode.set('hu', cc.find("Canvas/Game/Actions/hu"));
+            this.buttonsNode.set('chiWaysBox', cc.find("Canvas/Game/Actions/chiWaysBox"));
 
-            // this.renderActionsList(['peng', 'guo']);
+
+            cc.utils.roomInfo.chiResult = {
+                  status: true,
+                  chiWays: [
+                        [ [ 'x1', 'x2', 'x3' ], [ 'x2', 'd2', 'd2' ], [ 'x2', 'x7', 'x10' ] ],
+                        [ [ 'x1', 'x2', 'x3' ], [ 'x2', 'x2', 'd2' ] ],
+                        [ [ 'x2', 'x2', 'd2' ], [ 'x2', 'x7', 'x10' ] ]
+                      ],                      
+            }
+            this.renderActionsList(['peng', 'chi', 'guo']);
       },
 
       renderActionsList: function(buttons) {
@@ -424,7 +434,7 @@ cc.Class({
                         offSetx = -30 - (target.length * this.cardSmallWidth);
                   }
                   for (card of cards) {
-                        if (type === 'wei') {
+                        if (type === 'wei' && target !== this.cardsAlreadyUsedMySelf) {
                               nodes.push(cc.instantiate(this.cardsSmall.get('back')));
                         } else {
                               nodes.push(cc.instantiate(this.cardsSmall.get(card)));
@@ -732,6 +742,10 @@ cc.Class({
       },
 
       hideActionList: function() {
+            if (cc.utils.roomInfo.chiWaysNode) {
+                  cc.utils.roomInfo.chiWaysNode.destroy();
+                  cc.utils.roomInfo.chiWaysNode = null;
+            }
             for (const [key, value] of this.buttonsNode.entries()) {
                   value.active = false;
             }
@@ -880,8 +894,42 @@ cc.Class({
       },
       
       onChiClicked: function() {
-            this.hideActionList();
-            this.hiderTimer(cc.utils.roomInfo.my_seat_id);
+            if (!cc.utils.roomInfo.chiResult || cc.utils.roomInfo.chiResult.status === false) {
+                  return;
+            }
+
+            let offSetX = 0;
+            cc.utils.roomInfo.chiWaysNode = new cc.Node('Sprite');
+            cc.utils.roomInfo.chiWaysNode.parent = this.actionsNode;
+            cc.utils.roomInfo.chiWaysNode.x = 0;
+            cc.utils.roomInfo.chiWaysNode.y = 0;
+            for (let method of cc.utils.roomInfo.chiResult.chiWays) {
+                  let box = cc.instantiate(this.buttonsNode.get('chiWaysBox'));
+                  box.parent = cc.utils.roomInfo.chiWaysNode;
+                  box.active = true;
+                  box.method = method;
+                  for (let possibility of method) {
+                        let offSetY = 90;
+                        for (let oneCard of possibility) {
+                              let node = cc.instantiate(this.cardsSmall.get(oneCard));
+                              node.parent = box;
+                              node.x = offSetX;
+                              node.y = offSetY;
+                              node.interactable = true;
+                              node.active = true;
+                              offSetY += this.cardSmallWidth;
+                        }
+                        offSetX += this.cardSmallWidth;
+                  }
+                  box.on('click', (button) => {
+                        // TODO: send chi action to server
+                        this.hideActionList();
+                        this.hiderTimer(cc.utils.roomInfo.my_seat_id);
+                  }, this);
+                  offSetX += 15;
+            }
+            cc.utils.roomInfo.chiWaysNode.x -= (offSetX);
+            cc.utils.roomInfo.chiWaysNode.active = true;
       },
   });
     
