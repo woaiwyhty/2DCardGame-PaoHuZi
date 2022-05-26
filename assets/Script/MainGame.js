@@ -569,6 +569,9 @@ cc.Class({
                   if (cc.utils.roomInfo.my_seat_id === 0) {
                         // zhuang jia
                         if (data.tianHuResult && data.tianHuResult.status === true) {
+                              data.tianHuResult.huInfo.push("天胡");
+                              data.tianHuResult.fan += 4;
+
                               cc.utils.roomInfo.huResult = data.tianHuResult;
                               this.currentState = 2; // wait for tianhu decision
                               this.showTimer(cc.utils.roomInfo.my_seat_id);
@@ -584,6 +587,8 @@ cc.Class({
                   let huResult = cc.utils.gameAlgo.checkHu(this.cardsAlreadyUsedMySelf, this.cardsOnHand, data.card21st);
                   this.currentSession = data.sessionKey;
                   if (huResult && huResult.status === true) {
+                        data.tianHuResult.huInfo.push("地胡");
+                        data.tianHuResult.fan += 4;
                         cc.utils.roomInfo.huResult = huResult;
                         this.renderActionsList(['hu', 'guo']);
                         this.showTimer(cc.utils.roomInfo.my_seat_id);
@@ -598,9 +603,12 @@ cc.Class({
                         local_seat_id = 1;
                   }
                   console.log('dealed_card  ',  local_seat_id);
-                  this.dealHoleCard(data.dealed_card, local_seat_id);
                   if (data.ti_wei_pao_result.status === true) {
                         this.sessionKey = data.sessionKey;
+                        if (data.ti_wei_pao_result.type !== 'wei' || data.op_seat_id === cc.utils.roomInfo.my_seat_id) {
+                              // not showing the dealed card to others if it is wei
+                              this.dealHoleCard(data.dealed_card, local_seat_id);
+                        } 
                         if (data.ti_wei_pao_result.op_seat_id === cc.utils.roomInfo.my_seat_id) {
                               this.takeNormalAction(
                                     data.ti_wei_pao_result.type, 
@@ -678,24 +686,49 @@ cc.Class({
                         );
                         return;
                   }
-                  let actionsList = [];
-                  if (data.op_seat_id === this.prevPlayerId) {
-                        // I am next player of shooted player, so chi is available
-                        // TODO: check chi
-                  }
-
-                  let pengResult = cc.utils.gameAlgo.checkPeng(data.opCard, this.cardsOnHand);
-                  if (pengResult) {
-                        actionsList.push('peng');
-                  }
-
-                  if (actionsList.length > 0) {
-                        actionsList.push('guo');
-                        this.renderActionsList(actionsList);
+                  let actionList = this.calculateAvailableActions(card, true, data.op_seat_id);
+                  if (actionList.length > 0) {
+                        this.renderActionsList(actionList);
                   } else {
                         cc.utils.gameNetworkingManager.takeNormalAction('guo', null, null, false, this.sessionKey);
                   }
             }.bind(this));
+      },
+
+      calculateAvailableActions: function(card, isShoot, op_seat_id) {
+            let actionsList = [];
+            if (op_seat_id === this.prevPlayerId || op_seat_id === cc.utils.roomInfo.my_seat_id) {
+                  // I am next player of shooted player or I am the shooted player, so chi is available
+                  let chiResult = cc.utils.gameAlgo.checkChi(card, this.cardsOnHand);
+                  if (chiResult && chiResult.status === true) {
+                        actionsList.push('chi');
+                        cc.utils.roomInfo.chiResult = chiResult;
+                  }
+            }
+
+            let pengResult = cc.utils.gameAlgo.checkPeng(data.opCard, this.cardsOnHand);
+            if (pengResult) {
+                  actionsList.push('peng');
+            }
+
+            if (isShoot === false) {
+                  let huResult = cc.utils.gameAlgo.checkPeng(data.opCard, this.cardsOnHand);
+                  if (huResult && huResult.status === true) {
+                        actionsList.push('hu');
+                        if (op_seat_id === cc.utils.roomInfo.my_seat_id) {
+                              huResult.huInfo.push("自摸");
+                              huResult.tun += 1;
+                        }
+                        huResult.fan += (4 * cc.utils.roomInfo.number_of_wang);
+                        cc.utils.roomInfo.huResult = huResult;
+                  }
+            }
+
+            if (actionsList.length > 0) {
+                  actionsList.push('guo');
+            }
+
+            return actionsList;
       },
 
       hideActionList: function() {
