@@ -145,6 +145,7 @@ cc.Class({
       },
 
       initCardSetView: function() {
+            this.GameCanvas = cc.find("Canvas/Game");
             this.dealCardFrame = cc.find("Canvas/Game/DealCardFrame");
             this.shootCardFrame = cc.find("Canvas/Game/ShootCardFrame");
 
@@ -228,7 +229,9 @@ cc.Class({
       },
 
       dealHoleCard: function(card, destSeatId) {
+            console.log("dealHoleCard   ", this.currentOnBoardCardNode);
             if (this.currentOnBoardCardNode) {
+                  this.currentOnBoardCardNode.removeAllChildren(false);
                   this.currentOnBoardCardNode.destroy();
                   this.currentOnBoardCardNode = null;
             }
@@ -265,11 +268,15 @@ cc.Class({
                   return;
             }
 
+            console.log("shootcard   ", this.currentOnBoardCardNode);
+
             if (this.currentOnBoardCardNode) {
+                  this.currentOnBoardCardNode.removeAllChildren(false);
+
                   this.currentOnBoardCardNode.destroy();
                   this.currentOnBoardCardNode = null;
             }
-
+            
             let targetX = 0, targetY = -100;
             this.shootCardFrame.parent = cardNode;
             this.shootCardFrame.width = 65;
@@ -299,7 +306,10 @@ cc.Class({
       },
 
       shootCardOthers: function(card, seatId, leftToRight = true) {
+            console.log("shootCardOthers  ", this.currentOnBoardCardNode)
+
             if (this.currentOnBoardCardNode) {
+                  this.currentOnBoardCardNode.removeAllChildren(false);
                   this.currentOnBoardCardNode.destroy();
                   this.currentOnBoardCardNode = null;
             }
@@ -343,15 +353,15 @@ cc.Class({
             this.buttonsNode.set('chiWaysBox', cc.find("Canvas/Game/Actions/chiWaysBox"));
 
 
-            cc.utils.roomInfo.chiResult = {
-                  status: true,
-                  chiWays: [
-                        [ [ 'x1', 'x2', 'x3' ], [ 'x2', 'd2', 'd2' ], [ 'x2', 'x7', 'x10' ] ],
-                        [ [ 'x1', 'x2', 'x3' ], [ 'x2', 'x2', 'd2' ] ],
-                        [ [ 'x2', 'x2', 'd2' ], [ 'x2', 'x7', 'x10' ] ]
-                      ],                      
-            }
-            this.renderActionsList(['peng', 'chi', 'guo']);
+            // cc.utils.roomInfo.chiResult = {
+            //       status: true,
+            //       chiWays: [
+            //             [ [ 'x1', 'x2', 'x3' ], [ 'x2', 'd2', 'd2' ], [ 'x2', 'x7', 'x10' ] ],
+            //             [ [ 'x1', 'x2', 'x3' ], [ 'x2', 'x2', 'd2' ] ],
+            //             [ [ 'x2', 'x2', 'd2' ], [ 'x2', 'x7', 'x10' ] ]
+            //           ],                      
+            // }
+            // this.renderActionsList(['peng', 'chi', 'guo']);
       },
 
       renderActionsList: function(buttons) {
@@ -564,6 +574,9 @@ cc.Class({
                         this.seats[i].ready.active = false;
                   }
                   this.cardsOnHand = new Map(data.cardsOnHand);
+                  let cardGroups = cc.utils.gameAlgo.groupCards(this.cardsOnHand);
+                  this.renderCardsOnHand(cardGroups);
+
                   let tiResult = cc.utils.gameAlgo.checkTi(this.cardsOnHand);
                   if (tiResult.length > 0) {
                         cc.utils.gameAudio.actionsEffect('ti');
@@ -572,8 +585,7 @@ cc.Class({
                               this.takeNormalAction('ti', ti, ['back', 'back', 'back', ti], true);
                         }
                   }
-                  let cardGroups = cc.utils.gameAlgo.groupCards(this.cardsOnHand);
-                  this.renderCardsOnHand(cardGroups);
+
                   cc.utils.gameAudio.dealCardWhenGameStartEffect();
 
                   if (cc.utils.roomInfo.my_seat_id === 0) {
@@ -612,14 +624,16 @@ cc.Class({
                   if (data.op_seat_id === cc.utils.roomInfo.my_seat_id) {
                         local_seat_id = 1;
                   }
+                  this.sessionKey = data.sessionKey;
+
                   console.log('dealed_card  ',  local_seat_id);
                   if (data.ti_wei_pao_result.status === true) {
-                        this.sessionKey = data.sessionKey;
                         if (data.ti_wei_pao_result.type !== 'wei' || data.op_seat_id === cc.utils.roomInfo.my_seat_id) {
                               // not showing the dealed card to others if it is wei
                               this.dealHoleCard(data.dealed_card, local_seat_id);
                         } 
                         if (data.ti_wei_pao_result.op_seat_id === cc.utils.roomInfo.my_seat_id) {
+                              cc.utils.gameAudio.actionsEffect(data.ti_wei_pao_result.type);
                               this.takeNormalAction(
                                     data.ti_wei_pao_result.type, 
                                     data.ti_wei_pao_result.opCard, 
@@ -629,7 +643,15 @@ cc.Class({
                               );
                         }
                   } else {
-                        
+                        this.dealHoleCard(data.dealed_card, local_seat_id);
+
+                        let actionList = this.calculateAvailableActions(data.dealed_card, false, data.op_seat_id);
+                        if (actionList.length > 0) {
+                              this.showTimer(cc.utils.roomInfo.my_seat_id);
+                              this.renderActionsList(actionList);
+                        } else {
+                              cc.utils.gameNetworkingManager.takeNormalAction('guo', null, null, false, this.sessionKey);
+                        }
                   }
             }.bind(this));
 
@@ -647,6 +669,7 @@ cc.Class({
                   }
             }.bind(this));
             this.node.on('other_player_action', function (data) {
+                  cc.utils.gameAudio.actionsEffect(data.type);
                   console.log(this.nextPlayerId, this.prevPlayerId);
                   let target = this.cardsAlreadyUsedPrev;
                   let targetNode = this.cardsAlreadyUsedPrevNode;
@@ -687,6 +710,7 @@ cc.Class({
                   let paoResult = cc.utils.gameAlgo.checkPao(data.opCard, true, this.cardsOnHand, this.cardsAlreadyUsedMySelf);
                   if (paoResult.status === true) {
                         let from_wei_or_peng = paoResult.caseNumber - 1;
+                        cc.utils.gameAudio.actionsEffect('pao');
                         this.takeNormalAction(
                               'pao',
                               data.opCard,
@@ -696,8 +720,9 @@ cc.Class({
                         );
                         return;
                   }
-                  let actionList = this.calculateAvailableActions(card, true, data.op_seat_id);
+                  let actionList = this.calculateAvailableActions(data.opCard, true, data.op_seat_id);
                   if (actionList.length > 0) {
+                        this.showTimer(cc.utils.roomInfo.my_seat_id);
                         this.renderActionsList(actionList);
                   } else {
                         cc.utils.gameNetworkingManager.takeNormalAction('guo', null, null, false, this.sessionKey);
@@ -716,13 +741,13 @@ cc.Class({
                   }
             }
 
-            let pengResult = cc.utils.gameAlgo.checkPeng(data.opCard, this.cardsOnHand);
+            let pengResult = cc.utils.gameAlgo.checkPeng(card, this.cardsOnHand);
             if (pengResult) {
                   actionsList.push('peng');
             }
 
             if (isShoot === false) {
-                  let huResult = cc.utils.gameAlgo.checkPeng(data.opCard, this.cardsOnHand);
+                  let huResult = cc.utils.gameAlgo.checkPeng(card, this.cardsOnHand);
                   if (huResult && huResult.status === true) {
                         actionsList.push('hu');
                         if (op_seat_id === cc.utils.roomInfo.my_seat_id) {
@@ -778,13 +803,21 @@ cc.Class({
             cc.utils.userInfo.currentXi += xi;
             this.seats[1].xi.string = cc.utils.userInfo.currentXi.toString();
             this.cardsOnHand.set(opCard, 0);
+            for (let i = 0; i < this.cardGroups.length; ++i) {
+                  if (this.cardGroups[i].get(opCard) > 0) {
+                        this.cardGroups[i].set(opCard, 0);
+                  }
+            }
+            this.cardGroups = cc.utils.gameAlgo.filterEmptyGroup(this.cardGroups);
+            this.clearAllCardNodes();
+            this.renderCardsOnHand(this.cardGroups);
+
             this.addUsedCards(
                   this.cardsAlreadyUsedMySelf, 
                   this.cardsAlreadyUsedMySelfNode, 
                   cards, 
                   type, xi, false, from_wei_or_peng
             );
-
             cc.utils.gameNetworkingManager.takeNormalAction(type, opCard, cards, needsHide, this.sessionKey, from_wei_or_peng);
             this.sessionKey = null;
       },

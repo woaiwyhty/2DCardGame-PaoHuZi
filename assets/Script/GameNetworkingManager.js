@@ -205,7 +205,7 @@ cc.Class({
       },
 
       takeNormalAction: function(type, opCard, cards, needsHide = false, sessionKey = null, from_wei_or_peng = 0) {
-            console.log("takeNormalAction is called!");
+            console.log("takeNormalAction is called!  ", sessionKey);
             let data = {
                   username: cc.utils.userInfo.username,
                   token: cc.utils.userInfo.token,
