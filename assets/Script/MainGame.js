@@ -25,6 +25,7 @@ cc.Class({
             this.initCardSetView();
             this.initActionsView();
 
+            this.gameOver = cc.find("Canvas/GameOver");
             cc.utils.gameNetworkingManager.checkIfGameReady();
       },
 
@@ -668,6 +669,9 @@ cc.Class({
             this.node.on('self_action_result', function (data) {
                   if (data.type === 'hu') {
                         this.takeHuAction();
+                  } else if (data.type === 'peng') {
+                        cc.utils.gameAudio.actionsEffect('peng');
+                        this.takeNormalAction('peng', data.cards[0], data.cards);
                   }
             }.bind(this));
             this.node.on('other_player_action', function (data) {
@@ -965,8 +969,8 @@ cc.Class({
 
             this.hideActionList();
             this.hiderTimer(cc.utils.roomInfo.my_seat_id);
-            cc.utils.gameAudio.actionsEffect('peng');
-            this.takeNormalAction('peng', cc.utils.roomInfo.pengResult.opCard, cards, false);
+            // cc.utils.gameAudio.actionsEffect('peng');
+            // this.takeNormalAction('peng', cc.utils.roomInfo.pengResult.opCard, cards, false);
             this.sessionKey = null;
             this.clearActionResult();
       },
