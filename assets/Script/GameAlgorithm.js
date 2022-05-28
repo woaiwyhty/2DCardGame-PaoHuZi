@@ -346,6 +346,15 @@ cc.Class({
                 finalResult = finalResult.sort().filter((item, pos, array) => {
                     return !pos || item.toString() !== array[pos - 1].toString();
                 });
+
+                for (let item of finalResult) {
+                    for (let i = 0; i < 2; ++i) {
+                        if (item[i] === card) {
+                            item[i] = item[2];
+                            item[2] = card;
+                        }
+                    }
+                }
             }
             return {
                 status: finalResult.length > 0,

@@ -220,6 +220,15 @@ cc.Class({
             cc.utils.net.send(type, data);
       },
 
+      takeChiAction: function(manyCards, sessionKey = null) {
+            let data = {
+                  manyCards: manyCards,
+                  sessionKey: sessionKey,
+                  token: cc.utils.userInfo.token,
+            };
+            cc.utils.net.send('chi', data);
+      },
+
       shootCard: function(type, opCard) {
             console.log("shootCard is called!");
             let data = {

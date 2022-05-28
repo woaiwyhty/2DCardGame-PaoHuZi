@@ -641,6 +641,7 @@ cc.Class({
                                     false,
                                     data.ti_wei_pao_result.from_wei_or_peng,
                               );
+                              this.sessionKey = null;
                         }
                   } else {
                         this.dealHoleCard(data.dealed_card, local_seat_id);
@@ -651,6 +652,7 @@ cc.Class({
                               this.renderActionsList(actionList);
                         } else {
                               cc.utils.gameNetworkingManager.takeNormalAction('guo', null, null, false, this.sessionKey);
+                              this.sessionKey = null;
                         }
                   }
             }.bind(this));
@@ -718,6 +720,7 @@ cc.Class({
                               false,
                               from_wei_or_peng
                         );
+                        this.sessionKey = null;
                         return;
                   }
                   let actionList = this.calculateAvailableActions(data.opCard, true, data.op_seat_id);
@@ -744,6 +747,10 @@ cc.Class({
             let pengResult = cc.utils.gameAlgo.checkPeng(card, this.cardsOnHand);
             if (pengResult) {
                   actionsList.push('peng');
+                  cc.utils.roomInfo.pengResult = {
+                        status: true,
+                        opCard: card,
+                  };
             }
 
             if (isShoot === false) {
@@ -777,6 +784,12 @@ cc.Class({
             this.actionsNode.active = false;
       },
 
+      clearActionResult: function() {
+            cc.utils.roomInfo.pengResult = null;
+            cc.utils.roomInfo.huResult = null;
+            cc.utils.roomInfo.chiResult = null;
+      },
+
       takeHuAction: function() {
             this.hideActionList();
             cc.utils.gameAudio.actionsEffect('hu');
@@ -791,7 +804,25 @@ cc.Class({
             this.scheduleOnce(function() {
                   this.seats[1][type].active = false;
             }.bind(this), 1);
-            let xi = cc.utils.gameAlgo.calculateXi(type, opCard);
+            let xi = 0;
+            if (type === 'chi') {
+                  xi = cc.utils.gameAlgo.calculateXi(type, cards);
+                  for (let card of cards) {
+                        for (let i = 0; i < this.cardGroups.length; ++i) {
+                              if (this.cardGroups[i].get(card) > 0) {
+                                    this.cardGroups[i].set(card, this.cardGroups[i].get(card) - 1);
+                              }
+                        }
+                  }
+            } else {
+                  xi = cc.utils.gameAlgo.calculateXi(type, opCard);
+                  this.cardsOnHand.set(opCard, 0);
+                  for (let i = 0; i < this.cardGroups.length; ++i) {
+                        if (this.cardGroups[i].get(opCard) > 0) {
+                              this.cardGroups[i].set(opCard, 0);
+                        }
+                  }
+            }
             if (from_wei_or_peng) {
                   for (let usedCards of target) {
                         if (['wei', 'peng'].indexOf(type) >= 0
@@ -802,12 +833,6 @@ cc.Class({
             } 
             cc.utils.userInfo.currentXi += xi;
             this.seats[1].xi.string = cc.utils.userInfo.currentXi.toString();
-            this.cardsOnHand.set(opCard, 0);
-            for (let i = 0; i < this.cardGroups.length; ++i) {
-                  if (this.cardGroups[i].get(opCard) > 0) {
-                        this.cardGroups[i].set(opCard, 0);
-                  }
-            }
             this.cardGroups = cc.utils.gameAlgo.filterEmptyGroup(this.cardGroups);
             this.clearAllCardNodes();
             this.renderCardsOnHand(this.cardGroups);
@@ -819,7 +844,6 @@ cc.Class({
                   type, xi, false, from_wei_or_peng
             );
             cc.utils.gameNetworkingManager.takeNormalAction(type, opCard, cards, needsHide, this.sessionKey, from_wei_or_peng);
-            this.sessionKey = null;
       },
 
       onReturnToLobbyClicked: function() {
@@ -857,7 +881,7 @@ cc.Class({
             let label = timerLabel.getComponent(cc.Label);
             label.string = '30';
             let currentTime = 30;
-            this.schedule(function() {
+            let callback = function() {
                   // 这里的 this 指向 component
                   currentTime -= 1;
                   label.string = currentTime.toString();
@@ -865,8 +889,13 @@ cc.Class({
                         // TODO: random shoot a card or pass the operation
                         timerBg.active = false;
                         timerLabel.active = false;
-                  } 
-            }, 1, 29, 1);
+                  } else {
+                        if (!timerBg.active) {
+                              this.unschedule(callback);
+                        }
+                  }
+            };
+            this.schedule(callback, 1, 29, 1);
       },
 
       update: function() {
@@ -899,31 +928,47 @@ cc.Class({
       },
 
       onHuClicked: function() {
-            this.hideActionList();
-            this.hiderTimer(cc.utils.roomInfo.my_seat_id);
             if (this.currentState === 2) {
                   cc.utils.gameNetworkingManager.tianhuResult(cc.utils.roomInfo.huResult);
                   return;
             }
             cc.utils.gameNetworkingManager.takeHuAction(cc.utils.roomInfo.huResult, this.currentSession, cc.utils.roomInfo.my_seat_id);
+            this.hideActionList();
+            this.hiderTimer(cc.utils.roomInfo.my_seat_id);
+            this.clearActionResult();
       },
       
       onGuoClicked: function() {
-            this.hideActionList();
-            this.hiderTimer(cc.utils.roomInfo.my_seat_id);
+            cc.utils.gameNetworkingManager.takeNormalAction('guo', null, null, false, this.sessionKey);
 
             if (this.currentState === 2) {
                   // pass for tianhu
                   cc.utils.gameNetworkingManager.tianhuResult();
                   return;
             }
-            cc.utils.gameNetworkingManager.takeNormalAction('guo', null, null, false, this.sessionKey);
+
+            this.hideActionList();
+            this.hiderTimer(cc.utils.roomInfo.my_seat_id);
+            this.clearActionResult();
       },
 
       onPengClicked: function() {
+            if (!cc.utils.roomInfo.pengResult || cc.utils.roomInfo.pengResult.status === false) {
+                  return;
+            }
+
+            let cards = [cc.utils.roomInfo.pengResult.opCard, cc.utils.roomInfo.pengResult.opCard, cc.utils.roomInfo.pengResult.opCard];
+            cc.utils.gameNetworkingManager.takeNormalAction('peng',
+                  cc.utils.roomInfo.pengResult.opCard, cards, 
+                  false, this.sessionKey
+            );
+
             this.hideActionList();
             this.hiderTimer(cc.utils.roomInfo.my_seat_id);
-
+            cc.utils.gameAudio.actionsEffect('peng');
+            this.takeNormalAction('peng', cc.utils.roomInfo.pengResult.opCard, cards, false);
+            this.sessionKey = null;
+            this.clearActionResult();
       },
       
       onChiClicked: function() {
@@ -956,8 +1001,14 @@ cc.Class({
                   }
                   box.on('click', (button) => {
                         // TODO: send chi action to server
+                        cc.utils.gameNetworkingManager.takeChiAction(button.node.method, this.sessionKey);
                         this.hideActionList();
                         this.hiderTimer(cc.utils.roomInfo.my_seat_id);
+                        cc.utils.gameAudio.actionsEffect('chi');
+                        for (let possibility of button.node.method) {
+                              this.takeNormalAction('chi', possibility[2], possibility, false);
+                        }
+                        this.sessionKey = null;
                   }, this);
                   offSetX += 15;
             }
