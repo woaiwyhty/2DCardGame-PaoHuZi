@@ -195,6 +195,8 @@ cc.Class({
             this.cardsDiscardedPrev = [];
             this.cardsDiscardedNext = [];
 
+            this.cardsAlreadyChoseToNotUse = [];
+
             // cc.utils.gameAudio.dealCardWhenGameStartEffect();
             // let testCards = cc.utils.gameAlgo.dealWhenGameStarts();
             // console.log("testedCards  ", testCards)
@@ -423,7 +425,7 @@ cc.Class({
             target.push(node);
       },
       
-      addUsedCards: function(target, parentNode, cards, type, xi, addToLeft = false, from_wei_or_peng = 0) {
+      addUsedCards: function(target, parentNode, cards, type, xi, addToLeft = false, from_wei_or_peng = 0, needsHide = false) {
             if (from_wei_or_peng) {
                   for (let usedCards of target) {
                         if (['wei', 'peng'].indexOf(usedCards.type) >= 0
@@ -445,7 +447,7 @@ cc.Class({
                         offSetx = -30 - (target.length * this.cardSmallWidth);
                   }
                   for (card of cards) {
-                        if (type === 'wei' && target !== this.cardsAlreadyUsedMySelf) {
+                        if ((type === 'ti' && needsHide) || (type === 'wei' && target !== this.cardsAlreadyUsedMySelf)) {
                               nodes.push(cc.instantiate(this.cardsSmall.get('back')));
                         } else {
                               nodes.push(cc.instantiate(this.cardsSmall.get(card)));
@@ -626,8 +628,10 @@ cc.Class({
                         local_seat_id = 1;
                   }
                   this.sessionKey = data.sessionKey;
-
+                  cc.utils.roomInfo.currentCard = data.dealed_card;
                   console.log('dealed_card  ',  local_seat_id);
+                  this.showHideTiCard(local_seat_id);
+
                   if (data.ti_wei_pao_result.status === true) {
                         if (data.ti_wei_pao_result.type !== 'wei' || data.op_seat_id === cc.utils.roomInfo.my_seat_id) {
                               // not showing the dealed card to others if it is wei
@@ -688,15 +692,34 @@ cc.Class({
                         local_op_seat_id = 2;
                   }
                   this.seats[local_op_seat_id].xi.string = data.xi.toString();
-                  this.addUsedCards(
-                        target, 
-                        targetNode, 
-                        data.cards, 
-                        data.type,
-                        0,
-                        addToLeft,
-                        data.from_wei_or_peng
-                  ); // xi doesn't matter on other players side, so set it be 0.
+                  if (data.type === 'chi') {
+                        for (let cards of data.manyCards) {
+                              this.addUsedCards(
+                                    target, 
+                                    targetNode, 
+                                    cards, 
+                                    data.type,
+                                    0,
+                                    addToLeft,
+                                    0
+                              ); // xi doesn't matter on other players side, so set it be 0.
+                        }
+                  } else {
+                        let needsHide = false;
+                        if (data.type === 'ti') {
+                              needsHide = data.needsHide;
+                        }
+                        this.addUsedCards(
+                              target, 
+                              targetNode, 
+                              data.cards, 
+                              data.type,
+                              0,
+                              addToLeft,
+                              data.from_wei_or_peng,
+                              needsHide
+                        ); // xi doesn't matter on other players side, so set it be 0.
+                  }
             }.bind(this));
             this.node.on('need_shoot', function (data) {
                   if (data.op_seat_id === cc.utils.roomInfo.my_seat_id) {
@@ -709,9 +732,11 @@ cc.Class({
                   let leftToRight = data.op_seat_id === this.prevPlayerId;
                   let local_seat_id = data.op_seat_id === this.nextPlayerId ? 2 : 0;
                   this.shootCardOthers(data.opCard, local_seat_id, leftToRight);
+                  this.showHideTiCard(local_seat_id);
+
                   this.seats[local_seat_id].timerBg.active = false;
                   this.seats[local_seat_id].timerLabel.active = false;
-
+                  cc.utils.roomInfo.currentCard = data.opCard;
                   // check if I can use the shooted card
                   let paoResult = cc.utils.gameAlgo.checkPao(data.opCard, true, this.cardsOnHand, this.cardsAlreadyUsedMySelf);
                   if (paoResult.status === true) {
@@ -739,7 +764,8 @@ cc.Class({
 
       calculateAvailableActions: function(card, isShoot, op_seat_id) {
             let actionsList = [];
-            if (op_seat_id === this.prevPlayerId || op_seat_id === cc.utils.roomInfo.my_seat_id) {
+            if ((op_seat_id === this.prevPlayerId || 
+                  op_seat_id === cc.utils.roomInfo.my_seat_id) && this.cardsAlreadyChoseToNotUse.indexOf(card) < 0) {
                   // I am next player of shooted player or I am the shooted player, so chi is available
                   let chiResult = cc.utils.gameAlgo.checkChi(card, this.cardsOnHand);
                   if (chiResult && chiResult.status === true) {
@@ -749,7 +775,7 @@ cc.Class({
             }
 
             let pengResult = cc.utils.gameAlgo.checkPeng(card, this.cardsOnHand);
-            if (pengResult) {
+            if (pengResult && this.cardsAlreadyChoseToNotUse.indexOf(card) < 0) {
                   actionsList.push('peng');
                   cc.utils.roomInfo.pengResult = {
                         status: true,
@@ -792,6 +818,7 @@ cc.Class({
             cc.utils.roomInfo.pengResult = null;
             cc.utils.roomInfo.huResult = null;
             cc.utils.roomInfo.chiResult = null;
+            cc.utils.roomInfo.currentCard = null;
       },
 
       takeHuAction: function() {
@@ -950,6 +977,9 @@ cc.Class({
                   cc.utils.gameNetworkingManager.tianhuResult();
                   return;
             }
+            if (cc.utils.roomInfo.currentCard) {
+                  this.cardsAlreadyChoseToNotUse.push(cc.utils.roomInfo.currentCard);
+            }
 
             this.hideActionList();
             this.hiderTimer(cc.utils.roomInfo.my_seat_id);
@@ -1008,16 +1038,33 @@ cc.Class({
                         cc.utils.gameNetworkingManager.takeChiAction(button.node.method, this.sessionKey);
                         this.hideActionList();
                         this.hiderTimer(cc.utils.roomInfo.my_seat_id);
-                        cc.utils.gameAudio.actionsEffect('chi');
-                        for (let possibility of button.node.method) {
-                              this.takeNormalAction('chi', possibility[2], possibility, false);
-                        }
+                        // cc.utils.gameAudio.actionsEffect('chi');
+                        // for (let possibility of button.node.method) {
+                        //       this.takeNormalAction('chi', possibility[2], possibility, false);
+                        // }
                         this.sessionKey = null;
                   }, this);
                   offSetX += 15;
             }
             cc.utils.roomInfo.chiWaysNode.x -= (offSetX);
             cc.utils.roomInfo.chiWaysNode.active = true;
+      },
+
+      showHideTiCard: function(local_seat_id) {
+            if (local_seat_id !== 1) {
+                  let target = local_seat_id === 2 ? this.cardsAlreadyUsedNext : this.cardsAlreadyUsedPrev;
+                  for (let usedCards of target) {
+                        if (usedCards.type === 'ti' && usedCards.nodes[3].name === 'back') {
+                              let x = usedCards.nodes[3].x, y = usedCards.nodes[3].y;
+                              usedCards.nodes[3].destroy();
+                              usedCards.nodes[3] = cc.instantiate(this.cardsSmall.get(usedCards.cards[3]));
+                              usedCards.nodes[3].x = x;
+                              usedCards.nodes[3].y = y;
+                              usedCards.nodes[3].parent = usedCards.nodes[2].parent;
+                              usedCards.nodes[3].active = true;
+                        }
+                  }
+            }
       },
   });
     

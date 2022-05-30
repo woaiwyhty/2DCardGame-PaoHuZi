@@ -209,6 +209,7 @@ cc.Class({
             let data = {
                   username: cc.utils.userInfo.username,
                   token: cc.utils.userInfo.token,
+                  seat_id: cc.utils.roomInfo.my_seat_id,
                   opCard: opCard,
                   cards: cards,
                   needsHide: needsHide,
