@@ -19054,6 +19054,9 @@
     "remainNumOfGamesLabel": {
       "__id__": 29
     },
+    "remainNumofCardLabel": {
+      "__id__": 158
+    },
     "delayMSLabel": {
       "__id__": 25
     },

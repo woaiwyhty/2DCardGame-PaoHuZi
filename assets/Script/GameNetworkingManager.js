@@ -129,6 +129,13 @@ cc.Class({
                         self.dispatchEvent('self_action_result', data);
                   }
             });
+            cc.utils.net.addHandler("discarded_dealed_card", function(data){
+                  console.log("discarded_dealed_card received!!!  ", data);
+
+                  if (data.errcode === 0) {
+                        self.dispatchEvent('discarded_dealed_card', data);
+                  }
+            });
       },
       
       connectToGameServer: function(data){
