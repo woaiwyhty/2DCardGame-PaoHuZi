@@ -797,10 +797,10 @@ cc.Class({
                   this.addDiscardedCard(target, targetNode, data.opCard, addToLeft);
 
                   if (this.currentOnBoardCardNode) {
-                        let pos = lastNode.convertToWorldSpaceAR(cc.v2(target[target.length - 1].x, target[target.length - 1].y));
-
+                        let pos = target[target.length - 1].convertToWorldSpaceAR(cc.v2(target[target.length - 1].x, target[target.length - 1].y));
+                        let toPos = this.currentOnBoardCardNode.convertToNodeSpaceAR(pos);
                         cc.tween(this.currentOnBoardCardNode)
-                        .to(0.4, { position: pos } )
+                        .to(0.4, { position: toPos } )
                         .call(() => {
                               this.currentOnBoardCardNode.removeAllChildren(false);
                               this.currentOnBoardCardNode.destroy();
