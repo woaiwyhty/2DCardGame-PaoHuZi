@@ -26,9 +26,9 @@ cc.Class({
     },
 
     testGameAlgorithm: function() {
-        let cardsOnHand = new Map();
-        for (let i = 1; i <= 20; ++i) {
-            let key = 'x' + i.toString();
+        var cardsOnHand = new Map();
+        for (var i = 1; i <= 20; ++i) {
+            var key = 'x' + i.toString();
             if (i > 10) {
                 key = 'd' + (i - 10).toString();
             }
@@ -36,7 +36,7 @@ cc.Class({
             cardsOnHand.set(key, 0);
         }
     
-        let cardsAlreadyUsed = [
+        var cardsAlreadyUsed = [
             {
                 type: 'pao',
                 cards: ['back', 'back', 'back', 'd3'],
@@ -72,7 +72,7 @@ cc.Class({
         cc.utils.net.ip = "43.138.67.153:9001";
         console.log(window.io,cc.utils.net);
 
-        let gameNetworkingManager = require("GameNetworkingManager");
+        var gameNetworkingManager = require("GameNetworkingManager");
         cc.utils.gameNetworkingManager = new gameNetworkingManager();
         cc.utils.gameNetworkingManager.initEventHandlers();
         cc.utils.userInfo = {
@@ -83,13 +83,13 @@ cc.Class({
             currentScore: 0,
             travellerMode: false,
         };
-        let utilsMain = require("Utils");
+        var utilsMain = require("Utils");
         cc.utils.main = new utilsMain();
 
-        let gameAlgo = require("GameAlgorithm");
+        var gameAlgo = require("GameAlgorithm");
         cc.utils.gameAlgo = new gameAlgo();
 
-        let gameAudio = require("GameAudioEffect");
+        var gameAudio = require("GameAudioEffect");
         cc.utils.gameAudio = new gameAudio();
         cc.utils.gameAudio.initAudios();
 

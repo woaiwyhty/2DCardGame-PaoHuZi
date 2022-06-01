@@ -56,7 +56,7 @@ cc.Class({
       },
 
       onCreateRoomConfirmButtonClicked: function() {
-            let createRoomCallback = (ret) => {
+            var createRoomCallback = (ret) => {
                   console.log(ret);
                   if (ret.errcode === 0) {
                         this.joinRoom(ret.room_id);
@@ -64,7 +64,7 @@ cc.Class({
                         cc.utils.alert.show("提示", ret.errmsg);
                   }
             };
-            let num_of_games = 6;
+            var num_of_games = 6;
             if (!this.selected6Rounds) {
                   num_of_games = 12;
             }

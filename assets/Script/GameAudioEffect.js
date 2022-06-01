@@ -20,12 +20,12 @@ cc.Class({
                   if (err) {
                         console.error(err.message);
                     } else {
-                        for (let asset of assets) {
+                        for (var asset of assets) {
                               console.log(`url: ${asset.name}`);
                               if (asset.name[1] === '_') {
                                     this.audioClipsMap.set(asset.name, asset);
                               } else {
-                                    let index = parseInt(asset.name.slice(1));
+                                    var index = parseInt(asset.name.slice(1));
                                     if (index > 10) {
                                           this.audioClipsMap.set(`d${index - 10}`, asset);
                                     } else {
@@ -40,7 +40,7 @@ cc.Class({
                   if (err) {
                         console.error(err.message);
                     } else {
-                        for (let asset of assets) {
+                        for (var asset of assets) {
                               this.audioClipsMap.set(asset.name, asset);
                         }
                     }
@@ -62,9 +62,9 @@ cc.Class({
 
       dealCardWhenGameStartEffect: function() {
             if (this.audioClipsMap.has('runcard')) {
-                  let count = 0;
-                  let audioId = cc.audioEngine.play(this.audioClipsMap.get('runcard'), false, 1);
-                  // let callback = () => {
+                  var count = 0;
+                  var audioId = cc.audioEngine.play(this.audioClipsMap.get('runcard'), false, 1);
+                  // var callback = () => {
                   //       if (count > 20) {
                   //             return;
                   //       }
