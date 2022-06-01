@@ -26,6 +26,34 @@ cc.Class({
     },
 
     testGameAlgorithm: function() {
+        let cardsAlreadyUsed = [
+            {
+                type: 'chi',
+                cards: ['x6', 'x7', 'x8'],
+                xi: 0,
+            },
+            {
+                type: 'peng',
+                cards: ['x1', 'x1', 'x1'],
+                xi: 1,
+            },
+            {
+                type: 'wei',
+                cards: ['back', 'back', 'x3'],
+                xi: 3,
+            },
+            {
+                type: 'pao',
+                cards: ['d3', 'd3', 'd3', 'd3'],
+                xi: 9,
+            },
+            {
+                type: 'peng',
+                cards: ['d10', 'd10', 'd10'],
+                xi: 3,
+            },
+        ]
+    
         let cardsOnHand = new Map();
         for (let i = 1; i <= 20; ++i) {
             let key = 'x' + i.toString();
@@ -36,33 +64,11 @@ cc.Class({
             cardsOnHand.set(key, 0);
         }
     
-        let cardsAlreadyUsed = [
-            {
-                type: 'pao',
-                cards: ['back', 'back', 'back', 'd3'],
-                xi: 9,
-            },
-            {
-                type: 'ti',
-                cards: ['back', 'back', 'back', 'x3'],
-                xi: 9,
-            },
-            {
-                type: 'chi',
-                cards: ['d1', 'x1', 'x1'],
-                xi: 0,
-            },
-        ]
-    
-        cardsOnHand.set('d4', 2);
-        cardsOnHand.set('d5', 2);
-        cardsOnHand.set('d6', 2);
-        cardsOnHand.set('x4', 1);
-        cardsOnHand.set('x5', 1);
-        cardsOnHand.set('x6', 1);
-        cardsOnHand.set('d8', 2);
-    
-        // console.log(cc.utils.gameAlgo.checkHu(cardsAlreadyUsed, cardsOnHand));
+        cardsOnHand.set('x9', 2);
+        cardsOnHand.set('d7', 1);
+        cardsOnHand.set('d8', 1);
+        cardsOnHand.set('d9', 1);
+        console.log("test result  ", cc.utils.gameAlgo.checkHu(cardsAlreadyUsed, cardsOnHand))
     },
 
     initFrameworks: function() {
@@ -95,7 +101,7 @@ cc.Class({
         cc.utils.gameAudio = new gameAudio();
         cc.utils.gameAudio.initAudios();
 
-        this.testGameAlgorithm();
+        // this.testGameAlgorithm();
     },
 
     onServerOn: function(ret){

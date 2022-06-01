@@ -600,7 +600,7 @@ cc.Class({
                     }
                 }
             }
-            if (maxHu) {
+            if (maxHu === null) {
                 return {
                     status: false,
                 };

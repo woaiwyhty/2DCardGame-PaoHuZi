@@ -37,8 +37,8 @@
   <!--<link rel="apple-touch-icon" href=".png" />-->
   <!--<link rel="apple-touch-icon-precomposed" href=".png" />-->
 
-  <link rel="stylesheet" type="text/css" href="style-mobile.6e9cd.css"/>
-  <link rel="icon" href="favicon.8de18.ico"/>
+  <link rel="stylesheet" type="text/css" href="style-mobile.css"/>
+  <link rel="icon" href="favicon.ico"/>
 </head>
 <body>
   <canvas id="GameCanvas" oncontextmenu="event.preventDefault()" tabindex="0"></canvas>
@@ -48,9 +48,9 @@
     </div>
   </div>
 
-<script src="src/settings.0d9ef.js" charset="utf-8"></script>
+<script src="src/settings.js" charset="utf-8"></script>
 
-<script src="main.c9be1.js" charset="utf-8"></script>
+<script src="main.js" charset="utf-8"></script>
 
 <script type="text/javascript">
 (function () {
@@ -76,7 +76,7 @@
       document.body.appendChild(domScript);
     }
 
-    loadScript(debug ? 'cocos2d-js.js' : 'cocos2d-js-min.0b746.js', function () {
+    loadScript(debug ? 'cocos2d-js.js' : 'cocos2d-js-min.js', function () {
       if (CC_PHYSICS_BUILTIN || CC_PHYSICS_CANNON) {
         loadScript(debug ? 'physics.js' : 'physics-min.js', window.boot);
       }
