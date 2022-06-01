@@ -439,10 +439,10 @@ cc.Class({
                               usedCards.nodes[usedCards.nodes.length - 1].x = usedCards.nodes[usedCards.nodes.length - 2].x;
                               usedCards.nodes[usedCards.nodes.length - 1].y = usedCards.nodes[usedCards.nodes.length - 2].y + this.cardSmallWidth;
                               usedCards.nodes[usedCards.nodes.length - 1].active = true;
+                              
+                              usedCards.type = type;
+                              usedCards.xi = xi;
                         }
-
-                        usedCards.type = type;
-                        usedCards.xi = xi;
                   }
             } else {
                   let nodes = [];
