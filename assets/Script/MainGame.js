@@ -434,6 +434,7 @@ cc.Class({
                   for (let usedCards of target) {
                         if (['wei', 'peng'].indexOf(usedCards.type) >= 0
                         && usedCards.cards[2] == cards[cards.length - 1]) {
+                              usedCards.cards.push(cards[cards.length - 1]);
                               usedCards.nodes.push(cc.instantiate(this.cardsSmall.get(cards[cards.length - 1])));
                               usedCards.nodes[usedCards.nodes.length - 1].parent = parentNode;
                               usedCards.nodes[usedCards.nodes.length - 1].x = usedCards.nodes[usedCards.nodes.length - 2].x;
