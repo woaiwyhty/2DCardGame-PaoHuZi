@@ -58,7 +58,7 @@ cc.Class({
     
         filterEmptyGroup: function(cardGroups) {
             let newGroup = [];
-            for (cardGroup of cardGroups) {
+            for (let cardGroup of cardGroups) {
                 let sum = 0;
                 for (const [key, value] of cardGroup.entries()) {
                     sum += value;
@@ -367,7 +367,7 @@ cc.Class({
             if (numOfCards < 3) {
                 if (numOfCards === 0) {
                     // FIND A MATCH!!! Yeahhh!!!!
-                    for (current of currentResult) {
+                    for (let current of currentResult) {
                         current.xi = this.calculateXi('chi', current.cards);
                     }
                     finalResult.push(currentResult);
@@ -415,7 +415,7 @@ cc.Class({
         calculateFanAndTun: function(cardsAlreadyUsed, resultFromGroup3) {
             let all = cardsAlreadyUsed.concat(resultFromGroup3);
             let sumOfXi = 0;
-            for (group of all) {
+            for (let group of all) {
                 sumOfXi += group.xi;
             }
             if (sumOfXi < 15) {
@@ -426,9 +426,9 @@ cc.Class({
     
             let tipaoNum = new Map();
             let numOfRed = 0, numOfBlack = 0, numOfChi = 0, numOfXiao = 0, numOfDa = 0, numOfTuan = 0;
-            for (group of all) {
+            for (let group of all) {
                 if (group.type === 'chi') {
-                    for (card of group.cards) {
+                    for (let card of group.cards) {
                         if (cardRed.indexOf(card) >= 0) {
                             numOfRed += 1;
                         } else {
@@ -519,7 +519,7 @@ cc.Class({
                 JSON.stringify(Array.from(cardsOnHand))
             ));
             let groupResult = [];
-            for (cardsUsed of cardsAlreadyUsed) {
+            for (let cardsUsed of cardsAlreadyUsed) {
                 groupResult.push({
                     type: cardsUsed.type,
                     xi: cardsUsed.xi,
@@ -532,7 +532,7 @@ cc.Class({
             if (!alreadyNeedJiang) {
                 alreadyNeedJiang = tiResult.length > 0;
             }
-            for (ti of tiResult) {
+            for (let ti of tiResult) {
                 groupResult.push({
                     cards: [ti, ti, ti, ti],
                     type: 'ti',
@@ -542,7 +542,7 @@ cc.Class({
                 tempCardSet.set(ti, 0);
             }
             let weiResult = this.checkWei(null, tempCardSet);
-            for (wei of weiResult) {
+            for (let wei of weiResult) {
                 groupResult.push({
                     cards: [wei, wei, wei],
                     type: 'wei',
@@ -566,7 +566,7 @@ cc.Class({
                         tempCardSet.set(key, 0);
                         let finalResult = [], currentResult = [];
                         this.groupCardsBy3Dfs(tempCardSet, numOfCards - 2, finalResult, currentResult);
-                        for (res of finalResult) {
+                        for (let res of finalResult) {
                             let calcResult = this.calculateFanAndTun(groupResult, res);
                             if (!maxHu || (calcResult.status === true
                                 && calcResult.fan * calcResult.tun > maxHu.fan * maxHu.tun)) {
@@ -581,7 +581,7 @@ cc.Class({
                     // hu without jiang
                     let finalResult = [], currentResult = [];
                     this.groupCardsBy3Dfs(tempCardSet, numOfCards, finalResult, currentResult);
-                    for (res of finalResult) {
+                    for (let res of finalResult) {
                         let calcResult = this.calculateFanAndTun(groupResult, res);
                         if (!maxHu || (calcResult.status === true
                             && calcResult.fan * calcResult.tun > maxHu.fan * maxHu.tun)) {
@@ -611,7 +611,7 @@ cc.Class({
                   sumOfCardOnHand += a[1];
             }
             let currentXi = 0, needJiang = false;
-            for (cardsUsed of cardsAlreadyUsed) {
+            for (let cardsUsed of cardsAlreadyUsed) {
                 currentXi += cardsUsed.xi;
                 if (['pao', 'ti'].indexOf(cardsUsed.type) >= 0) {
                     needJiang = true;
