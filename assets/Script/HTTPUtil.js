@@ -1,7 +1,7 @@
 const { fail } = require("assert");
 
  
-var URL = "http://192.168.1.12:9001";
+var URL = "http://43.138.67.153:9001";
  
 exports.master_url = null;
 exports.url = null;
