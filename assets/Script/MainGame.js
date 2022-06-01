@@ -296,6 +296,7 @@ cc.Class({
             cc.tween(cardNode)
             .to(0.4, { position: cc.v2(targetX, pos.y + targetY), scale: 0.8  })
             .call(() => {
+                  this.cardsOnHand.set(card, this.cardsOnHand.get(card) - 1);
                   this.cardGroups[cardNode.bucket].set(
                         card, 
                         this.cardGroups[cardNode.bucket].get(card) - 1

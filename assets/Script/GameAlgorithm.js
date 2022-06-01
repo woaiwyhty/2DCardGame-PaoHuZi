@@ -627,7 +627,7 @@ cc.Class({
                     needJiang = true;
                 }
             }
-            let resultForJiangHu = this.checkHuHelper(cardsOnHand, needJiang, currentXi, cardsAlreadyUsed);
+            let resultForJiangHu = this.checkHuHelper(tempCardSet, needJiang, currentXi, cardsAlreadyUsed);
             if (resultForJiangHu && sumOfCardOnHand === 1) {
                   resultForJiangHu.huInfo.push("耍猴");
                   resultForJiangHu.fan += 8;
