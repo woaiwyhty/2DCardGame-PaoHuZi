@@ -123,7 +123,7 @@ cc.Class({
             for (let i = 0; i < 4; ++i) {
                 let satisfied = true;
                 let arr = [];
-                for (j = 0; j < 3; ++j) {
+                for (let j = 0; j < 3; ++j) {
                     if (tempCardSet.get(special[i][j]) < 1) {
                         satisfied = false;
                         break;
@@ -132,7 +132,7 @@ cc.Class({
                 }
                 if (satisfied) {
                     this.addToGroup(groups, arr);
-                    for (j = 0; j < 3; ++j) {
+                    for (let j = 0; j < 3; ++j) {
                         tempCardSet.set(special[i][j], 0);
                     }
                 }

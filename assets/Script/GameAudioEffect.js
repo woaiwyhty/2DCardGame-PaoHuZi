@@ -20,7 +20,7 @@ cc.Class({
                   if (err) {
                         console.error(err.message);
                     } else {
-                        for (asset of assets) {
+                        for (let asset of assets) {
                               console.log(`url: ${asset.name}`);
                               if (asset.name[1] === '_') {
                                     this.audioClipsMap.set(asset.name, asset);
@@ -40,7 +40,7 @@ cc.Class({
                   if (err) {
                         console.error(err.message);
                     } else {
-                        for (asset of assets) {
+                        for (let asset of assets) {
                               this.audioClipsMap.set(asset.name, asset);
                         }
                     }

@@ -32,7 +32,7 @@ cc.Class({
 
       determinePossibleMerge: function(endPosx, endPosy) {
             let index = 0;
-            for (cardGroup of this.cardGroupsNodes) {
+            for (let cardGroup of this.cardGroupsNodes) {
                   let lastNode = cardGroup[0];
                   console.log(cardGroup.length, lastNode);
                   let pos = lastNode.convertToWorldSpaceAR(cc.v2(0, 0));
@@ -139,8 +139,8 @@ cc.Class({
       },
 
       clearAllCardNodes: function() {
-            for (cardGroup of this.cardGroupsNodes) {
-                  for (node of cardGroup) {
+            for (let cardGroup of this.cardGroupsNodes) {
+                  for (let node of cardGroup) {
                         node.destroy();
                   }
             }
@@ -449,7 +449,7 @@ cc.Class({
                   if (addToLeft === true) {
                         offSetx = -30 - (target.length * this.cardSmallWidth);
                   }
-                  for (card of cards) {
+                  for (let card of cards) {
                         if ((type === 'ti' && needsHide) || (type === 'wei' && target !== this.cardsAlreadyUsedMySelf)) {
                               nodes.push(cc.instantiate(this.cardsSmall.get('back')));
                         } else {
@@ -588,7 +588,7 @@ cc.Class({
                   let tiResult = cc.utils.gameAlgo.checkTi(this.cardsOnHand);
                   if (tiResult.length > 0) {
                         cc.utils.gameAudio.actionsEffect('ti');
-                        for (ti of tiResult) {
+                        for (let ti of tiResult) {
                               // cc.utils.gameNetworkingManager.takeNormalAction('ti', ti, ['back', 'back', 'back', ti], true);
                               this.takeNormalAction('ti', ti, ['back', 'back', 'back', ti], true);
                         }
