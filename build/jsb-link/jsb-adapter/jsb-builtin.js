@@ -7509,7 +7509,7 @@ var VertexFormat = /*#__PURE__*/function () {
    * @param {Array} infos
    *
    * @example
-   * var vertexFmt = new VertexFormat([
+   * let vertexFmt = new VertexFormat([
    *   { name: gfx.ATTR_POSITION, type: gfx.ATTR_TYPE_FLOAT32, num: 3 },
    *   { name: gfx.ATTR_UV0, type: gfx.ATTR_TYPE_FLOAT32, num: 2 },
    *   { name: gfx.ATTR_COLOR, type: gfx.ATTR_TYPE_FLOAT32, num: 4, normalize: true },

@@ -1945,7 +1945,7 @@ if (!CC_JSB && !cc.sys.isNative) {
 
 	WS.prototype.doOpen = function(){
 	  if (!this.check()) {
-		// var probe timeout
+		// let probe timeout
 		return;
 	  }
 
@@ -3165,7 +3165,7 @@ if (!CC_JSB && !cc.sys.isNative) {
 	  try {
 		b64data = String.fromCharCode.apply(null, new Uint8Array(packet.data));
 	  } catch (e) {
-		// iPhone Safari doesn't var you apply with typed arrays
+		// iPhone Safari doesn't let you apply with typed arrays
 		var typed = new Uint8Array(packet.data);
 		var basic = new Array(typed.length);
 		for (var i = 0; i < typed.length; i++) {
@@ -3541,7 +3541,7 @@ if (!CC_JSB && !cc.sys.isNative) {
 		  try {
 			msg = String.fromCharCode.apply(null, new Uint8Array(msg));
 		  } catch (e) {
-			// iPhone Safari doesn't var you apply to typed arrays
+			// iPhone Safari doesn't let you apply to typed arrays
 			var typed = new Uint8Array(msg);
 			msg = '';
 			for (var i = 0; i < typed.length; i++) {
@@ -6828,7 +6828,7 @@ if (!CC_JSB && !cc.sys.isNative) {
 					var element = serialize(property, value, callback, properties, whitespace, indentation, stack);
 					if (element !== undef) {
 					  // According to ES 5.1 section 15.12.3: "If `gap` {whitespace}
-					  // is not the empty string, var `member` {quote(property) + ":"}
+					  // is not the empty string, let `member` {quote(property) + ":"}
 					  // be the concatenation of `member` and the `space` character."
 					  // The "`space` character" refers to the literal space
 					  // character, not the `space` {width} argument provided to

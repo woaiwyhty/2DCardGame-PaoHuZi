@@ -28111,7 +28111,7 @@ var e = this.linearVelocity;
 t.linearVelocity = new b2.Vec2(e.x / n, e.y / n);
 t.angularVelocity = this.angularVelocity * r;
 t.fixedRotation = this.fixedRotation;
-t.bulvar = this.bullet;
+t.bullet = this.bullet;
 var i = this.node, s = i.convertToWorldSpaceAR(h);
 t.position = new b2.Vec2(s.x / n, s.y / n);
 t.angle = -Math.PI / 180 * o(i);
@@ -57612,7 +57612,7 @@ t.angularDamping = this.m_angularDamping;
 t.gravityScale = this.m_gravityScale;
 t.angularVelocity = this.m_angularVelocity;
 t.fixedRotation = this.m_fixedRotationFlag;
-t.bulvar = this.m_bulletFlag;
+t.bullet = this.m_bulletFlag;
 t.awake = this.m_awakeFlag;
 t.linearDamping = this.m_linearDamping;
 t.linearVelocity.Copy(this.GetLinearVelocity());
@@ -57811,10 +57811,10 @@ for (var r = this.m_fixtureList; r; r = r.m_next) r.TouchProxies();
 i.prototype.GetType = function() {
 return this.m_type;
 };
-i.prototype.SetBulvar = function(t) {
+i.prototype.SetBullet = function(t) {
 this.m_bulletFlag = t;
 };
-i.prototype.IsBulvar = function() {
+i.prototype.IsBullet = function() {
 return this.m_bulletFlag;
 };
 i.prototype.SetSleepingAllowed = function(t) {
@@ -57916,7 +57916,7 @@ e("  bd.angularDamping = %.15f;\n", this.m_angularDamping);
 e("  bd.allowSleep = %s;\n", this.m_autoSleepFlag ? "true" : "false");
 e("  bd.awake = %s;\n", this.m_awakeFlag ? "true" : "false");
 e("  bd.fixedRotation = %s;\n", this.m_fixedRotationFlag ? "true" : "false");
-e("  bd.bulvar = %s;\n", this.m_bulletFlag ? "true" : "false");
+e("  bd.bullet = %s;\n", this.m_bulletFlag ? "true" : "false");
 e("  bd.active = %s;\n", this.m_activeFlag ? "true" : "false");
 e("  bd.gravityScale = %.15f;\n", this.m_gravityScale);
 e("\n");
@@ -66076,7 +66076,7 @@ this.angularDamping = 0;
 this.allowSleep = !0;
 this.awake = !0;
 this.fixedRotation = !1;
-this.bulvar = !1;
+this.bullet = !1;
 this.active = !0;
 this.userData = null;
 this.gravityScale = 1;

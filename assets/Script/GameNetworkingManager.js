@@ -47,7 +47,7 @@ cc.Class({
       },
         
       initEventHandlers: function() {
-            var self = this;
+            let self = this;
             cc.utils.net.addHandler("login_result",function(data){
                 self.dispatchEvent('login_result', data);
             });
@@ -142,7 +142,7 @@ cc.Class({
             this.dissoveData = null;
             // console.log(cc.utils.net.ip);
     
-            var onConnectOK = function(){
+            let onConnectOK = function(){
                 console.log("onConnectOK");
                 var sd = {
                     token: data.token,
@@ -153,7 +153,7 @@ cc.Class({
                 cc.utils.net.send("login", sd);
             };
             
-            var onConnectFailed = function(){
+            let onConnectFailed = function(){
                 console.log("failed.");
                 cc.utils.wc.hide();
             };
@@ -163,7 +163,7 @@ cc.Class({
       },
 
       exitToGameServer: function() {
-            var data = {
+            let data = {
                   username: cc.utils.userInfo.username,
                   token: cc.utils.userInfo.token,
                   room_id: cc.utils.roomInfo.room_id,
@@ -176,7 +176,7 @@ cc.Class({
 
       checkIfGameReady: function() {
             console.log("checkIfGameReady is called!");
-            var data = {
+            let data = {
                   username: cc.utils.userInfo.username,
                   token: cc.utils.userInfo.token,
                   room_id: cc.utils.roomInfo.room_id,
@@ -187,7 +187,7 @@ cc.Class({
 
       askForCardsOnHand: function() {
             console.log("askForCardsOnHand is called!");
-            var data = {
+            let data = {
                   username: cc.utils.userInfo.username,
                   token: cc.utils.userInfo.token,
                   time: Date.now()
@@ -198,7 +198,7 @@ cc.Class({
       },
 
       takeHuAction: function(huResult, sessionKey, seat_id) {
-            var data = {
+            let data = {
                   status: huResult.status,
                   fan: huResult.fan,
                   xi: huResult.xi,
@@ -213,7 +213,7 @@ cc.Class({
 
       takeNormalAction: function(type, opCard, cards, needsHide = false, sessionKey = null, from_wei_or_peng = 0) {
             console.log("takeNormalAction is called!  ", sessionKey);
-            var data = {
+            let data = {
                   username: cc.utils.userInfo.username,
                   token: cc.utils.userInfo.token,
                   seat_id: cc.utils.roomInfo.my_seat_id,
@@ -229,7 +229,7 @@ cc.Class({
       },
 
       takeChiAction: function(manyCards, sessionKey = null) {
-            var data = {
+            let data = {
                   manyCards: manyCards,
                   sessionKey: sessionKey,
                   token: cc.utils.userInfo.token,
@@ -239,7 +239,7 @@ cc.Class({
 
       shootCard: function(type, opCard) {
             console.log("shootCard is called!");
-            var data = {
+            let data = {
                   opCard: opCard,
                   type: type,
                   time: Date.now(),
@@ -249,7 +249,7 @@ cc.Class({
       },
 
       tianhuResult: function(huResult) {
-            var data = huResult;
+            let data = huResult;
             if (!huResult) {
                   data = {
                         status: false,

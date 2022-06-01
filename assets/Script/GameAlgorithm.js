@@ -52,14 +52,14 @@ cc.Class({
       },
 
       addToGroup: function(groups, arr) {
-            var tempMap = new Map(arr);
+            let tempMap = new Map(arr);
             groups.push(tempMap);
         },
     
         filterEmptyGroup: function(cardGroups) {
-            var newGroup = [];
-            for (var cardGroup of cardGroups) {
-                var sum = 0;
+            let newGroup = [];
+            for (let cardGroup of cardGroups) {
+                let sum = 0;
                 for (const [key, value] of cardGroup.entries()) {
                     sum += value;
                 }
@@ -73,18 +73,18 @@ cc.Class({
         groupCards: function(cardSet) {
             // all keys must be inserted, sth like: x1: 0.
             // if there is no specific card, just set the value to be 0.
-            var groups = [];
-            var tempCardSet = new Map(JSON.parse(
+            let groups = [];
+            let tempCardSet = new Map(JSON.parse(
                 JSON.stringify(Array.from(cardSet))
             ));
             // pick all >=3 card arrangements
-            for (var i = 1; i <= 20; ++i) {
-                var key = 'x' + i.toString();
+            for (let i = 1; i <= 20; ++i) {
+                let key = 'x' + i.toString();
                 if (i > 10) {
                     key = 'd' + (i - 10).toString();
                 }
     
-                var num = tempCardSet.get(key);
+                let num = tempCardSet.get(key);
                 if (num >= 3) {
                     this.addToGroup(groups, [[key, num]]);
                     tempCardSet.set(key, 0);
@@ -92,10 +92,10 @@ cc.Class({
             }
     
             // da and xiao with the same number can be put together
-            for (var i = 1; i <= 10; ++i) {
-                var keyXiao = 'x' + i.toString();
-                var keyDa = 'd' + i.toString();
-                var numXiao = tempCardSet.get(keyXiao), numDa = tempCardSet.get(keyDa);
+            for (let i = 1; i <= 10; ++i) {
+                let keyXiao = 'x' + i.toString();
+                let keyDa = 'd' + i.toString();
+                let numXiao = tempCardSet.get(keyXiao), numDa = tempCardSet.get(keyDa);
                 if (numXiao === 0 && numDa === 0){
                     continue;
                 }
@@ -114,16 +114,16 @@ cc.Class({
             }
     
             // 1,2,3 and 2,7,10
-            var special = [
+            let special = [
                 ['x1', 'x2', 'x3'],
                 ['d1', 'd2', 'd3'],
                 ['x2', 'x7', 'x10'],
                 ['d2', 'd7', 'd10'],
             ]
-            for (var i = 0; i < 4; ++i) {
-                var satisfied = true;
-                var arr = [];
-                for (var j = 0; j < 3; ++j) {
+            for (let i = 0; i < 4; ++i) {
+                let satisfied = true;
+                let arr = [];
+                for (let j = 0; j < 3; ++j) {
                     if (tempCardSet.get(special[i][j]) < 1) {
                         satisfied = false;
                         break;
@@ -132,21 +132,21 @@ cc.Class({
                 }
                 if (satisfied) {
                     this.addToGroup(groups, arr);
-                    for (var j = 0; j < 3; ++j) {
+                    for (let j = 0; j < 3; ++j) {
                         tempCardSet.set(special[i][j], 0);
                     }
                 }
             }
     
-            var current = [];
+            let current = [];
             // all remaining
-            for (var i = 1; i <= 20; ++i) {
-                var key = 'x' + i.toString();
+            for (let i = 1; i <= 20; ++i) {
+                let key = 'x' + i.toString();
                 if (i > 10) {
                     key = 'd' + (i - 10).toString();
                 }
     
-                var num = tempCardSet.get(key);
+                let num = tempCardSet.get(key);
                 if (num > 0) {
                     current.push([key, num]);
                     if (current.length === 2) {
@@ -164,13 +164,13 @@ cc.Class({
         },
     
         generateAllCardSet: function() {
-            var cards = [];
-            for (var i = 0; i <= 20; ++i) {
-                var key = 'x' + i.toString();
+            let cards = [];
+            for (let i = 0; i <= 20; ++i) {
+                let key = 'x' + i.toString();
                 if (i > 10) {
                     key = 'd' + (i - 10).toString();
                 }
-                for (var j = 0; j < 4; ++j) {
+                for (let j = 0; j < 4; ++j) {
                     cards.push(key);
                 }
             }
@@ -184,17 +184,17 @@ cc.Class({
         },
     
         dealWhenGameStarts: function() {
-            var cards = this.generateAllCardSet();
+            let cards = this.generateAllCardSet();
             cards = this.shuffle(cards);
-            var cardSetMap = new Map();
-            for (var i = 0; i <= 20; ++i) {
-                var key = 'x' + i.toString();
+            let cardSetMap = new Map();
+            for (let i = 0; i <= 20; ++i) {
+                let key = 'x' + i.toString();
                 if (i > 10) {
                     key = 'd' + (i - 10).toString();
                 }
                 cardSetMap.set(key, 0);
             }
-            for (var i = 0; i < 21; ++i) {
+            for (let i = 0; i < 21; ++i) {
                 cardSetMap.set(cards[i], cardSetMap.get(cards[i]) + 1);
             }
             return cardSetMap;
@@ -205,7 +205,7 @@ cc.Class({
         },
     
         calculateXi: function(type, card) {
-            var key;
+            let key;
             if (Array.isArray(card)) {
                 card.sort();
                 if (card.toString() === ['d1', 'd2', 'd3'].toString() ||
@@ -226,7 +226,7 @@ cc.Class({
         },
     
         checkTi: function(cards, dealedCard) {
-            var tiResult = [];
+            let tiResult = [];
             if (dealedCard) {
                 if (cards.get(dealedCard) === 3) {
                     tiResult.push(dealedCard);
@@ -249,7 +249,7 @@ cc.Class({
                 return cardsOnHand.get(dealedCard) === 2;
             }
     
-            var result = []
+            let result = []
             for (const [card, value] of cardsOnHand.entries()) {
                 if (value === 3) {
                     result.push(card);
@@ -268,8 +268,8 @@ cc.Class({
                     caseNumber: 1,
                 };
             }
-            var id = 0;
-            for (var usedCards of cardsAlreadyUsed) {
+            let id = 0;
+            for (let usedCards of cardsAlreadyUsed) {
                 if (usedCards.type === 'wei') {
                     if ( usedCards.cards[0] === card) {
                         return {
@@ -299,25 +299,34 @@ cc.Class({
                 finalResult.push(currentResult);
                 return;
             }
-            for (var possibility of chiMap[card]) {
-                var result = true;
-                for (var oneCard of possibility) {
+            for (let possibility of chiMap[card]) {
+                let result = true;
+                for (let oneCard of possibility) {
+                    if (cardsOnHand.get(oneCard) >= 3 && oneCard != card) {
+                        result = false;
+                        break;
+                    }
+                }
+                if (!result) {
+                    continue;
+                }
+                for (let oneCard of possibility) {
                     cardsOnHand.set(oneCard, cardsOnHand.get(oneCard) - 1);
                 }
-                for (var oneCard of possibility) {
+                for (let oneCard of possibility) {
                     if (cardsOnHand.get(oneCard) < 0) {
                         result = false;
-                        for (var oneCard1 of possibility) {
-                            cardsOnHand.set(oneCard1, cardsOnHand.get(oneCard1) - 1);
+                        for (let oneCard1 of possibility) {
+                            cardsOnHand.set(oneCard1, cardsOnHand.get(oneCard1) + 1);
                         }
                         break;
                     }
                 }
                 if (result === true) {
-                    var newResult = Array.from(currentResult);
+                    let newResult = Array.from(currentResult);
                     newResult.push(possibility);
                     this.checkChiOnlyOnHandDfs(card, cardsOnHand, finalResult, newResult);
-                    for (var oneCard of possibility) {
+                    for (let oneCard of possibility) {
                         cardsOnHand.set(oneCard, cardsOnHand.get(oneCard) + 1);
                     }
                 }
@@ -330,25 +339,25 @@ cc.Class({
                     status: false
                 };
             }
-            var tempCardSet = new Map(JSON.parse(
+            let tempCardSet = new Map(JSON.parse(
                 JSON.stringify(Array.from(cardsOnHand))
             ));
             tempCardSet.set(card, tempCardSet.get(card) + 1);
-            var finalResult = [];
-            var currentResult = [];
+            let finalResult = [];
+            let currentResult = [];
             // we may chi multiple times to make sure we don't have the same dealed card on hand.
             // it is necessary to use dfs to find all possibilities.
             this.checkChiOnlyOnHandDfs(card, tempCardSet, finalResult, currentResult);
             if (finalResult.length > 0) {
-                for (var item of finalResult) {
+                for (let item of finalResult) {
                     item.sort();
                 }
                 finalResult = finalResult.sort().filter((item, pos, array) => {
                     return !pos || item.toString() !== array[pos - 1].toString();
                 });
 
-                for (var item of finalResult) {
-                    for (var i = 0; i < 2; ++i) {
+                for (let item of finalResult) {
+                    for (let i = 0; i < 2; ++i) {
                         if (item[i] === card) {
                             item[i] = item[2];
                             item[2] = card;
@@ -367,7 +376,7 @@ cc.Class({
             if (numOfCards < 3) {
                 if (numOfCards === 0) {
                     // FIND A MATCH!!! Yeahhh!!!!
-                    for (var current of currentResult) {
+                    for (let current of currentResult) {
                         current.xi = this.calculateXi('chi', current.cards);
                     }
                     finalResult.push(currentResult);
@@ -379,22 +388,22 @@ cc.Class({
                     continue;
                 }
     
-                for (var possibility of chiMap[card]) {
-                    var result = true;
-                    for (var oneCard of possibility) {
+                for (let possibility of chiMap[card]) {
+                    let result = true;
+                    for (let oneCard of possibility) {
                         cardsOnHand.set(oneCard, cardsOnHand.get(oneCard) - 1);
                     }
-                    for (var oneCard of possibility) {
+                    for (let oneCard of possibility) {
                         if (cardsOnHand.get(oneCard) < 0) {
                             result = false;
-                            for (var oneCard1 of possibility) {
+                            for (let oneCard1 of possibility) {
                                 cardsOnHand.set(oneCard1, cardsOnHand.get(oneCard1) + 1);
                             }
                             break;
                         }
                     }
                     if (result === true) {
-                        var newResult = Array.from(currentResult);
+                        let newResult = Array.from(currentResult);
                         newResult.push({
                             type: 'chi',
                             cards: possibility,
@@ -404,7 +413,7 @@ cc.Class({
                         this.groupCardsBy3Dfs(cardsOnHand, numOfCards - 3, finalResult, newResult);
                         // console.log("after group   ", possibility);
     
-                        for (var oneCard of possibility) {
+                        for (let oneCard of possibility) {
                             cardsOnHand.set(oneCard, cardsOnHand.get(oneCard) + 1);
                         }
                     }
@@ -413,9 +422,9 @@ cc.Class({
         },
     
         calculateFanAndTun: function(cardsAlreadyUsed, resultFromGroup3) {
-            var all = cardsAlreadyUsed.concat(resultFromGroup3);
-            var sumOfXi = 0;
-            for (var group of all) {
+            let all = cardsAlreadyUsed.concat(resultFromGroup3);
+            let sumOfXi = 0;
+            for (let group of all) {
                 sumOfXi += group.xi;
             }
             if (sumOfXi < 15) {
@@ -424,11 +433,11 @@ cc.Class({
                 };
             }
     
-            var tipaoNum = new Map();
-            var numOfRed = 0, numOfBlack = 0, numOfChi = 0, numOfXiao = 0, numOfDa = 0, numOfTuan = 0;
-            for (var group of all) {
+            let tipaoNum = new Map();
+            let numOfRed = 0, numOfBlack = 0, numOfChi = 0, numOfXiao = 0, numOfDa = 0, numOfTuan = 0;
+            for (let group of all) {
                 if (group.type === 'chi') {
-                    for (var card of group.cards) {
+                    for (let card of group.cards) {
                         if (cardRed.indexOf(card) >= 0) {
                             numOfRed += 1;
                         } else {
@@ -442,10 +451,10 @@ cc.Class({
                     }
                     numOfChi += 1;
                 } else {
-                    var cnt = 3;
+                    let cnt = 3;
                     if(['ti', 'pao'].indexOf(group.type) >= 0) {
                         cnt = 4;
-                        var oppoCard = group.cards[3].slice(1);
+                        let oppoCard = group.cards[3].slice(1);
                         if (group.cards[3][0] === 'd') {
                             oppoCard = 'x' + oppoCard;
                         } else {
@@ -471,8 +480,8 @@ cc.Class({
                 }
             }
     
-            var fan = 0;
-            var huInfo = [];
+            let fan = 0;
+            let huInfo = [];
             if (numOfRed >= 10) {
                 huInfo.push("红胡");
                 fan += 4 + (numOfRed - 10);
@@ -515,11 +524,11 @@ cc.Class({
         },
     
         checkHuHelper: function(cardsOnHand, alreadyNeedJiang, currentXi, cardsAlreadyUsed) {
-            var tempCardSet = new Map(JSON.parse(
+            let tempCardSet = new Map(JSON.parse(
                 JSON.stringify(Array.from(cardsOnHand))
             ));
-            var groupResult = [];
-            for (var cardsUsed of cardsAlreadyUsed) {
+            let groupResult = [];
+            for (let cardsUsed of cardsAlreadyUsed) {
                 groupResult.push({
                     type: cardsUsed.type,
                     xi: cardsUsed.xi,
@@ -528,11 +537,11 @@ cc.Class({
             }
     
             // 4x + 3y + 2
-            var tiResult = this.checkTi(tempCardSet);
+            let tiResult = this.checkTi(tempCardSet);
             if (!alreadyNeedJiang) {
                 alreadyNeedJiang = tiResult.length > 0;
             }
-            for (var ti of tiResult) {
+            for (let ti of tiResult) {
                 groupResult.push({
                     cards: [ti, ti, ti, ti],
                     type: 'ti',
@@ -541,8 +550,8 @@ cc.Class({
                 currentXi += groupResult[groupResult.length - 1].xi;
                 tempCardSet.set(ti, 0);
             }
-            var weiResult = this.checkWei(null, tempCardSet);
-            for (var wei of weiResult) {
+            let weiResult = this.checkWei(null, tempCardSet);
+            for (let wei of weiResult) {
                 groupResult.push({
                     cards: [wei, wei, wei],
                     type: 'wei',
@@ -552,22 +561,22 @@ cc.Class({
                 tempCardSet.set(wei, 0);
             }
     
-            var numOfCards = 0;
+            let numOfCards = 0;
             for (const [key, value] of tempCardSet.entries()) {
                 numOfCards += value;
             }
-            var maxHu = null;
+            let maxHu = null;
             if (alreadyNeedJiang) {
                 for (const a of tempCardSet.entries()) {
-                    var key = a[0];
-                    var value = a[1];
+                    let key = a[0];
+                    let value = a[1];
                     if (value === 2 && (numOfCards - 2) % 3 === 0) {
                         // may be jiang
                         tempCardSet.set(key, 0);
-                        var finalResult = [], currentResult = [];
+                        let finalResult = [], currentResult = [];
                         this.groupCardsBy3Dfs(tempCardSet, numOfCards - 2, finalResult, currentResult);
-                        for (var res of finalResult) {
-                            var calcResult = this.calculateFanAndTun(groupResult, res);
+                        for (let res of finalResult) {
+                            let calcResult = this.calculateFanAndTun(groupResult, res);
                             if (!maxHu || (calcResult.status === true
                                 && calcResult.fan * calcResult.tun > maxHu.fan * maxHu.tun)) {
                                 maxHu = calcResult;
@@ -579,10 +588,10 @@ cc.Class({
             } else {
                 if (numOfCards % 3 === 0) {
                     // hu without jiang
-                    var finalResult = [], currentResult = [];
+                    let finalResult = [], currentResult = [];
                     this.groupCardsBy3Dfs(tempCardSet, numOfCards, finalResult, currentResult);
-                    for (var res of finalResult) {
-                        var calcResult = this.calculateFanAndTun(groupResult, res);
+                    for (let res of finalResult) {
+                        let calcResult = this.calculateFanAndTun(groupResult, res);
                         if (!maxHu || (calcResult.status === true
                             && calcResult.fan * calcResult.tun > maxHu.fan * maxHu.tun)) {
                             maxHu = calcResult;
@@ -600,24 +609,24 @@ cc.Class({
     
         checkHu: function(cardsAlreadyUsed, cardsOnHand, currentCard) {
             // tian, di, wang should be added later.
-            var tempCardSet = new Map(JSON.parse(
+            let tempCardSet = new Map(JSON.parse(
                 JSON.stringify(Array.from(cardsOnHand))
             ));
             if (currentCard) {
                 tempCardSet.set(currentCard, tempCardSet.get(currentCard) + 1);
             }
-            var sumOfCardOnHand = 0;
+            let sumOfCardOnHand = 0;
             for (const a of cardsOnHand.entries()) {
                   sumOfCardOnHand += a[1];
             }
-            var currentXi = 0, needJiang = false;
-            for (var cardsUsed of cardsAlreadyUsed) {
+            let currentXi = 0, needJiang = false;
+            for (let cardsUsed of cardsAlreadyUsed) {
                 currentXi += cardsUsed.xi;
                 if (['pao', 'ti'].indexOf(cardsUsed.type) >= 0) {
                     needJiang = true;
                 }
             }
-            var resultForJiangHu = this.checkHuHelper(cardsOnHand, needJiang, currentXi, cardsAlreadyUsed);
+            let resultForJiangHu = this.checkHuHelper(cardsOnHand, needJiang, currentXi, cardsAlreadyUsed);
             if (resultForJiangHu && sumOfCardOnHand === 1) {
                   resultForJiangHu.huInfo.push("耍猴");
                   resultForJiangHu.fan += 8;

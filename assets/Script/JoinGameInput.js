@@ -28,7 +28,7 @@ cc.Class({
     },
     
     onInputFinished: function(roomId) {
-        var joinRoomCallback = (ret) => {
+        let joinRoomCallback = (ret) => {
             if (ret.errcode == 0){
                 this.node.active = false;
                 cc.utils.joinRoom(roomId);
@@ -37,7 +37,7 @@ cc.Class({
                 // cc.director.loadScene("PaohuZiGame");
             }
             else {
-                var content = "";
+                let content = "";
                 if (ret.errcode === 1) {
                     content = "房间[" + roomId + "]不存在，请重新输入!";
                 } else if (ret.errcode === 2) {
@@ -115,8 +115,8 @@ cc.Class({
     },
 
     parseRoomID: function(){
-        var str = "";
-        for(var i = 0; i < this.nums.length; ++i){
+        let str = "";
+        for(let i = 0; i < this.nums.length; ++i){
             str += this.nums[i].string;
         }
         return parseInt(str);
