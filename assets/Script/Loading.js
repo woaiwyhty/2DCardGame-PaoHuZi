@@ -22,53 +22,35 @@ cc.Class({
         this.initFrameworks();
         cc.utils.main.setFitScreenMode();
         console.log(this.tipLabel.string);
-        cc.utils.http.sendRequest("/isServerOn",{}, this.onServerOn, null, false, this.onServerOff.bind(this));
+        cc.utils.http.sendRequest("/isServerOn",{}, this.onServerOn.bind(this), null, false, this.onServerOff.bind(this));
     },
 
     testGameAlgorithm: function() {
-        let cardsAlreadyUsed = [
-            {
-                type: 'chi',
-                cards: ['x6', 'x7', 'x8'],
-                xi: 0,
-            },
-            {
-                type: 'peng',
-                cards: ['x1', 'x1', 'x1'],
-                xi: 1,
-            },
-            {
-                type: 'wei',
-                cards: ['back', 'back', 'x3'],
-                xi: 3,
-            },
-            {
-                type: 'pao',
-                cards: ['d3', 'd3', 'd3', 'd3'],
-                xi: 9,
-            },
-            {
-                type: 'peng',
-                cards: ['d10', 'd10', 'd10'],
-                xi: 3,
-            },
-        ]
+        const data = {
+            'x1' : 1,
+            'x2' : 2,
+            'x3' : 1,
+            'x4' : 2,
+            'x5' : 2,
+            'x6' : 2,
+            'x7' : 1,
+            'x8' : 1,
+            'x9' : 0,
+            'x10' : 1,
+            'd1' : 1,
+            'd2' : 2,
+            'd3' : 1,
+            'd4' : 2,
+            'd5' : 1,
+            'd6' : 0,
+            'd7' : 1,
+            'd8' : 0,
+            'd9' : 0,
+            'd10' : 0
+        };
+        let cardsOnHand = new Map(Object.entries(data));
     
-        let cardsOnHand = new Map();
-        for (let i = 1; i <= 20; ++i) {
-            let key = 'x' + i.toString();
-            if (i > 10) {
-                key = 'd' + (i - 10).toString();
-            }
-    
-            cardsOnHand.set(key, 0);
-        }
-    
-        cardsOnHand.set('x9', 2);
-        cardsOnHand.set('d7', 1);
-        cardsOnHand.set('d8', 1);
-        cardsOnHand.set('d9', 1);
-        console.log("test result  ", cc.utils.gameAlgo.checkHu(cardsAlreadyUsed, cardsOnHand))
+        console.log(cc.utils.gameAlgo.checkChi('x2', cardsOnHand).chiWays)
     },
 
     initFrameworks: function() {
@@ -105,7 +87,11 @@ cc.Class({
     },
 
     onServerOn: function(ret){
-        cc.director.loadScene("Login");
+        this.tipLabel.string = "正在预加载游戏...";
+        cc.director.preloadScene("PaohuZiGame", function () {
+            console.log('MainGame preloaded');
+            cc.director.loadScene("Login");
+        });
     },
 
     onServerOff: function(ret){

@@ -267,8 +267,8 @@
     ],
     "_srcBlendFactor": 770,
     "_dstBlendFactor": 771,
-    "_string": "正在连接服务器...\n\n",
-    "_N$string": "正在连接服务器...\n\n",
+    "_string": "正在连接服务器...",
+    "_N$string": "正在连接服务器...",
     "_fontSize": 30,
     "_lineHeight": 50,
     "_enableWrapText": true,
@@ -311,7 +311,7 @@
     "_contentSize": {
       "__type__": "cc.Size",
       "width": 235,
-      "height": 163
+      "height": 63
     },
     "_anchorPoint": {
       "__type__": "cc.Vec2",

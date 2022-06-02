@@ -42,7 +42,9 @@ cc.Class({
                   node.destroy();
             }
             this.nodes = [];
-
+            this.exitButton.node.active = cc.utils.roomInfo.huInfo.lastGame;
+            this.huInfo.string = cc.utils.roomInfo.huInfo.huInfo.join(' ');
+            
             if (cc.utils.roomInfo.huInfo.type === "wang_hu") {
                   for (let i = 0; i < 3; ++i) {
                         this.nicknames[i].string = cc.utils.roomInfo.huInfo.nicknames[i];
@@ -61,8 +63,6 @@ cc.Class({
                   }
                   this.allscores[i].string = cc.utils.roomInfo.huInfo.afterScore[i].toString();
             }
-            this.exitButton.node.active = cc.utils.roomInfo.huInfo.lastGame;
-            this.huInfo.string = cc.utils.roomInfo.huInfo.huInfo.join(' ');
 
             let totalHoleCards = cc.utils.roomInfo.huInfo.holeCards.length;
             this.holeCardBg.width = totalHoleCards * 50;

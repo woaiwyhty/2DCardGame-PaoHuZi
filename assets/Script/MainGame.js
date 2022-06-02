@@ -593,6 +593,7 @@ cc.Class({
                   this.exitButton.active = false;
                   cc.utils.roomInfo.number_of_wang = data.number_of_wang;
                   cc.utils.roomInfo.current_played_games = data.current_played_games;
+                  this.remainNumOfGamesLabel.string = (data.total_games - data.current_played_games).toString();
                   cc.utils.roomInfo.total_games = data.total_games;
                   this.remainNumofCardNode.active = true;
                   this.remainNumofCardLabel.string = "19";
@@ -707,6 +708,16 @@ cc.Class({
                   this.scheduleOnce(function() {
                         this.seats[local_seat_id]['hu'].active = false;
                   }.bind(this), 1);
+
+                  for (let i = 0; i < 3; ++i) {
+                        let target = 1;
+                        if (i === this.nextPlayerId) {
+                              target = 2;
+                        } else if (i === this.prevPlayerId) {
+                              target = 0;
+                        }
+                        this.seats[target].score.string = cc.utils.roomInfo.huInfo.afterScore[i].toString();
+                  }
 
                   this.scheduleOnce(function() {
                         this.gameOver.active = true;
@@ -954,6 +965,15 @@ cc.Class({
             }.bind(this), 1);
 
             cc.utils.roomInfo.huInfo = data;
+            for (let i = 0; i < 3; ++i) {
+                  let target = 1;
+                  if (i === this.nextPlayerId) {
+                        target = 2;
+                  } else if (i === this.prevPlayerId) {
+                        target = 0;
+                  }
+                  this.seats[target].score.string = cc.utils.roomInfo.huInfo.afterScore[i].toString();
+            }
             this.scheduleOnce(function() {
                   this.gameOver.active = true;
             }.bind(this), 2);
@@ -1234,6 +1254,11 @@ cc.Class({
       },
 
       resetEverything: function() {
+            if (this.cardGroupsNodes) {
+                  this.clearAllCardNodes();
+            }
+            this.cardGroupsNodes = [];
+            this.cardsGroups = [];
             this.clearUsedCards(this.cardsAlreadyUsedMySelf);
             this.clearUsedCards(this.cardsAlreadyUsedPrev)
             this.clearUsedCards(this.cardsAlreadyUsedNext)
@@ -1249,6 +1274,12 @@ cc.Class({
             this.cardsDiscardedPrev = [];
             this.cardsDiscardedNext = [];
             this.cardsAlreadyChoseToNotUse = [];
+
+            if (this.currentOnBoardCardNode) {
+                  this.currentOnBoardCardNode.removeAllChildren(false);
+                  this.currentOnBoardCardNode.destroy();
+                  this.currentOnBoardCardNode = null;
+            }
 
             cc.utils.roomInfo.huInfo = null;
       },

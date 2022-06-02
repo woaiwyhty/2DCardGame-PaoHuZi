@@ -211,11 +211,11 @@ cc.Class({
                 mycard.sort();
                 console.log("calculate xi  ", mycard, card);
                 if (mycard.toString() === ['d1', 'd2', 'd3'].toString() ||
-                mycard.toString() === ['d2', 'd7', 'd10'].toString()) {
+                mycard.toString() === ['d10', 'd2', 'd7'].toString()) {
                     return 6;
                 }
                 if (mycard.toString() === ['x1', 'x2', 'x3'].toString() ||
-                mycard.toString() === ['x2', 'x7', 'x10'].toString()) {
+                mycard.toString() === ['x10', 'x2', 'x7'].toString()) {
                     return 3;
                 }
                 return 0;
@@ -358,11 +358,13 @@ cc.Class({
                     return !pos || item.toString() !== array[pos - 1].toString();
                 });
 
-                for (let item of finalResult) {
-                    for (let i = 0; i < 2; ++i) {
-                        if (item[i] === card) {
-                            item[i] = item[2];
-                            item[2] = card;
+                for (let result of finalResult) {
+                    for (let item of result) {
+                        for (let i = 0; i < 2; ++i) {
+                            if (item[i] === card) {
+                                item[i] = item[2];
+                                item[2] = card;
+                            }
                         }
                     }
                 }
