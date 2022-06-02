@@ -28,6 +28,29 @@ cc.Class({
 
             this.gameOver = cc.find("Canvas/GameOver");
             cc.utils.gameNetworkingManager.checkIfGameReady();
+
+            // cc.utils.roomInfo.huInfo = {
+            //       op_seat_id: 2,
+            //       type: 'hu',
+            //       xi: 20,
+            //       fan: 2,
+            //       tun: 4,
+            //       loseMark: 8,
+            //       afterScore: [-8, -8, 16],
+            //       nicknames: ['test 1', 'test 2', 'test3'],
+            //       huInfo: ["红胡", "点胡", "自摸"],
+            //       holeCards: [],
+            //       lastGame: true,
+            //       cardsGroups: [
+            //             { cards: ["d1", "d1", "d1", "d1"] },
+            //             { cards: ["d1", "d1", "d1"] },
+            //             { cards: ["x2", "x7", "x10"] },
+            //             { cards: ["d1", "d1", "d1", "d1"] },
+            //             { cards: ["d1", "d1", "d1"] },
+            //             { cards: ["x2", "x7", "x10"] },
+            //       ]
+            // }
+            // this.gameOver.active = true;
       },
 
       determinePossibleMerge: function(endPosx, endPosy) {
@@ -151,20 +174,9 @@ cc.Class({
             this.dealCardFrame = cc.find("Canvas/Game/DealCardFrame");
             this.shootCardFrame = cc.find("Canvas/Game/ShootCardFrame");
 
-            this.backCards = [];
-            this.backCardsLast = 8;
-            this.backCardsCulm = 0;
             this.baseCardNode = cc.find("Canvas/Game/CardSetEffect/CardBlind");
             this.cardSetNode = cc.find("Canvas/Game/CardSetEffect");
             this.remainNumofCardNode = cc.find("Canvas/Game/CardSetEffect/remainNumofCardLabel");
-            let original_pos = this.baseCardNode.getPosition();
-
-            for (let i = 0; i < 9; ++i) {
-                  this.backCards.push(cc.instantiate(this.baseCardNode));
-                  this.backCards[i].parent = this.cardSetNode;
-                  this.backCards[i].setPosition(original_pos.x, original_pos.y + i * 2);
-                  this.backCards[i].active = true;
-            }
 
             this.cardsFull = new Map();
             this.cardsSmall = new Map();
@@ -232,6 +244,7 @@ cc.Class({
  
             // this.dealHoleCard('x5', 1);
             // this.shootCardOthers('x7', 0, true);
+            cc.utils.roomInfo.cardsSmall = this.cardsSmall;
       },
 
       dealHoleCard: function(card, destSeatId) {
@@ -572,6 +585,9 @@ cc.Class({
             }.bind(this));
 
             this.node.on('game_start', function (data) {
+                  this.resetEverything();
+                  this.renderHoleCards();
+                  this.gameOver.active = false;
                   console.log("game_start", data);
                   this.exitButton.active = false;
                   cc.utils.roomInfo.number_of_wang = data.number_of_wang;
@@ -686,13 +702,25 @@ cc.Class({
                   let local_seat_id = data.op_seat_id === this.nextPlayerId ? 2 : 0;
                   cc.utils.gameAudio.actionsEffect('hu');
                   this.seats[local_seat_id]['hu'].active = true;
+                  cc.utils.roomInfo.huInfo = data;
                   this.scheduleOnce(function() {
                         this.seats[local_seat_id]['hu'].active = false;
+                  }.bind(this), 1);
+
+                  this.scheduleOnce(function() {
+                        this.gameOver.active = true;
+                  }.bind(this), 2);
+            }.bind(this));
+            this.node.on('wang_hu', function (data) {
+                  cc.utils.roomInfo.huInfo = data;
+
+                  this.scheduleOnce(function() {
+                        this.gameOver.active = true;
                   }.bind(this), 1);
             }.bind(this));
             this.node.on('self_action_result', function (data) {
                   if (data.type === 'hu') {
-                        this.takeHuAction();
+                        this.takeHuAction(data);
                   } else if (data.type === 'peng') {
                         cc.utils.gameAudio.actionsEffect('peng');
                         this.takeNormalAction('peng', data.cards[0], data.cards, false, false);
@@ -848,6 +876,9 @@ cc.Class({
                         }).start()
                   }
             }.bind(this));
+            this.node.on('askGameReady', function (data) {
+                  cc.utils.gameNetworkingManager.checkIfGameReady();
+            }.bind(this));
       },
 
       calculateAvailableActions: function(card, isShoot, op_seat_id) {
@@ -913,13 +944,18 @@ cc.Class({
             cc.utils.roomInfo.currentCard = null;
       },
 
-      takeHuAction: function() {
+      takeHuAction: function(data) {
             this.hideActionList();
             cc.utils.gameAudio.actionsEffect('hu');
             this.seats[1]['hu'].active = true;
             this.scheduleOnce(function() {
                   this.seats[1]['hu'].active = false;
             }.bind(this), 1);
+
+            cc.utils.roomInfo.huInfo = data;
+            this.scheduleOnce(function() {
+                  this.gameOver.active = true;
+            }.bind(this), 2);
       },
 
       takeNormalAction: function(type, opCard, cards, needsHide = false, needSent = true, from_wei_or_peng = 0, sessionKey = null) {
@@ -1042,7 +1078,7 @@ cc.Class({
             if (cc.utils.net.delayMS != null){
                   this.delayMSLabel.string = cc.utils.net.delayMS + 'ms';
                   if (cc.utils.net.delayMS > 800){
-                        delay.color = this.red;
+                        this.delayMSNode.color = this.red;
                   }
                   else if(cc.utils.net.delayMS > 300){
                         this.delayMSNode.color = this.yellow;
@@ -1166,6 +1202,54 @@ cc.Class({
                         }
                   }
             }
+      },
+
+      renderHoleCards: function() {
+            this.backCards = [];
+            this.backCardsLast = 8;
+            this.backCardsCulm = 0;
+            let original_pos = this.baseCardNode.getPosition();
+
+            for (let i = 0; i < 9; ++i) {
+                  this.backCards.push(cc.instantiate(this.baseCardNode));
+                  this.backCards[i].parent = this.cardSetNode;
+                  this.backCards[i].setPosition(original_pos.x, original_pos.y + i * 2);
+                  this.backCards[i].active = true;
+            }
+      },
+
+      clearUsedCards: function(usedCards) {
+            for (let cards of usedCards) {
+                  for (let node of cards.nodes) {
+                        node.destroy();
+                  }
+            }
+      },
+
+      clearDiscardedCards: function(discardedCards) {
+            for (let node of discardedCards) {
+                  node.destroy();
+            }
+      },
+
+      resetEverything: function() {
+            this.clearUsedCards(this.cardsAlreadyUsedMySelf);
+            this.clearUsedCards(this.cardsAlreadyUsedPrev)
+            this.clearUsedCards(this.cardsAlreadyUsedNext)
+
+            this.clearDiscardedCards(this.cardsDiscardedMySelf);
+            this.clearDiscardedCards(this.cardsDiscardedPrev)
+            this.clearDiscardedCards(this.cardsDiscardedNext)
+
+            this.cardsAlreadyUsedMySelf = [];
+            this.cardsAlreadyUsedPrev = [];
+            this.cardsAlreadyUsedNext = [];
+            this.cardsDiscardedMySelf = [];
+            this.cardsDiscardedPrev = [];
+            this.cardsDiscardedNext = [];
+            this.cardsAlreadyChoseToNotUse = [];
+
+            cc.utils.roomInfo.huInfo = null;
       },
   });
     

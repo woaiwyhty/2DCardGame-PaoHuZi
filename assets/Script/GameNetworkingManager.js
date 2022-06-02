@@ -136,6 +136,21 @@ cc.Class({
                         self.dispatchEvent('discarded_dealed_card', data);
                   }
             });
+            cc.utils.net.addHandler("wang_hu", function(data){
+                  console.log("wang_hu received!!!  ", data);
+
+                  if (data.errcode === 0) {
+                        self.dispatchEvent('wang_hu', data);
+                  }
+            });
+
+            cc.utils.net.addHandler("askGameReady", function(data){
+                  console.log("askGameReady received!!!  ", data);
+
+                  if (data.errcode === 0) {
+                        self.dispatchEvent('askGameReady', data);
+                  }
+            });
       },
       
       connectToGameServer: function(data){
