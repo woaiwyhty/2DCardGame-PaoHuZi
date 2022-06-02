@@ -209,6 +209,7 @@ cc.Class({
             if (Array.isArray(card)) {
                 let mycard = Array.from(card);
                 mycard.sort();
+                console.log("calculate xi  ", mycard, card);
                 if (mycard.toString() === ['d1', 'd2', 'd3'].toString() ||
                 mycard.toString() === ['d2', 'd7', 'd10'].toString()) {
                     return 6;
