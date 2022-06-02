@@ -288,6 +288,7 @@ cc.Class({
             }
 
             console.log("shootcard   ", this.currentOnBoardCardNode);
+            this.cardsAlreadyChoseToNotUse.push(card);
 
             if (this.currentOnBoardCardNode) {
                   this.currentOnBoardCardNode.removeAllChildren(false);
