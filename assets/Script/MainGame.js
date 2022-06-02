@@ -1282,6 +1282,11 @@ cc.Class({
             }
 
             cc.utils.roomInfo.huInfo = null;
+            cc.utils.userInfo.currentXi = 0;
+            for (let i = 0; i < 3; ++i) {
+                  this.seats[i].xi.string = "0";
+            }
+            this.currentState = 0;
       },
   });
     
