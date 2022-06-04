@@ -1,2 +1,4 @@
 Android NDK: WARNING: Unsupported source file extensions in E:\CocosDashboard\resources\.editors\Creator\2.4.9\resources\cocos2d-x/cocos/Android.mk for module cocos2dx_static    
 Android NDK:   ../external/sources/edtaa3func/edtaa3func.h renderer/memop/RecyclePool.hpp    
+[x86] Compile++      : cocos2djs <= AppDelegate.cpp
+[x86] SharedLibrary  : libcocos2djs.so

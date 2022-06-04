@@ -273,7 +273,7 @@ cc.Class({
             let id = 0;
             for (let usedCards of cardsAlreadyUsed) {
                 if (usedCards.type === 'wei') {
-                    if ( usedCards.cards[0] === card) {
+                    if ( usedCards.cards[2] === card) {
                         return {
                             status: true,
                             caseNumber: 2,
@@ -281,7 +281,7 @@ cc.Class({
                         };
                     }
                 } else if (usedCards.type === 'peng') {
-                    if ((usedCards.cards[0] === card) && (isShoot === false)) {
+                    if ((usedCards.cards[2] === card) && (isShoot === false)) {
                         return {
                             status: true,
                             caseNumber: 3,

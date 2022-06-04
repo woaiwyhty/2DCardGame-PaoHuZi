@@ -63,9 +63,18 @@ cc.Class({
                         endPosx >= pos.x - lastNode.width / 2 && endPosx <= pos.x + lastNode.width / 2) {
                         return index;
                   }
+                  if (index === 0 && endPosy >= 0 && endPosy <= 300 && 
+                        endPosx < pos.x - lastNode.width / 2) {
+                        return -1;
+                        
+                  }
+                  if (index === this.cardGroupsNodes.length - 1 && endPosy >= 0 && endPosy <= 300 && 
+                        endPosx > pos.x + lastNode.width / 2 ) {
+                        return this.cardGroupsNodes.length;
+                  }
                   index += 1;
             }
-            return -1;
+            return -2;
       },
 
       initDrag: function(node) {
@@ -117,7 +126,7 @@ cc.Class({
                         }
                   } else {
                         let possibleDrug = this.determinePossibleMerge(event.getLocationX(), event.getLocationY());
-                        if (possibleDrug !== -1) {
+                        if (possibleDrug !== -2) {
                               this.mergeCards(node, possibleDrug);
                         }
                   }
@@ -139,7 +148,7 @@ cc.Class({
                         }
                   } else {
                         let possibleDrug = this.determinePossibleMerge(event.getLocationX(), event.getLocationY());
-                        if (possibleDrug !== -1) {
+                        if (possibleDrug !== -2) {
                               this.mergeCards(node, possibleDrug);
                         }
                   }
@@ -151,11 +160,18 @@ cc.Class({
                   node.name, 
                   this.cardGroups[node.bucket].get(node.name) - 1
             );
-            let num = 0;
-            if (this.cardGroups[possibleDrug].has(node.name)) {
-                  num = this.cardGroups[possibleDrug].get(node.name);
+            let changedIndex = possibleDrug;
+            if (possibleDrug === -1) {
+                  this.cardGroups.splice(0, 0, new Map());
+                  changedIndex = 0;
+            } else if (possibleDrug === this.cardGroups.length) {
+                  this.cardGroups.push(new Map());
             }
-            this.cardGroups[possibleDrug].set(node.name, num + 1);
+            let num = 0;
+            if (this.cardGroups[changedIndex].has(node.name)) {
+                  num = this.cardGroups[changedIndex].get(node.name);
+            }
+            this.cardGroups[changedIndex].set(node.name, num + 1);
             this.cardGroups = cc.utils.gameAlgo.filterEmptyGroup(this.cardGroups);
             this.clearAllCardNodes();
             this.renderCardsOnHand(this.cardGroups);
@@ -310,6 +326,7 @@ cc.Class({
             cc.tween(cardNode)
             .to(0.4, { position: cc.v2(targetX, pos.y + targetY), scale: 0.8  })
             .call(() => {
+                  cardNode.getComponent(cc.Button).interactable = false;
                   this.cardsOnHand.set(card, this.cardsOnHand.get(card) - 1);
                   this.cardGroups[cardNode.bucket].set(
                         card, 
@@ -448,6 +465,16 @@ cc.Class({
                   for (let usedCards of target) {
                         if (['wei', 'peng'].indexOf(usedCards.type) >= 0
                         && usedCards.cards[2] == cards[cards.length - 1]) {
+                              if (type === "pao" && usedCards.type === "wei") {
+                                    console.log("working on change spriteframe")
+                                    for (let i = 0; i < 3; ++i) {
+                                          usedCards.cards[i] = cards[cards.length - 1];
+                                          usedCards.nodes[i].getComponent(cc.Sprite).spriteFrame = 
+                                                this.cardsSmall.get(cards[cards.length - 1]).getComponent(cc.Sprite).spriteFrame;
+                                    }
+                                    console.log("working on change spriteframe  ", usedCards)
+
+                              }
                               usedCards.cards.push(cards[cards.length - 1]);
                               usedCards.nodes.push(cc.instantiate(this.cardsSmall.get(cards[cards.length - 1])));
                               usedCards.nodes[usedCards.nodes.length - 1].parent = parentNode;
@@ -643,7 +670,7 @@ cc.Class({
                         this.renderActionsList(['hu', 'guo']);
                         this.showTimer(cc.utils.roomInfo.my_seat_id);
                   } else {
-                        cc.utils.gameNetworkingManager.takeNormalAction('guo', null, null, false, data.sessionKey);
+                        cc.utils.gameNetworkingManager.takeGuoAction(false, data.sessionKey);
                   }
             }.bind(this));
 
@@ -694,7 +721,7 @@ cc.Class({
                               this.showTimer(cc.utils.roomInfo.my_seat_id);
                               this.renderActionsList(actionList);
                         } else {
-                              cc.utils.gameNetworkingManager.takeNormalAction('guo', null, null, false, this.sessionKey);
+                              cc.utils.gameNetworkingManager.takeGuoAction(false, this.sessionKey);
                               this.sessionKey = null;
                         }
                   }
@@ -857,7 +884,7 @@ cc.Class({
                         this.showTimer(cc.utils.roomInfo.my_seat_id);
                         this.renderActionsList(actionList);
                   } else {
-                        cc.utils.gameNetworkingManager.takeNormalAction('guo', null, null, false, this.sessionKey);
+                        cc.utils.gameNetworkingManager.takeGuoAction(false, this.sessionKey);
                   }
             }.bind(this));
             this.node.on('discarded_dealed_card', function (data) {
@@ -1125,7 +1152,7 @@ cc.Class({
       },
       
       onGuoClicked: function() {
-            cc.utils.gameNetworkingManager.takeNormalAction('guo', null, null, false, this.sessionKey);
+            cc.utils.gameNetworkingManager.takeGuoAction(true, this.sessionKey);
 
             if (this.currentState === 2) {
                   // pass for tianhu

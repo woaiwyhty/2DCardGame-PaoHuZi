@@ -243,6 +243,20 @@ cc.Class({
             cc.utils.net.send(type, data);
       },
 
+      takeGuoAction: function(isDoneByUser, sessionKey) {
+            console.log("takeGuoAction is called!  ", sessionKey);
+            let data = {
+                  username: cc.utils.userInfo.username,
+                  token: cc.utils.userInfo.token,
+                  seat_id: cc.utils.roomInfo.my_seat_id,
+                  isDoneByUser: isDoneByUser,
+                  sessionKey: sessionKey,
+                  time: Date.now(),
+            };
+
+            cc.utils.net.send('guo', data);
+      },
+
       takeChiAction: function(manyCards, sessionKey = null) {
             let data = {
                   manyCards: manyCards,
