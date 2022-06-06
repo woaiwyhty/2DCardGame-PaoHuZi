@@ -151,7 +151,7 @@ if(window.io == null){
               var fn = function(ret){
                   fnResult(ret.errcode == 0);
               }
-              cc.utils.main.sendRequest("/hi",null,fn,'http://' + this.ip);
-          }
+              cc.utils.http.sendRequest("/isServerOn", {}, fn);
+            }
       },
   });

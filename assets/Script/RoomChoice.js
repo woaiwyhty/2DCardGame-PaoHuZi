@@ -28,10 +28,25 @@ cc.Class({
             this.node.on('login_result', function (data) {
                   console.log('login_result arrived', data);
                   if (data.errcode === 0) {
-                        cc.utils.roomInfo = {
-                              room_id: data.room_id,
-                              my_seat_id: data.seat_id,
-                              other_players: data.other_players,
+                        if (data.relogin === true) {
+                              cc.utils.roomInfo = {
+                                    room_id: data.room_id,
+                                    my_seat_id: data.seat_id,
+                                    playersInfo: data.playersInfo,
+                                    cardsOnHand: data.cardsOnHand,
+                                    numberOfHoleCards: data.numberOfHoleCards,
+                                    number_of_wang: data.number_of_wang,
+                                    current_played_games: data.current_played_games,
+                                    total_games: data.total_games,
+                                    relogin: true,
+                              };
+                        } else {
+                              cc.utils.roomInfo = {
+                                    room_id: data.room_id,
+                                    my_seat_id: data.seat_id,
+                                    other_players: data.other_players,
+                                    relogin: false,
+                              };
                         }
                         cc.utils.wc.hide();
                         cc.director.loadScene("PaohuZiGame");

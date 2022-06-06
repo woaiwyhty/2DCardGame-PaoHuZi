@@ -12,12 +12,13 @@ cc.Class({
   
       // use this for initialization
       onLoad: function () {
+            cc.utils.wc.show("正在加载游戏");
             cc.utils.main.setFitScreenMode();
 
             this.red = new cc.Color(205,0,0);
             this.green = new cc.Color(0,205,0);
             this.yellow = new cc.Color(255,200,0); 
-
+            this.reconnection = cc.find("Canvas/ReConnection");
             this.cardOnDrag = cc.find("Canvas/Game/CardOnDrag");
             this.shootLine = cc.find("Canvas/Game/LeftBottom/ShootLine");
             this.roomIdLabel.string = cc.utils.roomInfo.room_id;
@@ -27,7 +28,9 @@ cc.Class({
             this.initActionsView();
 
             this.gameOver = cc.find("Canvas/GameOver");
-            cc.utils.gameNetworkingManager.checkIfGameReady();
+            cc.utils.mainGame = this;
+            this.processLoginData();
+            cc.utils.wc.hide();
 
             // cc.utils.roomInfo.huInfo = {
             //       op_seat_id: 2,
@@ -513,14 +516,14 @@ cc.Class({
             }
       },
       
-      setSeatInfo: function(seatClientSideId, emptySeat, username = "", xi = 0, score = 0, online = true) {
+      setSeatInfo: function(seatClientSideId, emptySeat, username = "", xi = 0, score = 0, online = true, isReady = true) {
             if (emptySeat) {
                   this.seats[seatClientSideId].icon.spriteFrame = this.seatNobodyIcon;
                   this.seats[seatClientSideId].ready.active = false;
                   this.seats[seatClientSideId].offline.active = false;
             } else {
                   this.seats[seatClientSideId].icon.spriteFrame = this.seatIcon;
-                  this.seats[seatClientSideId].ready.active = true;
+                  this.seats[seatClientSideId].ready.active = isReady;
                   this.seats[seatClientSideId].offline.active = !online;
             }
             this.seats[seatClientSideId].name.string = username;
@@ -570,14 +573,6 @@ cc.Class({
             }
             this.setSeatInfo(2, true);
             this.setSeatInfo(0, true);
-            for (let i = 0; i < cc.utils.roomInfo.other_players.length; ++i) {
-                  let info = cc.utils.roomInfo.other_players[i];
-                  if (info.seat_id === this.nextPlayerId) {
-                        this.setSeatInfo(2, false, info.nickname, 0, 0, true);
-                  } else {
-                        this.setSeatInfo(0, false, info.nickname, 0, 0, true);
-                  }
-            }
       },
 
       initEventHandlers: function() {
@@ -587,28 +582,31 @@ cc.Class({
                   if (data.errcode === 0) {
                         cc.utils.net.close();
                         cc.utils.roomInfo = null;
-                        // cc.director.loadScene('RoomChoice');
+                        cc.director.loadScene('RoomChoice');
                   } else {
                         cc.utils.wc.hide();
                   }
             });
             this.node.on('disconnect', function (data) {
                   console.log('disconnect arrived');
-                  cc.director.loadScene('RoomChoice');
-            });
+                  this.reconnection.active = true;
+                  // cc.director.loadScene('RoomChoice');
+            }.bind(this));
             this.node.on('new_player_entered_room', function (data) {
-                  if (data.seat_id === this.nextPlayerId) {
-                        this.setSeatInfo(2, false, data.nickname, 0, data.score, data.online);
+                  let local_seat_id = data.seat_id === this.nextPlayerId ? 2 : 0;
+                  if (data.relogin === true) {
+                        this.seats[local_seat_id].offline.active = false;
                   } else {
-                        this.setSeatInfo(0, false, data.nickname, 0, data.score, data.online);
+                        this.setSeatInfo(local_seat_id, false, data.nickname, 0, data.score, data.online);
                   }
             }.bind(this));
             this.node.on('other_player_exit', function (data) {
                   console.log("other_player_exit", data)
-                  if (data.seat_id === this.nextPlayerId) {
-                        this.setSeatInfo(2, true);
+                  let local_seat_id = data.seat_id === this.nextPlayerId ? 2 : 0;
+                  if (data.completely_left === true) {
+                        this.setSeatInfo(local_seat_id, true);
                   } else {
-                        this.setSeatInfo(0, true);
+                        this.seats[local_seat_id].offline.active = true;
                   }
             }.bind(this));
 
@@ -1252,13 +1250,17 @@ cc.Class({
             }
       },
 
-      renderHoleCards: function() {
+      renderHoleCards: function(remainCard = 19) {
+            let groups = Math.ceil(remainCard / 2);
+            if (remainCard === 19) {
+                  groups = 9;
+            }
             this.backCards = [];
-            this.backCardsLast = 8;
+            this.backCardsLast = groups - 1;
             this.backCardsCulm = 0;
             let original_pos = this.baseCardNode.getPosition();
 
-            for (let i = 0; i < 9; ++i) {
+            for (let i = 0; i < groups; ++i) {
                   this.backCards.push(cc.instantiate(this.baseCardNode));
                   this.backCards[i].parent = this.cardSetNode;
                   this.backCards[i].setPosition(original_pos.x, original_pos.y + i * 2);
@@ -1314,6 +1316,71 @@ cc.Class({
                   this.seats[i].xi.string = "0";
             }
             this.currentState = 0;
+      },
+
+      processLoginData: function() {
+            this.exitButton.active = false;
+
+            if (cc.utils.roomInfo.relogin === false) {
+                  for (let i = 0; i < cc.utils.roomInfo.other_players.length; ++i) {
+                        let info = cc.utils.roomInfo.other_players[i];
+                        if (info.seat_id === this.nextPlayerId) {
+                              this.setSeatInfo(2, false, info.nickname, 0, 0, true);
+                        } else {
+                              this.setSeatInfo(0, false, info.nickname, 0, 0, true);
+                        }
+                  }
+                  cc.utils.gameNetworkingManager.checkIfGameReady();
+                  return;
+            }
+
+            for (let i = 0; i < 3; ++i) {
+                  let player = cc.utils.roomInfo.playersInfo[i];
+                  let local_seat_id = i === cc.utils.roomInfo.my_seat_id ? 
+                        1 : (i === this.nextPlayerId ? 2 : 0);
+                  let usedCardsTarget = this.cardsAlreadyUsedMySelf, usedCardsNode = this.cardsAlreadyUsedMySelfNode;
+                  let discardedCardsTarget = this.cardsDiscardedMySelf, discardedCardsNode = this.cardsDiscardedMySelfNode;
+                  let addToLeftUsedCards = false, addToLeftDiscardedCards = true;
+
+                  if (i === this.nextPlayerId) {
+                        usedCardsTarget = this.cardsAlreadyUsedNext;
+                        usedCardsNode = this.cardsAlreadyUsedNextNode;
+                        discardedCardsTarget = this.cardsDiscardedNext;
+                        discardedCardsNode = this.cardsDiscardedNextNode;
+                        addToLeftUsedCards = true;
+                        addToLeftDiscardedCards = true;
+                  } else if (i === this.prevPlayerId) {
+                        usedCardsTarget = this.cardsAlreadyUsedPrev;
+                        usedCardsNode = this.cardsAlreadyUsedPrevNode;
+                        discardedCardsTarget = this.cardsDiscardedPrev;
+                        discardedCardsNode = this.cardsDiscardedPrevNode;
+                        addToLeftUsedCards = false;
+                        addToLeftDiscardedCards = false;
+                  } else {
+                        this.resetEverything();
+                        this.renderHoleCards(cc.utils.roomInfo.numberOfHoleCards);
+                        this.remainNumofCardNode.active = true;
+                        this.remainNumofCardLabel.string = cc.utils.roomInfo.numberOfHoleCards.toString();
+                        this.cardsAlreadyChoseToNotUse = Array.from(player.cardsChooseToNotUsed);
+                        for (let i = 0; i < 3; ++i) {
+                              this.seats[i].ready.active = false;
+                        }
+                        this.cardsOnHand = new Map(cc.utils.roomInfo.cardsOnHand);
+                        let cardGroups = cc.utils.gameAlgo.groupCards(this.cardsOnHand);
+                        this.renderCardsOnHand(cardGroups);
+                  }
+
+                  this.setSeatInfo(local_seat_id, false, player.nickname, 
+                        player.xi, player.score, player.online, false);
+                  for (let card of player.cardsAlreadyUsed) {
+                        this.addUsedCards(usedCardsTarget, 
+                              usedCardsNode, card.cards, card.type, card.xi, addToLeftUsedCards);
+                  }
+                  for (let card of player.cardsDiscarded) {
+                        this.addDiscardedCard(discardedCardsTarget, 
+                              discardedCardsNode, card, addToLeftDiscardedCards);
+                  }
+            }
       },
   });
     
