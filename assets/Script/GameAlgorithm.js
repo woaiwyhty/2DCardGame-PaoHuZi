@@ -199,6 +199,14 @@ cc.Class({
             }
             return cardSetMap;
         },
+
+        findOneCardToShoot: function(cardsOnHand) {
+            for (const [key, value] of cardsOnHand.entries()) {
+                if (value < 3 && value > 0) {
+                    return key;
+                }
+            }
+        },
     
         checkValidForShoot: function(card, cardsOnHand) {
             return cardsOnHand.get(card) < 3;

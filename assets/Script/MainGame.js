@@ -916,6 +916,19 @@ cc.Class({
             this.node.on('askGameReady', function (data) {
                   cc.utils.gameNetworkingManager.checkIfGameReady();
             }.bind(this));
+            this.node.on('request_shoot', function (data) {
+                  let card = cc.utils.gameAlgo.findOneCardToShoot(this.cardsOnHand);
+                  if (card !== null) {
+                        for (let groupNodes of this.cardGroupsNodes) {
+                              for (let node of groupNodes) {
+                                    if (node.name === card) {
+                                          this.shootCardOnHand(card, node);
+                                          break;
+                                    }
+                              }
+                        }
+                  }
+            }.bind(this));
       },
 
       calculateAvailableActions: function(card, isShoot, op_seat_id) {

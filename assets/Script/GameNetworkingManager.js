@@ -151,6 +151,14 @@ cc.Class({
                         self.dispatchEvent('askGameReady', data);
                   }
             });
+
+            cc.utils.net.addHandler("request_shoot", function(data){
+                  console.log("request_shoot received!!!  ", data);
+
+                  if (data.errcode === 0) {
+                        self.dispatchEvent('request_shoot', data);
+                  }
+            });
       },
       
       connectToGameServer: function(data){
