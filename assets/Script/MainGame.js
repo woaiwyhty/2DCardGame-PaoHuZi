@@ -301,7 +301,7 @@ cc.Class({
             .start()
       },
 
-      shootCardOnHand: function(card, cardNode) {
+      shootCardOnHand: function(card, cardNode, locally = false) {
             if (!cc.utils.gameAlgo.checkValidForShoot(card, this.cardsOnHand)) {
                   return;
             }
@@ -324,6 +324,7 @@ cc.Class({
             this.shootCardFrame.active = true;
             this.currentOnBoardCardNode = cardNode;
 
+            console.log("current cards on hand", this.cardsOnHand);
             let pos = this.cardSetNode.convertToWorldSpaceAR(cc.v2(0, 0));
             cc.utils.gameAudio.playCardOutEffect(card);
             cc.tween(cardNode)
@@ -339,9 +340,14 @@ cc.Class({
                   this.cardGroupsNodes[cardNode.bucket].splice(cardNode.innerIndex, 1);
                   this.clearAllCardNodes();
                   this.renderCardsOnHand(this.cardGroups);
+
+                  console.log("after cards on hand", this.cardsOnHand);
+
             })
             .start()
-            cc.utils.gameNetworkingManager.shootCard('onHand', card);
+            if (!locally) {
+                  cc.utils.gameNetworkingManager.shootCard('onHand', card);
+            }
             this.hiderTimer(cc.utils.roomInfo.my_seat_id);
             this.currentState = 0; // IDLE
       },
@@ -916,18 +922,27 @@ cc.Class({
             this.node.on('askGameReady', function (data) {
                   cc.utils.gameNetworkingManager.checkIfGameReady();
             }.bind(this));
-            this.node.on('request_shoot', function (data) {
-                  let card = cc.utils.gameAlgo.findOneCardToShoot(this.cardsOnHand);
-                  if (card !== null) {
+            this.node.on('timer_passed', function (data) {
+                  if (data.type === "shoot_card") {
                         for (let groupNodes of this.cardGroupsNodes) {
                               for (let node of groupNodes) {
-                                    if (node.name === card) {
-                                          this.shootCardOnHand(card, node);
+                                    if (node.name === data.opCard) {
+                                          this.shootCardOnHand(data.opCard, node, true);
                                           break;
                                     }
                               }
                         }
+                        this.hideActionList();
+                  } else if (data.type === "operation") {
+                        if (cc.utils.roomInfo.currentCard) {
+                              this.cardsAlreadyChoseToNotUse.push(cc.utils.roomInfo.currentCard);
+                        }
+            
+                        this.hideActionList();
+                        this.hiderTimer(cc.utils.roomInfo.my_seat_id);
+                        this.clearActionResult();
                   }
+
             }.bind(this));
       },
 
@@ -1301,6 +1316,7 @@ cc.Class({
             }
             this.cardGroupsNodes = [];
             this.cardsGroups = [];
+            console.log(this.cardsAlreadyUsedMySelf, this.cardsDiscardedMySelf);
             this.clearUsedCards(this.cardsAlreadyUsedMySelf);
             this.clearUsedCards(this.cardsAlreadyUsedPrev)
             this.clearUsedCards(this.cardsAlreadyUsedNext)

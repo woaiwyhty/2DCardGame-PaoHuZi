@@ -152,11 +152,11 @@ cc.Class({
                   }
             });
 
-            cc.utils.net.addHandler("request_shoot", function(data){
-                  console.log("request_shoot received!!!  ", data);
+            cc.utils.net.addHandler("timer_passed", function(data){
+                  console.log("timer_passed received!!!  ", data);
 
                   if (data.errcode === 0) {
-                        self.dispatchEvent('request_shoot', data);
+                        self.dispatchEvent('timer_passed', data);
                   }
             });
       },
