@@ -475,14 +475,11 @@ cc.Class({
                         if (['wei', 'peng'].indexOf(usedCards.type) >= 0
                         && usedCards.cards[2] == cards[cards.length - 1]) {
                               if (type === "pao" && usedCards.type === "wei") {
-                                    console.log("working on change spriteframe")
                                     for (let i = 0; i < 3; ++i) {
                                           usedCards.cards[i] = cards[cards.length - 1];
                                           usedCards.nodes[i].getComponent(cc.Sprite).spriteFrame = 
                                                 this.cardsSmall.get(cards[cards.length - 1]).getComponent(cc.Sprite).spriteFrame;
                                     }
-                                    console.log("working on change spriteframe  ", usedCards)
-
                               }
                               usedCards.cards.push(cards[cards.length - 1]);
                               usedCards.nodes.push(cc.instantiate(this.cardsSmall.get(cards[cards.length - 1])));
@@ -704,18 +701,40 @@ cc.Class({
                               // not showing the dealed card to others if it is wei
                               this.dealHoleCard(data.dealed_card, local_seat_id);
                         } 
-                        if (data.ti_wei_pao_result.op_seat_id === cc.utils.roomInfo.my_seat_id) {
-                              cc.utils.gameAudio.actionsEffect(data.ti_wei_pao_result.type);
+                        cc.utils.gameAudio.actionsEffect(data.ti_wei_pao_result.type);
+                        if (data.op_seat_id === cc.utils.roomInfo.my_seat_id) {
                               this.takeNormalAction(
                                     data.ti_wei_pao_result.type, 
                                     data.ti_wei_pao_result.opCard, 
                                     data.ti_wei_pao_result.cards, 
                                     false,
-                                    true,
+                                    false,
                                     data.ti_wei_pao_result.from_wei_or_peng,
-                                    this.sessionKey,
                               );
-                              // this.sessionKey = null;
+                        } else {
+                              let target = this.cardsAlreadyUsedPrev;
+                              let targetNode = this.cardsAlreadyUsedPrevNode;
+                              let addToLeft = false;
+                              if (data.op_seat_id === this.nextPlayerId) {
+                                    target = this.cardsAlreadyUsedNext;
+                                    targetNode = this.cardsAlreadyUsedNextNode;
+                                    addToLeft = true;
+                              }
+                              this.seats[local_seat_id].xi.string = data.xi.toString();
+                              this.seats[local_seat_id][data.ti_wei_pao_result.type].active = true;
+                              this.scheduleOnce(function() {
+                                    this.seats[local_seat_id][data.ti_wei_pao_result.type].active = false;
+                              }.bind(this), 1);
+                              this.addUsedCards(
+                                    target, 
+                                    targetNode, 
+                                    data.ti_wei_pao_result.cards, 
+                                    data.ti_wei_pao_result.type,
+                                    0,
+                                    addToLeft,
+                                    data.from_wei_or_peng,
+                                    false
+                              ); // xi doesn't matter on other players side, so set it be 0.
                         }
                   } else {
                         this.dealHoleCard(data.dealed_card, local_seat_id);
@@ -1062,7 +1081,7 @@ cc.Class({
             }
             if (from_wei_or_peng) {
                   for (let usedCards of this.cardsAlreadyUsedMySelf) {
-                        if (['wei', 'peng'].indexOf(type) >= 0
+                        if (['wei', 'peng'].indexOf(usedCards.type) >= 0
                         && usedCards.cards[2] == cards[cards.length - 1]) {
                               cc.utils.userInfo.currentXi -= usedCards.xi;
                         }
