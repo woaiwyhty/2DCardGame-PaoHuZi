@@ -699,6 +699,7 @@ cc.Class({
                   ++this.backCardsCulm;
                   if ((this.backCardsLast === 8 && this.backCards === 3) || this.backCardsCulm === 2) {
                         this.backCards[this.backCardsLast].active = false;
+                        this.backCardsLast--;
                         this.backCardsCulm = 0;
                   }
                   let local_seat_id = data.op_seat_id === this.nextPlayerId ? 2 : 0;
@@ -1161,7 +1162,7 @@ cc.Class({
             timerLabel.active = false;
       },
 
-      showTimer: function(remote_seat_id) {
+      showTimer: function(remote_seat_id, remain_seconds = 30) {
             let timerBg = this.seats[1].timerBg;
             let timerLabel = this.seats[1].timerLabel;
             if (remote_seat_id === this.prevPlayerId) {
@@ -1175,8 +1176,8 @@ cc.Class({
             timerBg.active = true;
             timerLabel.active = true;
             let label = timerLabel.getComponent(cc.Label);
-            label.string = '30';
-            let currentTime = 30;
+            label.string = remain_seconds.toString();
+            let currentTime = remain_seconds;
             let callback = function() {
                   // 这里的 this 指向 component
                   currentTime -= 1;
@@ -1191,7 +1192,7 @@ cc.Class({
                         }
                   }
             };
-            this.schedule(callback, 1, 29, 1);
+            this.schedule(callback, 1, remain_seconds - 1, 1);
       },
 
       update: function() {
@@ -1454,6 +1455,7 @@ cc.Class({
                         this.cardsOnHand = new Map(cc.utils.roomInfo.cardsOnHand);
                         let cardGroups = cc.utils.gameAlgo.groupCards(this.cardsOnHand);
                         this.renderCardsOnHand(cardGroups);
+                        this.processOperation(player);
                   }
 
                   this.setSeatInfo(local_seat_id, false, player.nickname, 
@@ -1465,6 +1467,60 @@ cc.Class({
                   for (let card of player.cardsDiscarded) {
                         this.addDiscardedCard(discardedCardsTarget, 
                               discardedCardsNode, card, addToLeftDiscardedCards);
+                  }
+            }
+      },
+
+      processOperation(player) {
+            if (player.operation) {
+                  let remainTime = parseInt((Date.now() - player.operation.startTime) / 1000);
+                  if (player.operation.type === 'operation') {
+                        this.sessionKey = player.operation.sessionKey;
+                        let isShoot = false;
+                        if (player.operation.isDealed === true) {
+                              this.dealHoleCard(player.operation.opCard, player.operation.op_seat_id);
+                        } else {
+                              isShoot = true;
+                              let leftToRight = player.operation.op_seat_id === this.prevPlayerId;
+                              let local_seat_id = player.operation.op_seat_id === this.nextPlayerId ? 2 : 0;
+                              this.shootCardOthers(player.operation.opCard, local_seat_id, leftToRight);
+                        }
+                        let actionList = this.calculateAvailableActions(player.operation.opCard, isShoot, player.operation.op_seat_id);
+                        if (actionList.length > 0) {
+                              this.showTimer(cc.utils.roomInfo.my_seat_id, remainTime);
+                              this.renderActionsList(actionList);
+                        } else {
+                              cc.utils.gameNetworkingManager.takeGuoAction(false, this.sessionKey);
+                              this.sessionKey = null;
+                        }
+                  } else {
+                        this.showTimer(cc.utils.roomInfo.my_seat_id, remainTime);
+                        if (player.operation.is_last_card_dealed === 1) {
+                              console.log("checkHu  in need_shoot  ", this.cardsAlreadyUsedMySelf, this.cardsOnHand);
+                              let huResult = cc.utils.gameAlgo.checkHu(this.cardsAlreadyUsedMySelf, this.cardsOnHand);
+                              let actionsList = [];
+                              if (huResult && huResult.status === true) {
+                                    actionsList.push('hu');
+                                    if (this.currentDealShootInfo.op_seat_id === cc.utils.roomInfo.my_seat_id) {
+                                          huResult.huInfo.push("自摸");
+                                          huResult.tun += 1;
+                                    }
+                                    if (cc.utils.roomInfo.number_of_wang > 0) {
+                                          huResult.huInfo.push("王" + cc.utils.roomInfo.number_of_wang.toString());
+                                          huResult.fan += (4 * cc.utils.roomInfo.number_of_wang);
+                                    }
+                                    cc.utils.roomInfo.huResult = huResult;
+                              }
+                              if (actionsList.length > 0) {
+                                    actionsList.push('guo');
+                                    this.renderActionsList(actionsList);
+                                    this.currentState = 3; // check hu locally
+                              } else {
+                                    this.currentState = 1; // need shoot
+                              }
+                        } else {
+                              this.currentState = 1; // need shoot
+                        }
                   }
             }
       },
