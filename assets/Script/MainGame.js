@@ -1456,6 +1456,7 @@ cc.Class({
                         let cardGroups = cc.utils.gameAlgo.groupCards(this.cardsOnHand);
                         this.renderCardsOnHand(cardGroups);
                         this.processOperation(player);
+                        cc.utils.userInfo.currentXi -= player.xi;
                   }
 
                   this.setSeatInfo(local_seat_id, false, player.nickname, 
