@@ -456,6 +456,10 @@ cc.Class({
       },
 
       addDiscardedCard: function(target, parentNode, card, addToLeft = false) {
+            let names = [], names_after = [];
+            for (let t of target) {
+                  names.push(t.name);
+            }
             let node = null;
             let offSetx = 30 + (target.length * this.cardSmallWidth), offSety = 0;
             if (addToLeft === true) {
@@ -467,9 +471,14 @@ cc.Class({
             node.y = offSety;
             node.active = true;
             target.push(node);
+            for (let t of target) {
+                  names_after.push(t.name);
+            }
+            console.log("addDiscardedCard result  ", names, names_after);
       },
       
       addUsedCards: function(target, parentNode, cards, type, xi, addToLeft = false, from_wei_or_peng = 0, needsHide = false) {
+            console.log("addusedcard before  ", target, from_wei_or_peng);
             if (from_wei_or_peng) {
                   for (let usedCards of target) {
                         if (['wei', 'peng'].indexOf(usedCards.type) >= 0
@@ -517,6 +526,9 @@ cc.Class({
                         xi: xi,
                   });
             }
+
+            console.log("addusedcard after  ", target, from_wei_or_peng);
+
       },
       
       setSeatInfo: function(seatClientSideId, emptySeat, username = "", xi = 0, score = 0, online = true, isReady = true) {
@@ -591,8 +603,10 @@ cc.Class({
                   }
             });
             this.node.on('disconnect', function (data) {
-                  console.log('disconnect arrived');
-                  this.reconnection.active = true;
+                  if (cc.utils.roomInfo.exited !== true) {
+                        console.log('disconnect arrived');
+                        this.reconnection.active = true;
+                  }
                   // cc.director.loadScene('RoomChoice');
             }.bind(this));
             this.node.on('new_player_entered_room', function (data) {
@@ -884,30 +898,53 @@ cc.Class({
 
                   this.seats[local_seat_id].timerBg.active = false;
                   this.seats[local_seat_id].timerLabel.active = false;
-                  cc.utils.roomInfo.currentCard = data.opCard;
-                  // check if I can use the shooted card
-                  let paoResult = cc.utils.gameAlgo.checkPao(data.opCard, true, this.cardsOnHand, this.cardsAlreadyUsedMySelf);
-                  if (paoResult.status === true) {
-                        let from_wei_or_peng = paoResult.caseNumber - 1;
-                        cc.utils.gameAudio.actionsEffect('pao');
-                        this.takeNormalAction(
-                              'pao',
-                              data.opCard,
-                              [data.opCard, data.opCard, data.opCard, data.opCard],
-                              false,
-                              true,
-                              from_wei_or_peng,
-                              this.sessionKey,
-                        );
-                        this.sessionKey = null;
-                        return;
-                  }
-                  let actionList = this.calculateAvailableActions(data.opCard, true, data.op_seat_id);
-                  if (actionList.length > 0) {
-                        this.showTimer(cc.utils.roomInfo.my_seat_id);
-                        this.renderActionsList(actionList);
+                  if (data.paoResult) {
+                        if (data.paoResult.op_seat_id === cc.utils.roomInfo.my_seat_id) {
+                              cc.utils.gameAudio.actionsEffect('pao');
+                              this.takeNormalAction(
+                                    'pao',
+                                    data.opCard,
+                                    [data.opCard, data.opCard, data.opCard, data.opCard],
+                                    false,
+                                    false,
+                                    data.paoResult.from_wei,
+                              );
+                        } else {
+                              let target = this.cardsAlreadyUsedPrev;
+                              let targetNode = this.cardsAlreadyUsedPrevNode;
+                              let addToLeft = false;
+                              let local_pao_seat_id = 0; 
+                              if (data.paoResult.op_seat_id === this.nextPlayerId) {
+                                    target = this.cardsAlreadyUsedNext;
+                                    targetNode = this.cardsAlreadyUsedNextNode;
+                                    addToLeft = true;
+                                    local_pao_seat_id = 2;
+                              }
+                              this.seats[local_pao_seat_id].xi.string = data.paoResult.xi.toString();
+                              this.seats[local_pao_seat_id]['pao'].active = true;
+                              this.scheduleOnce(function() {
+                                    this.seats[local_pao_seat_id]['pao'].active = false;
+                              }.bind(this), 1);
+                              this.addUsedCards(
+                                    target, 
+                                    targetNode, 
+                                    data.paoResult.cards, 
+                                    data.paoResult.type,
+                                    0,
+                                    addToLeft,
+                                    data.paoResult.from_wei,
+                                    false
+                              );
+                        }
                   } else {
-                        cc.utils.gameNetworkingManager.takeGuoAction(false, this.sessionKey);
+                        cc.utils.roomInfo.currentCard = data.opCard;
+                        let actionList = this.calculateAvailableActions(data.opCard, true, data.op_seat_id);
+                        if (actionList.length > 0) {
+                              this.showTimer(cc.utils.roomInfo.my_seat_id);
+                              this.renderActionsList(actionList);
+                        } else {
+                              cc.utils.gameNetworkingManager.takeGuoAction(false, this.sessionKey);
+                        }
                   }
             }.bind(this));
             this.node.on('discarded_dealed_card', function (data) {
@@ -1105,6 +1142,7 @@ cc.Class({
       },
 
       onReturnToLobbyClicked: function() {
+            cc.utils.roomInfo.exited = true;
             cc.utils.gameNetworkingManager.exitToGameServer();
       },
 
@@ -1209,6 +1247,7 @@ cc.Class({
             }
             if (cc.utils.roomInfo.currentCard) {
                   this.cardsAlreadyChoseToNotUse.push(cc.utils.roomInfo.currentCard);
+                  cc.utils.roomInfo.currentCard = null;
             }
 
             this.hideActionList();
@@ -1367,8 +1406,6 @@ cc.Class({
       },
 
       processLoginData: function() {
-            this.exitButton.active = false;
-
             if (cc.utils.roomInfo.relogin === false) {
                   for (let i = 0; i < cc.utils.roomInfo.other_players.length; ++i) {
                         let info = cc.utils.roomInfo.other_players[i];
@@ -1382,6 +1419,8 @@ cc.Class({
                   return;
             }
 
+            this.exitButton.active = false;
+            this.resetEverything();
             for (let i = 0; i < 3; ++i) {
                   let player = cc.utils.roomInfo.playersInfo[i];
                   let local_seat_id = i === cc.utils.roomInfo.my_seat_id ? 
@@ -1405,7 +1444,6 @@ cc.Class({
                         addToLeftUsedCards = false;
                         addToLeftDiscardedCards = false;
                   } else {
-                        this.resetEverything();
                         this.renderHoleCards(cc.utils.roomInfo.numberOfHoleCards);
                         this.remainNumofCardNode.active = true;
                         this.remainNumofCardLabel.string = cc.utils.roomInfo.numberOfHoleCards.toString();
