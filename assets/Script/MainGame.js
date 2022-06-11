@@ -657,33 +657,24 @@ cc.Class({
                   }
 
                   cc.utils.gameAudio.dealCardWhenGameStartEffect();
-
+                  this.sessionKey = data.sessionKey;
+                  let currentCard = data.card21st;
+                  let huSpecial = "地胡";
                   if (cc.utils.roomInfo.my_seat_id === 0) {
-                        // zhuang jia
-                        if (data.tianHuResult && data.tianHuResult.status === true) {
-                              data.tianHuResult.huInfo.push("天胡");
-                              data.tianHuResult.fan += 4;
-
-                              cc.utils.roomInfo.huResult = data.tianHuResult;
-                              this.currentState = 2; // wait for tianhu decision
-                              this.showTimer(cc.utils.roomInfo.my_seat_id);
-                              this.renderActionsList(['hu', 'guo']);
-                        } else {
-                              cc.utils.gameNetworkingManager.tianhuResult();
-                        }
+                        currentCard = null;
+                        huSpecial = "天胡";
                   }
-                  // cc.utils.gameNetworkingManager.askForCardsOnHand();
-            }.bind(this));
-
-            this.node.on('check_dihu', function (data) {
-                  let huResult = cc.utils.gameAlgo.checkHu(this.cardsAlreadyUsedMySelf, this.cardsOnHand, data.card21st);
-                  this.currentSession = data.sessionKey;
+                  let huResult = cc.utils.gameAlgo.checkHu(this.cardsAlreadyUsedMySelf, this.cardsOnHand, currentCard);
                   if (huResult && huResult.status === true) {
-                        data.tianHuResult.huInfo.push("地胡");
-                        data.tianHuResult.fan += 4;
+                        huResult.huInfo.push(huSpecial);
+                        huResult.fan += 4;
+                        if (cc.utils.roomInfo.number_of_wang > 0) {
+                              huResult.huInfo.push("王" + cc.utils.roomInfo.number_of_wang.toString());
+                              huResult.fan += (4 * cc.utils.roomInfo.number_of_wang);
+                        }
                         cc.utils.roomInfo.huResult = huResult;
-                        this.renderActionsList(['hu', 'guo']);
                         this.showTimer(cc.utils.roomInfo.my_seat_id);
+                        this.renderActionsList(['hu', 'guo']);
                   } else {
                         cc.utils.gameNetworkingManager.takeGuoAction(false, data.sessionKey);
                   }
@@ -1237,11 +1228,7 @@ cc.Class({
       },
 
       onHuClicked: function() {
-            if (this.currentState === 2) {
-                  cc.utils.gameNetworkingManager.tianhuResult(cc.utils.roomInfo.huResult);
-                  return;
-            }
-            cc.utils.gameNetworkingManager.takeHuAction(cc.utils.roomInfo.huResult, this.currentSession, cc.utils.roomInfo.my_seat_id);
+            cc.utils.gameNetworkingManager.takeHuAction(cc.utils.roomInfo.huResult, this.sessionKey, cc.utils.roomInfo.my_seat_id);
             this.hideActionList();
             this.hiderTimer(cc.utils.roomInfo.my_seat_id);
             this.clearActionResult();
@@ -1250,11 +1237,7 @@ cc.Class({
       onGuoClicked: function() {
             cc.utils.gameNetworkingManager.takeGuoAction(true, this.sessionKey);
 
-            if (this.currentState === 2) {
-                  // pass for tianhu
-                  cc.utils.gameNetworkingManager.tianhuResult();
-                  return;
-            } else if (this.currentState === 3) {
+            if (this.currentState === 3) {
                   this.currentState = 1; // need shoot
                   return;
             }

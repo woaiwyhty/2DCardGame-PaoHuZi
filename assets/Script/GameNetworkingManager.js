@@ -284,17 +284,6 @@ cc.Class({
 
             cc.utils.net.send('shootCard', data);
       },
-
-      tianhuResult: function(huResult) {
-            let data = huResult;
-            if (!huResult) {
-                  data = {
-                        status: false,
-                  }
-            }
-
-            cc.utils.net.send('tianhu_result', data);
-      },
   
       // called every frame, uncomment this function to activate update callback
       // update: function (dt) {
