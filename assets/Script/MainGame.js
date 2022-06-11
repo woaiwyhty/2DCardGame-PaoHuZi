@@ -1170,6 +1170,10 @@ cc.Class({
       },
 
       showTimer: function(remote_seat_id, remain_seconds = 30) {
+            if (this.timerCallback) {
+                  this.unschedule(this.timerCallback);
+                  this.timerCallback = null;
+            }
             let timerBg = this.seats[1].timerBg;
             let timerLabel = this.seats[1].timerLabel;
             if (remote_seat_id === this.prevPlayerId) {
@@ -1185,7 +1189,7 @@ cc.Class({
             let label = timerLabel.getComponent(cc.Label);
             label.string = remain_seconds.toString();
             let currentTime = remain_seconds;
-            let callback = function() {
+            this.timerCallback = function() {
                   // 这里的 this 指向 component
                   currentTime -= 1;
                   label.string = currentTime.toString();
@@ -1195,11 +1199,12 @@ cc.Class({
                         timerLabel.active = false;
                   } else {
                         if (!timerBg.active) {
-                              this.unschedule(callback);
+                              this.unschedule(this.timerCallback);
+                              this.timerCallback = null;
                         }
                   }
             };
-            this.schedule(callback, 1, remain_seconds - 1, 1);
+            this.schedule(this.timerCallback, 1, remain_seconds - 1, 1);
       },
 
       update: function() {

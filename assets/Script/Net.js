@@ -97,16 +97,20 @@ if(window.io == null){
                   cc.game.on(cc.game.EVENT_HIDE,function(){
                       self.ping();
                   });
-                  setInterval(function(){
+                  self.pingInterval = setInterval(function(){
                       if(self.sio){
                           self.ping();                
                       }
                   }.bind(this),5000);
-                  setInterval(function(){
+                  self.checkInterval = setInterval(function(){
+                    console.log("self.lastRecieveTime  ", self.lastRecieveTime)
                       if(self.sio && self.lastRecieveTime !== null){
                           if(Date.now() - self.lastRecieveTime > 10000){
                               console.log("omg... trying to close ws");
+                              self.lastRecieveTime = null;
                               self.close();
+                              clearInterval(self.checkInterval);
+                              clearInterval(self.pingInterval);
                           }         
                       }
                   }.bind(this),500);
