@@ -717,7 +717,7 @@ cc.Class({
                               this.dealHoleCard(data.dealed_card, local_seat_id);
                         } 
                         cc.utils.gameAudio.actionsEffect(data.ti_wei_pao_result.type);
-                        if (data.op_seat_id === cc.utils.roomInfo.my_seat_id) {
+                        if (data.ti_wei_pao_result.op_seat_id === cc.utils.roomInfo.my_seat_id) {
                               this.takeNormalAction(
                                     data.ti_wei_pao_result.type, 
                                     data.ti_wei_pao_result.opCard, 
@@ -727,10 +727,11 @@ cc.Class({
                                     data.ti_wei_pao_result.from_wei_or_peng,
                               );
                         } else {
+                              local_seat_id = data.ti_wei_pao_result.op_seat_id === this.nextPlayerId ? 2 : 0;
                               let target = this.cardsAlreadyUsedPrev;
                               let targetNode = this.cardsAlreadyUsedPrevNode;
                               let addToLeft = false;
-                              if (data.op_seat_id === this.nextPlayerId) {
+                              if (data.ti_wei_pao_result.op_seat_id === this.nextPlayerId) {
                                     target = this.cardsAlreadyUsedNext;
                                     targetNode = this.cardsAlreadyUsedNextNode;
                                     addToLeft = true;
