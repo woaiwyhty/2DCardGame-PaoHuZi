@@ -804,8 +804,10 @@ cc.Class({
                         this.takeNormalAction('peng', data.cards[0], data.cards, false, false);
                   } else if (data.type === 'chi') {
                         cc.utils.gameAudio.actionsEffect('chi');
+                        this.cardGroups[0].set(data.opCard, this.cardGroups[0].get(data.opCard) + 1);
+                        this.cardsOnHand.set(data.opCard, this.cardsOnHand.get(data.opCard) + 1);
                         for (let cards of data.manyCards) {
-                              this.takeNormalAction('chi', cards[2], cards, false, false);
+                              this.takeNormalAction('chi', data.opCard, cards, false, false);
                         }
                   }
             }.bind(this));
@@ -1098,12 +1100,7 @@ cc.Class({
             let xi = 0;
             if (type === 'chi') {
                   xi = cc.utils.gameAlgo.calculateXi(type, cards);
-                  let opCardCovered = false;
                   for (let card of cards) {
-                        if (!opCardCovered && card === opCard) {
-                              opCardCovered = true;
-                              continue;
-                        }
                         for (let i = 0; i < this.cardGroups.length; ++i) {
                               if (this.cardGroups[i].get(card) > 0) {
                                     this.cardGroups[i].set(card, this.cardGroups[i].get(card) - 1);
