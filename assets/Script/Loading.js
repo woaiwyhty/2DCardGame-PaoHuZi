@@ -57,8 +57,8 @@ cc.Class({
         cc.utils = {};
         cc.utils.http = require("HTTPUtil");
         cc.utils.net = require("Net");
-        // cc.utils.net.ip = "43.138.67.153:9001";
-        cc.utils.net.ip = "http://192.168.1.12:9001";
+        cc.utils.net.ip = "43.138.67.153:9001";
+        // cc.utils.net.ip = "http://192.168.1.12:9001";
 
         console.log(window.io,cc.utils.net);
 
