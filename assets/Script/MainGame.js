@@ -1097,7 +1097,12 @@ cc.Class({
             let xi = 0;
             if (type === 'chi') {
                   xi = cc.utils.gameAlgo.calculateXi(type, cards);
+                  let opCardCovered = false;
                   for (let card of cards) {
+                        if (!opCardCovered && card === opCard) {
+                              opCardCovered = true;
+                              continue;
+                        }
                         for (let i = 0; i < this.cardGroups.length; ++i) {
                               if (this.cardGroups[i].get(card) > 0) {
                                     this.cardGroups[i].set(card, this.cardGroups[i].get(card) - 1);
