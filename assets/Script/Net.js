@@ -57,6 +57,7 @@ if(window.io == null){
               
               this.sio.on('disconnect',function(data){
                   console.log("disconnect");
+                  this.lastRecieveTime = null;
                   self.sio.connected = false;
                   self.close();
               });
@@ -102,7 +103,7 @@ if(window.io == null){
                       }
                   }.bind(this),5000);
                   setInterval(function(){
-                      if(self.sio){
+                      if(self.sio && self.lastRecieveTime !== null){
                           if(Date.now() - self.lastRecieveTime > 10000){
                               console.log("omg... trying to close ws");
                               self.close();

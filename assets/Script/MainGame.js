@@ -748,7 +748,7 @@ cc.Class({
                                     data.ti_wei_pao_result.type,
                                     0,
                                     addToLeft,
-                                    data.from_wei_or_peng,
+                                    data.ti_wei_pao_result.from_wei_or_peng,
                                     false
                               ); // xi doesn't matter on other players side, so set it be 0.
                         }
@@ -804,7 +804,11 @@ cc.Class({
                         this.takeNormalAction('peng', data.cards[0], data.cards, false, false);
                   } else if (data.type === 'chi') {
                         cc.utils.gameAudio.actionsEffect('chi');
-                        this.cardGroups[0].set(data.opCard, this.cardGroups[0].get(data.opCard) + 1);
+                        if (!this.cardGroups[0].has(data.opCard)) {
+                              this.cardGroups[0].set(data.opCard, 1);
+                        } else {
+                              this.cardGroups[0].set(data.opCard, this.cardGroups[0].get(data.opCard) + 1);
+                        }
                         this.cardsOnHand.set(data.opCard, this.cardsOnHand.get(data.opCard) + 1);
                         for (let cards of data.manyCards) {
                               this.takeNormalAction('chi', data.opCard, cards, false, false);
