@@ -43,9 +43,9 @@ cc.Class({
             }
             this.nodes = [];
             this.exitButton.node.active = cc.utils.roomInfo.huInfo.lastGame;
-            this.huInfo.string = cc.utils.roomInfo.huInfo.huInfo.join(' ');
             
             if (cc.utils.roomInfo.huInfo.type === "wang_hu") {
+                  this.huInfo.string = cc.utils.roomInfo.huInfo.huInfo.join(' ');
                   for (let i = 0; i < 3; ++i) {
                         this.nicknames[i].string = cc.utils.roomInfo.huInfo.nicknames[i];
                         this.scores[i].string = "0";
@@ -94,6 +94,8 @@ cc.Class({
                   }
                   offsetX -= 60;
             }
+            this.huInfo.string = cc.utils.roomInfo.huInfo.huInfo.join(' ') + " " + cc.utils.roomInfo.huInfo.xi.toString() + "胡息";
+
       },
       // update (dt) {},
   });

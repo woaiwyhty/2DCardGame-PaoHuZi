@@ -12332,7 +12332,7 @@
         "__id__": 246
       }
     ],
-    "_active": false,
+    "_active": true,
     "_components": [
       {
         "__id__": 282
@@ -12543,7 +12543,7 @@
         "__id__": 279
       }
     ],
-    "_active": true,
+    "_active": false,
     "_components": [
       {
         "__id__": 281
@@ -12716,7 +12716,7 @@
     },
     "_contentSize": {
       "__type__": "cc.Size",
-      "width": 255.06,
+      "width": 0,
       "height": 37.8
     },
     "_anchorPoint": {
