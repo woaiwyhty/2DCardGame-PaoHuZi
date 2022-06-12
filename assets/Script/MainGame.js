@@ -978,7 +978,7 @@ cc.Class({
                         }
                   } else {
                         cc.utils.roomInfo.currentCard = data.opCard;
-                        let actionList = this.calculateAvailableActions(data.opCard, true, data.op_seat_id, true);
+                        let actionList = this.calculateAvailableActions(data.opCard, true, data.op_seat_id, false);
                         if (actionList.length > 0) {
                               this.showTimer(cc.utils.roomInfo.my_seat_id);
                               this.renderActionsList(actionList);
