@@ -433,8 +433,16 @@ cc.Class({
             }
         },
     
-        calculateFanAndTun: function(cardsAlreadyUsed, resultFromGroup3) {
+        calculateFanAndTun: function(cardsAlreadyUsed, resultFromGroup3, jiang = null) {
             let all = cardsAlreadyUsed.concat(resultFromGroup3);
+            if (jiang) {
+                all.push({
+                    type: 'jiang',
+                    cards: [jiang, jiang],
+                    opCard: jiang,
+                    xi: 0,
+                });
+            }
             let sumOfXi = 0;
             for (let group of all) {
                 sumOfXi += group.xi;
@@ -476,6 +484,9 @@ cc.Class({
                         if (tipaoNum.get(oppoCard)) {
                             numOfTuan += 1;
                         }
+                    }
+                    if (group.type === 'jiang') {
+                        cnt = 2;
                     }
     
                     if (group.cards[cnt - 1][0] === 'd') {
@@ -588,7 +599,7 @@ cc.Class({
                         let finalResult = [], currentResult = [];
                         this.groupCardsBy3Dfs(tempCardSet, numOfCards - 2, finalResult, currentResult);
                         for (let res of finalResult) {
-                            let calcResult = this.calculateFanAndTun(groupResult, res);
+                            let calcResult = this.calculateFanAndTun(groupResult, res, key);
                             if (!maxHu || (calcResult.status === true
                                 && calcResult.fan * calcResult.tun > maxHu.fan * maxHu.tun)) {
                                 maxHu = calcResult;
@@ -624,8 +635,21 @@ cc.Class({
             let tempCardSet = new Map(JSON.parse(
                 JSON.stringify(Array.from(cardsOnHand))
             ));
+
             if (currentCard) {
-                tempCardSet.set(currentCard, tempCardSet.get(currentCard) + 1);
+                let found = false;
+                for (let usedCard of cardsAlreadyUsed) {
+                    if (["peng", "wei"].indexOf(usedCard.type) >= 0 && usedCard.cards[2] === currentCard) {
+                        usedCard.type = "pao";
+                        usedCard.cards.push(currentCard);
+                        usedCard.xi = this.calculateXi("pao", currentCard);
+                        found = true;
+                        break;
+                    }
+                }
+                if (!found) {
+                    tempCardSet.set(currentCard, tempCardSet.get(currentCard) + 1);
+                }
             }
             let sumOfCardOnHand = 0;
             for (const a of cardsOnHand.entries()) {
