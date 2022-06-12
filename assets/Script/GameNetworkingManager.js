@@ -108,6 +108,13 @@ cc.Class({
                         self.dispatchEvent('dealed_card', data);
                   }
             });
+            cc.utils.net.addHandler("dealed_card_check_hu", function(data){
+                  console.log("dealed_card_check_hu received!!!  ", data);
+
+                  if (data.errcode === 0) {
+                        self.dispatchEvent('dealed_card_check_hu', data);
+                  }
+            });
             cc.utils.net.addHandler("other_player_shoot", function(data){
                   console.log("other_player_shoot received!!!  ", data);
 

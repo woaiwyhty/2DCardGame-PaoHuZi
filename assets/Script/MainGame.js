@@ -680,12 +680,13 @@ cc.Class({
                   }
             }.bind(this));
 
-            this.node.on('dealed_card', function (data) {
+            this.node.on('dealed_card_check_hu', function (data) {
                   this.currentDealShootInfo = {
                         type: 1,
                         op_seat_id: data.op_seat_id,
                         opCard: data.dealed_card,
                   };
+
                   this.remainNumofCardLabel.string = parseInt(this.remainNumofCardLabel.string) - 1;
                   ++this.backCardsCulm;
                   if ((this.backCardsLast === 8 && this.backCards === 3) || this.backCardsCulm === 2) {
@@ -693,6 +694,42 @@ cc.Class({
                         this.backCardsLast--;
                         this.backCardsCulm = 0;
                   }
+
+                  let local_seat_id = data.op_seat_id === this.nextPlayerId ? 2 : 0;
+                  if (data.op_seat_id === cc.utils.roomInfo.my_seat_id) {
+                        local_seat_id = 1;
+                  }
+                  this.sessionKey = data.sessionKey;
+                  this.dealHoleCard(data.dealed_card, local_seat_id);
+                  this.showHideTiCard(local_seat_id);
+                  cc.utils.roomInfo.currentCard = null;
+
+                  let actionList = this.calculateAvailableActions(data.dealed_card, false, data.op_seat_id, true);
+                  if (actionList.length > 0) {
+                        this.showTimer(cc.utils.roomInfo.my_seat_id);
+                        this.renderActionsList(actionList);
+                  } else {
+                        cc.utils.gameNetworkingManager.takeGuoAction(false, this.sessionKey);
+                        this.sessionKey = null;
+                  }
+            }.bind(this))
+
+            this.node.on('dealed_card', function (data) {
+                  this.currentDealShootInfo = {
+                        type: 1,
+                        op_seat_id: data.op_seat_id,
+                        opCard: data.dealed_card,
+                  };
+                  if (data.hasPrevCheckHu === false) {
+                        this.remainNumofCardLabel.string = parseInt(this.remainNumofCardLabel.string) - 1;
+                        ++this.backCardsCulm;
+                        if ((this.backCardsLast === 8 && this.backCards === 3) || this.backCardsCulm === 2) {
+                              this.backCards[this.backCardsLast].active = false;
+                              this.backCardsLast--;
+                              this.backCardsCulm = 0;
+                        }
+                  }
+                  
                   let local_seat_id = data.op_seat_id === this.nextPlayerId ? 2 : 0;
                   if (data.op_seat_id === cc.utils.roomInfo.my_seat_id) {
                         local_seat_id = 1;
@@ -705,7 +742,9 @@ cc.Class({
                   if (data.ti_wei_pao_result.status === true) {
                         if (data.ti_wei_pao_result.type !== 'wei' || data.op_seat_id === cc.utils.roomInfo.my_seat_id) {
                               // not showing the dealed card to others if it is wei
-                              this.dealHoleCard(data.dealed_card, local_seat_id);
+                              if (data.hasPrevCheckHu === false) {
+                                    this.dealHoleCard(data.dealed_card, local_seat_id);
+                              }
                         } 
                         cc.utils.gameAudio.actionsEffect(data.ti_wei_pao_result.type);
                         if (data.ti_wei_pao_result.op_seat_id === cc.utils.roomInfo.my_seat_id) {
@@ -744,7 +783,9 @@ cc.Class({
                               ); // xi doesn't matter on other players side, so set it be 0.
                         }
                   } else {
-                        this.dealHoleCard(data.dealed_card, local_seat_id);
+                        if (data.hasPrevCheckHu === false) {
+                              this.dealHoleCard(data.dealed_card, local_seat_id);
+                        }
 
                         let actionList = this.calculateAvailableActions(data.dealed_card, false, data.op_seat_id);
                         if (actionList.length > 0) {
@@ -937,7 +978,7 @@ cc.Class({
                         }
                   } else {
                         cc.utils.roomInfo.currentCard = data.opCard;
-                        let actionList = this.calculateAvailableActions(data.opCard, true, data.op_seat_id);
+                        let actionList = this.calculateAvailableActions(data.opCard, true, data.op_seat_id, true);
                         if (actionList.length > 0) {
                               this.showTimer(cc.utils.roomInfo.my_seat_id);
                               this.renderActionsList(actionList);
@@ -1001,29 +1042,31 @@ cc.Class({
             }.bind(this));
       },
 
-      calculateAvailableActions: function(card, isShoot, op_seat_id) {
+      calculateAvailableActions: function(card, isShoot, op_seat_id, huOnly = false) {
             console.log("current cardsonhand  ", this.cardGroups, this.cardsAlreadyChoseToNotUse);
             let actionsList = [];
-            if ((op_seat_id === this.prevPlayerId || 
-                  op_seat_id === cc.utils.roomInfo.my_seat_id) && this.cardsAlreadyChoseToNotUse.indexOf(card) < 0) {
-                  // I am next player of shooted player or I am the shooted player, so chi is available
-                  let chiResult = cc.utils.gameAlgo.checkChi(card, this.cardsOnHand);
-                  if (chiResult && chiResult.status === true) {
-                        actionsList.push('chi');
-                        cc.utils.roomInfo.chiResult = chiResult;
+            if (!huOnly) {
+                  if ((op_seat_id === this.prevPlayerId || 
+                        op_seat_id === cc.utils.roomInfo.my_seat_id) && this.cardsAlreadyChoseToNotUse.indexOf(card) < 0) {
+                        // I am next player of shooted player or I am the shooted player, so chi is available
+                        let chiResult = cc.utils.gameAlgo.checkChi(card, this.cardsOnHand);
+                        if (chiResult && chiResult.status === true) {
+                              actionsList.push('chi');
+                              cc.utils.roomInfo.chiResult = chiResult;
+                        }
                   }
+      
+                  let pengResult = cc.utils.gameAlgo.checkPeng(card, this.cardsOnHand);
+                  if (pengResult && this.cardsAlreadyChoseToNotUse.indexOf(card) < 0) {
+                        actionsList.push('peng');
+                        cc.utils.roomInfo.pengResult = {
+                              status: true,
+                              opCard: card,
+                        };
+                  }      
             }
-
-            let pengResult = cc.utils.gameAlgo.checkPeng(card, this.cardsOnHand);
-            if (pengResult && this.cardsAlreadyChoseToNotUse.indexOf(card) < 0) {
-                  actionsList.push('peng');
-                  cc.utils.roomInfo.pengResult = {
-                        status: true,
-                        opCard: card,
-                  };
-            }
-
-            if (isShoot === false) {
+            
+            if (isShoot === false && huOnly) {
                   let huResult = cc.utils.gameAlgo.checkHu(this.cardsAlreadyUsedMySelf, this.cardsOnHand, card);
                   if (huResult && huResult.status === true) {
                         actionsList.push('hu');
@@ -1481,7 +1524,7 @@ cc.Class({
                               let local_seat_id = player.operation.op_seat_id === this.nextPlayerId ? 2 : 0;
                               this.shootCardOthers(player.operation.opCard, local_seat_id, leftToRight);
                         }
-                        let actionList = this.calculateAvailableActions(player.operation.opCard, isShoot, player.operation.op_seat_id);
+                        let actionList = this.calculateAvailableActions(player.operation.opCard, isShoot, player.operation.op_seat_id, player.operation.isCheckHu);
                         if (actionList.length > 0) {
                               this.showTimer(cc.utils.roomInfo.my_seat_id, remainTime);
                               this.renderActionsList(actionList);
