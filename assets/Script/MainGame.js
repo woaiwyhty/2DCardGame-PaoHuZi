@@ -642,6 +642,7 @@ cc.Class({
                   cc.utils.roomInfo.current_played_games = data.current_played_games;
                   this.remainNumOfGamesLabel.string = (data.total_games - data.current_played_games).toString();
                   cc.utils.roomInfo.total_games = data.total_games;
+                  cc.utils.roomInfo.isLastCard = false;
                   this.remainNumofCardNode.active = true;
                   this.remainNumofCardLabel.string = "19";
 
@@ -686,6 +687,7 @@ cc.Class({
             }.bind(this));
 
             this.node.on('dealed_card_check_hu', function (data) {
+                  cc.utils.roomInfo.isLastCard = data.isLastCard;
                   this.currentDealShootInfo = {
                         type: 1,
                         op_seat_id: data.op_seat_id,
@@ -720,6 +722,7 @@ cc.Class({
             }.bind(this))
 
             this.node.on('dealed_card', function (data) {
+                  cc.utils.roomInfo.isLastCard = data.isLastCard;
                   this.currentDealShootInfo = {
                         type: 1,
                         op_seat_id: data.op_seat_id,
@@ -1085,6 +1088,10 @@ cc.Class({
                               huResult.huInfo.push("王" + cc.utils.roomInfo.number_of_wang.toString());
                               huResult.fan += (4 * cc.utils.roomInfo.number_of_wang);
                         }
+                        if (cc.utils.isLastCard === true) {
+                              huResult.huInfo.push("海底");
+                              huResult.fan += 4;
+                        }
                         cc.utils.roomInfo.huResult = huResult;
                   }
             }
@@ -1321,7 +1328,7 @@ cc.Class({
       },
       
       onChiClicked: function() {
-            if (!cc.utils.roomInfo.chiResult || cc.utils.roomInfo.chiResult.status === false) {
+            if (!cc.utils.roomInfo.chiResult || cc.utils.roomInfo.chiResult.status === false || cc.utils.roomInfo.chiWaysNode) {
                   return;
             }
 
@@ -1357,6 +1364,7 @@ cc.Class({
                         // for (let possibility of button.node.method) {
                         //       this.takeNormalAction('chi', possibility[2], possibility, false);
                         // }
+                        this.clearActionResult();
                         this.sessionKey = null;
                   }, this);
                   offSetX += 15;
@@ -1418,6 +1426,8 @@ cc.Class({
             if (this.cardGroupsNodes) {
                   this.clearAllCardNodes();
             }
+            this.hideActionList();
+            this.clearActionResult();
             this.cardGroupsNodes = [];
             this.cardsGroups = [];
             console.log(this.cardsAlreadyUsedMySelf, this.cardsDiscardedMySelf);
