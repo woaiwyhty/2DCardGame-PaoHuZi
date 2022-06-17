@@ -108,6 +108,7 @@ if(window.io == null){
                           if(Date.now() - self.lastRecieveTime > 10000){
                               console.log("omg... trying to close ws");
                               self.lastRecieveTime = null;
+                              self.isPinging = false;
                               self.close();
                               clearInterval(self.checkInterval);
                               clearInterval(self.pingInterval);

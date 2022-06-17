@@ -26,31 +26,56 @@ cc.Class({
     },
 
     testGameAlgorithm: function() {
-        const data = {
-            'x1' : 1,
-            'x2' : 2,
-            'x3' : 1,
-            'x4' : 2,
-            'x5' : 2,
-            'x6' : 2,
-            'x7' : 1,
-            'x8' : 1,
-            'x9' : 0,
-            'x10' : 1,
-            'd1' : 1,
-            'd2' : 2,
-            'd3' : 1,
-            'd4' : 2,
-            'd5' : 1,
-            'd6' : 0,
-            'd7' : 1,
-            'd8' : 0,
-            'd9' : 0,
-            'd10' : 0
-        };
-        let cardsOnHand = new Map(Object.entries(data));
-    
-        console.log(cc.utils.gameAlgo.checkChi('x2', cardsOnHand).chiWays)
+        let times = [];
+        for (let i = 0; i < 2; ++i) {
+            let cardsOnHand = cc.utils.gameAlgo.dealWhenGameStarts();
+            for (let j = 1; j <= 20; ++j) {
+                let key = 'x' + j.toString();
+                if (j > 10) {
+                    key = 'd' + (j - 10).toString();
+                }
+                let start = Date.now();
+                // console.log(key, cardsOnHand);
+                cc.utils.gameAlgo.checkChi(key, cardsOnHand);
+                times.push(Date.now() - start);
+            }
+        }
+
+        let sum = times.reduce((a, b) => a + b, 0);
+        console.log("testGameAlgorithm complete  ", sum, sum / times.length, Math.max(...times));
+    },
+
+    testGameAlgorithm1: function() {
+        let times = [];
+        let cards = [];
+        for (let i = 0; i < 100; ++i) {
+            let cardsOnHand = cc.utils.gameAlgo.dealWhenGameStarts();
+            // for (const [k, v] of cardsOnHand.entries()) {
+            //     console.log(k, v);
+            // }
+
+            for (let j = 1; j <= 1; ++j) {
+                let key = 'x' + j.toString();
+                if (j > 10) {
+                    key = 'd' + (j - 10).toString();
+                }
+                let start = Date.now();
+                cc.utils.gameAlgo.checkHu([], cardsOnHand, key);
+                times.push(Date.now() - start);
+            }
+            cards.push(cardsOnHand);
+        }
+
+        let maxTime = 0, maxCards = null;
+        let sum = times.reduce((a, b) => a + b, 0);
+        for (let i = 0; i < times.length; ++i) {
+            if (times[i] > maxTime) {
+                maxTime = times[i];
+                maxCards = cards[i]
+            }
+        }
+        console.log("testGameAlgorithm complete  ", sum, sum / times.length, Math.max(...times));
+        console.log(maxTime, maxCards);
     },
 
     initFrameworks: function() {
@@ -83,7 +108,7 @@ cc.Class({
         cc.utils.gameAudio = new gameAudio();
         cc.utils.gameAudio.initAudios();
 
-        // this.testGameAlgorithm();
+        // this.testGameAlgorithm1();
     },
 
     onServerOn: function(ret){

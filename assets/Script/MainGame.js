@@ -480,9 +480,13 @@ cc.Class({
       addUsedCards: function(target, parentNode, cards, type, xi, addToLeft = false, from_wei_or_peng = 0, needsHide = false) {
             console.log("addusedcard before  ", target, from_wei_or_peng);
             if (from_wei_or_peng) {
+                  if (target === this.cardsAlreadyUsedMySelf) {
+                        console.log("myself", target);
+                  }
                   for (let usedCards of target) {
                         if (['wei', 'peng'].indexOf(usedCards.type) >= 0
                         && usedCards.cards[2] == cards[cards.length - 1]) {
+                              console.log("from_wei_or_peng find ", usedCards);
                               if (type === "pao" && usedCards.type === "wei") {
                                     for (let i = 0; i < 3; ++i) {
                                           usedCards.cards[i] = cards[cards.length - 1];
@@ -499,6 +503,7 @@ cc.Class({
                               
                               usedCards.type = type;
                               usedCards.xi = xi;
+                              console.log("from_wei_or_peng processed ", usedCards);
                         }
                   }
             } else {
@@ -736,7 +741,9 @@ cc.Class({
                   }
                   this.sessionKey = data.sessionKey;
                   cc.utils.roomInfo.currentCard = data.dealed_card;
-                  console.log('dealed_card  ',  local_seat_id);
+                  for (let c of this.cardsAlreadyUsedMySelf) {
+                        console.log('dealed_card  ',  local_seat_id, c);
+                  }
                   this.showHideTiCard(local_seat_id);
 
                   if (data.ti_wei_pao_result.status === true) {

@@ -34,6 +34,29 @@ const chiMap = {
     'd10':  [['d8', 'd9', 'd10'], ['d10', 'd10', 'x10'], ['d10', 'x10', 'x10'], ['d2', 'd7', 'd10']] ,
 }
 
+const huChiMap = {
+    'x1':  [['x1', 'x2', 'x3'], ['x1', 'x1', 'd1'], ['x1', 'd1', 'd1']] ,
+    'x2':  [['x2', 'x3', 'x4'], ['x2', 'x2', 'd2'], ['x2', 'd2', 'd2'], ['x2', 'x7', 'x10']] ,
+    'x3':  [['x3', 'x4', 'x5'], ['x3', 'x3', 'd3'], ['x3', 'd3', 'd3']] ,
+    'x4':  [['x4', 'x5', 'x6'], ['x4', 'x4', 'd4'], ['x4', 'd4', 'd4']] ,
+    'x5':  [['x5', 'x6', 'x7'], ['x5', 'x5', 'd5'], ['x5', 'd5', 'd5']] ,
+    'x6':  [['x6', 'x7', 'x8'], ['x6', 'x6', 'd6'], ['x6', 'd6', 'd6']] ,
+    'x7':  [['x7', 'x8', 'x9'], ['x7', 'x7', 'd7'], ['x7', 'd7', 'd7']] ,
+    'x8':  [['x8', 'x9', 'x10'], ['x8', 'x8', 'd8'], ['x8', 'd8', 'd8']] ,
+    'x9':  [['x9', 'x9', 'd9'], ['x9', 'd9', 'd9']] ,
+    'x10':  [['x10', 'x10', 'd10'], ['x10', 'd10', 'd10']] ,
+    'd1':  [['d1', 'd2', 'd3'], ['d1', 'd1', 'x1'], ['d1', 'x1', 'x1']] ,
+    'd2':  [['d2', 'd3', 'd4'], ['d2', 'd2', 'x2'], ['d2', 'x2', 'x2'], ['d2', 'd7', 'd10']] ,
+    'd3':  [['d3', 'd4', 'd5'], ['d3', 'd3', 'x3'], ['d3', 'x3', 'x3']] ,
+    'd4':  [['d4', 'd5', 'd6'], ['d4', 'd4', 'x4'], ['d4', 'x4', 'x4']] ,
+    'd5':  [['d5', 'd6', 'd7'], ['d5', 'd5', 'x5'], ['d5', 'x5', 'x5']] ,
+    'd6':  [['d6', 'd7', 'd8'], ['d6', 'd6', 'x6'], ['d6', 'x6', 'x6']] ,
+    'd7':  [['d7', 'd8', 'd9'], ['d7', 'd7', 'x7'], ['d7', 'x7', 'x7']] ,
+    'd8':  [['d8', 'd9', 'd10'], ['d8', 'd8', 'x8'], ['d8', 'x8', 'x8']] ,
+    'd9':  [['d9', 'd9', 'x9'], ['d9', 'x9', 'x9']] ,
+    'd10':  [['d10', 'd10', 'x10'], ['d10', 'x10', 'x10']] ,
+}
+
 const cardRed = ['x2', 'x7', 'x10', 'd2', 'd7', 'd10'];
 cc.Class({
       extends: cc.Component,
@@ -165,7 +188,7 @@ cc.Class({
     
         generateAllCardSet: function() {
             let cards = [];
-            for (let i = 0; i <= 20; ++i) {
+            for (let i = 1; i <= 20; ++i) {
                 let key = 'x' + i.toString();
                 if (i > 10) {
                     key = 'd' + (i - 10).toString();
@@ -187,14 +210,14 @@ cc.Class({
             let cards = this.generateAllCardSet();
             cards = this.shuffle(cards);
             let cardSetMap = new Map();
-            for (let i = 0; i <= 20; ++i) {
+            for (let i = 1; i <= 20; ++i) {
                 let key = 'x' + i.toString();
                 if (i > 10) {
                     key = 'd' + (i - 10).toString();
                 }
                 cardSetMap.set(key, 0);
             }
-            for (let i = 0; i < 21; ++i) {
+            for (let i = 0; i < 20; ++i) {
                 cardSetMap.set(cards[i], cardSetMap.get(cards[i]) + 1);
             }
             return cardSetMap;
@@ -217,7 +240,7 @@ cc.Class({
             if (Array.isArray(card)) {
                 let mycard = Array.from(card);
                 mycard.sort();
-                console.log("calculate xi  ", mycard, card);
+                // console.log("calculate xi  ", mycard, card);
                 if (mycard.toString() === ['d1', 'd2', 'd3'].toString() ||
                 mycard.toString() === ['d10', 'd2', 'd7'].toString()) {
                     return 6;
@@ -400,7 +423,7 @@ cc.Class({
                     continue;
                 }
     
-                for (let possibility of chiMap[card]) {
+                for (let possibility of huChiMap[card]) {
                     let result = true;
                     for (let oneCard of possibility) {
                         cardsOnHand.set(oneCard, cardsOnHand.get(oneCard) - 1);
@@ -636,9 +659,17 @@ cc.Class({
                 JSON.stringify(Array.from(cardsOnHand))
             ));
 
+            let tempCardsAlreadyUsed = [];
+            for (let usedCard of cardsAlreadyUsed) {
+                tempCardsAlreadyUsed.push({
+                    type: usedCard.type,
+                    cards: Array.from(usedCard.cards),
+                    xi: usedCard.xi,
+                })
+            }
             if (currentCard) {
                 let found = false;
-                for (let usedCard of cardsAlreadyUsed) {
+                for (let usedCard of tempCardsAlreadyUsed) {
                     if (["peng", "wei"].indexOf(usedCard.type) >= 0 && usedCard.cards[2] === currentCard) {
                         usedCard.type = "pao";
                         usedCard.cards.push(currentCard);
@@ -656,13 +687,13 @@ cc.Class({
                   sumOfCardOnHand += a[1];
             }
             let currentXi = 0, needJiang = false;
-            for (let cardsUsed of cardsAlreadyUsed) {
+            for (let cardsUsed of tempCardsAlreadyUsed) {
                 currentXi += cardsUsed.xi;
                 if (['pao', 'ti'].indexOf(cardsUsed.type) >= 0) {
                     needJiang = true;
                 }
             }
-            let resultForJiangHu = this.checkHuHelper(tempCardSet, needJiang, currentXi, cardsAlreadyUsed);
+            let resultForJiangHu = this.checkHuHelper(tempCardSet, needJiang, currentXi, tempCardsAlreadyUsed);
             if (resultForJiangHu && sumOfCardOnHand === 1 && resultForJiangHu.status === true) {
                   resultForJiangHu.huInfo.push("耍猴");
                   resultForJiangHu.fan += 8;
