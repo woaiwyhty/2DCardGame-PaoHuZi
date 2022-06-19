@@ -906,32 +906,35 @@ cc.Class({
             }.bind(this));
             this.node.on('need_shoot', function (data) {
                   if (data.op_seat_id === cc.utils.roomInfo.my_seat_id) {
-                        if (this.currentDealShootInfo && this.currentDealShootInfo.type === 1) {
-                              console.log("checkHu  in need_shoot  ", this.cardsAlreadyUsedMySelf, this.cardsOnHand);
-                              let huResult = cc.utils.gameAlgo.checkHu(this.cardsAlreadyUsedMySelf, this.cardsOnHand);
-                              let actionsList = [];
-                              if (huResult && huResult.status === true) {
-                                    actionsList.push('hu');
-                                    if (this.currentDealShootInfo.op_seat_id === cc.utils.roomInfo.my_seat_id) {
-                                          huResult.huInfo.push("自摸");
-                                          huResult.tun += 1;
-                                    }
-                                    if (cc.utils.roomInfo.number_of_wang > 0) {
-                                          huResult.huInfo.push("王" + cc.utils.roomInfo.number_of_wang.toString());
-                                          huResult.fan += (4 * cc.utils.roomInfo.number_of_wang);
-                                    }
-                                    cc.utils.roomInfo.huResult = huResult;
-                              }
-                              if (actionsList.length > 0) {
-                                    actionsList.push('guo');
-                                    this.renderActionsList(actionsList);
-                                    this.currentState = 3; // check hu locally
-                              } else {
-                                    this.currentState = 1; // need shoot
-                              }
-                        } else {
-                              this.currentState = 1; // need shoot
-                        }
+                        this.currentState = 1; // need shoot
+
+                        // if (this.currentDealShootInfo && this.currentDealShootInfo.type === 1) {
+                        //       // console.log("checkHu  in need_shoot  ", this.cardsAlreadyUsedMySelf, this.cardsOnHand);
+                        //       // let huResult = cc.utils.gameAlgo.checkHu(this.cardsAlreadyUsedMySelf, this.cardsOnHand);
+                        //       // let actionsList = [];
+                        //       // if (huResult && huResult.status === true) {
+                        //       //       actionsList.push('hu');
+                        //       //       if (this.currentDealShootInfo.op_seat_id === cc.utils.roomInfo.my_seat_id) {
+                        //       //             huResult.huInfo.push("自摸");
+                        //       //             huResult.tun += 1;
+                        //       //       }
+                        //       //       if (cc.utils.roomInfo.number_of_wang > 0) {
+                        //       //             huResult.huInfo.push("王" + cc.utils.roomInfo.number_of_wang.toString());
+                        //       //             huResult.fan += (4 * cc.utils.roomInfo.number_of_wang);
+                        //       //       }
+                        //       //       cc.utils.roomInfo.huResult = huResult;
+                        //       // }
+                        //       // if (actionsList.length > 0) {
+                        //       //       actionsList.push('guo');
+                        //       //       this.renderActionsList(actionsList);
+                        //       //       this.currentState = 3; // check hu locally
+                        //       // } else {
+                        //       //       this.currentState = 1; // need shoot
+                        //       // }
+                        //       this.currentState = 1; // need shoot
+                        // } else {
+                        //       this.currentState = 1; // need shoot
+                        // }
                   }
                   this.showTimer(data.op_seat_id);
             }.bind(this));

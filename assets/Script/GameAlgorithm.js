@@ -659,7 +659,7 @@ cc.Class({
                 JSON.stringify(Array.from(cardsOnHand))
             ));
 
-            let tempCardsAlreadyUsed = [];
+            let tempCardsAlreadyUsed = [], resultWithPao;
             for (let usedCard of cardsAlreadyUsed) {
                 tempCardsAlreadyUsed.push({
                     type: usedCard.type,
@@ -678,9 +678,10 @@ cc.Class({
                         break;
                     }
                 }
-                if (!found) {
-                    tempCardSet.set(currentCard, tempCardSet.get(currentCard) + 1);
+                if (found) {
+                    resultWithPao = this.checkHu(tempCardsAlreadyUsed, tempCardSet);
                 }
+                tempCardSet.set(currentCard, tempCardSet.get(currentCard) + 1);
             }
             let sumOfCardOnHand = 0;
             for (const a of cardsOnHand.entries()) {
@@ -694,6 +695,12 @@ cc.Class({
                 }
             }
             let resultForJiangHu = this.checkHuHelper(tempCardSet, needJiang, currentXi, tempCardsAlreadyUsed);
+            if (resultWithPao && resultWithPao.status === true) {
+                if (!resultForJiangHu || resultForJiangHu.status === false ||
+                    resultWithPao.fan * resultWithPao.tun > resultForJiangHu.fan * resultForJiangHu.tun) {
+                    resultForJiangHu = resultWithPao;
+                }
+            }
             if (resultForJiangHu && sumOfCardOnHand === 1 && resultForJiangHu.status === true) {
                   resultForJiangHu.huInfo.push("耍猴");
                   resultForJiangHu.fan += 8;

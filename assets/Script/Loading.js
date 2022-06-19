@@ -26,23 +26,44 @@ cc.Class({
     },
 
     testGameAlgorithm: function() {
-        let times = [];
-        for (let i = 0; i < 2; ++i) {
-            let cardsOnHand = cc.utils.gameAlgo.dealWhenGameStarts();
-            for (let j = 1; j <= 20; ++j) {
-                let key = 'x' + j.toString();
-                if (j > 10) {
-                    key = 'd' + (j - 10).toString();
-                }
-                let start = Date.now();
-                // console.log(key, cardsOnHand);
-                cc.utils.gameAlgo.checkChi(key, cardsOnHand);
-                times.push(Date.now() - start);
+        let cardsOnHand = new Map();
+        for (let i = 1; i <= 20; ++i) {
+            let key = 'x' + i.toString();
+            if (i > 10) {
+                key = 'd' + (i - 10).toString();
             }
+            cardsOnHand.set(key, 0);
         }
 
-        let sum = times.reduce((a, b) => a + b, 0);
-        console.log("testGameAlgorithm complete  ", sum, sum / times.length, Math.max(...times));
+        let cardsUsed = [
+            {
+                type: 'pao',
+                cards: ['d9', 'd9', 'd9', 'd9'],
+                xi: 9,
+            },
+            {
+                type: 'peng',
+                cards: ['x5', 'x5', 'x5'],
+                xi: 1,
+            },
+            {
+                type: 'peng',
+                cards: ['x7', 'x7', 'x7'],
+                xi: 1,
+            },
+        ]
+
+        cardsOnHand.set("x5", 2);
+        cardsOnHand.set("d8", 2);
+        cardsOnHand.set("x9", 1);
+        cardsOnHand.set("x8", 1);
+        cardsOnHand.set("x10", 1);
+        cardsOnHand.set("d2", 1);
+        cardsOnHand.set("d7", 1);
+        cardsOnHand.set("d10", 1);
+        let start = Date.now();
+        console.log(cc.utils.gameAlgo.checkHu(cardsUsed, cardsOnHand, 'x5'));
+        console.log("time consume  ", Date.now() - start);
     },
 
     testGameAlgorithm1: function() {
@@ -108,7 +129,7 @@ cc.Class({
         cc.utils.gameAudio = new gameAudio();
         cc.utils.gameAudio.initAudios();
 
-        // this.testGameAlgorithm1();
+        // this.testGameAlgorithm();
     },
 
     onServerOn: function(ret){
