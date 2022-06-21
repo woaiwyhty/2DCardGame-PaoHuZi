@@ -118,6 +118,9 @@ if(window.io == null){
               }   
           },
           send:function(event,data){
+            if (!this.sio) {
+                return;
+            }
             console.log("sio send", event, data, this.sio.connected);
               if(this.sio.connected){
                   if(data != null && (typeof(data) == "object")){
@@ -155,9 +158,15 @@ if(window.io == null){
           
           test:function(fnResult){
               var fn = function(ret){
-                  fnResult(ret.errcode == 0);
+                    fnResult(ret);
               }
-              cc.utils.http.sendRequest("/isServerOn", {}, fn);
+              var failed = function(ret) {
+                    fnResult();
+              }
+              cc.utils.http.sendRequest("/roomExists", { 
+                username: cc.utils.userInfo.username, 
+                token: cc.utils.userInfo.token, 
+                room_id: cc.utils.roomInfo.room_id }, fn, null, false, failed);
             }
       },
   });

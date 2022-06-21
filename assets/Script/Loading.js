@@ -35,34 +35,20 @@ cc.Class({
             cardsOnHand.set(key, 0);
         }
 
-        let cardsUsed = [
-            {
-                type: 'pao',
-                cards: ['d9', 'd9', 'd9', 'd9'],
-                xi: 9,
-            },
-            {
-                type: 'peng',
-                cards: ['x5', 'x5', 'x5'],
-                xi: 1,
-            },
-            {
-                type: 'peng',
-                cards: ['x7', 'x7', 'x7'],
-                xi: 1,
-            },
-        ]
 
-        cardsOnHand.set("x5", 2);
-        cardsOnHand.set("d8", 2);
-        cardsOnHand.set("x9", 1);
-        cardsOnHand.set("x8", 1);
-        cardsOnHand.set("x10", 1);
-        cardsOnHand.set("d2", 1);
-        cardsOnHand.set("d7", 1);
-        cardsOnHand.set("d10", 1);
+        cardsOnHand.set('x3', 3);
+        cardsOnHand.set('d2', 3);
+        cardsOnHand.set('d7', 3);
+        cardsOnHand.set('d10', 3);
+        cardsOnHand.set('x10', 3);
+        cardsOnHand.set('x1', 2);
+
         let start = Date.now();
-        console.log(cc.utils.gameAlgo.checkHu(cardsUsed, cardsOnHand, 'x5'));
+        console.log(cc.utils.gameAlgo.checkHu([{
+            type:'ti',
+            cards: ['d1', 'd1', 'd1', 'd1'],
+            xi: 12
+        }], cardsOnHand));
         console.log("time consume  ", Date.now() - start);
     },
 
@@ -106,7 +92,7 @@ cc.Class({
         cc.utils.net.ip = "43.138.67.153:9001";
         // cc.utils.net.ip = "http://192.168.1.7:9001";
 
-        console.log(window.io,cc.utils.net);
+        console.log(window.io,cc.utils.net.ip);
 
         let gameNetworkingManager = require("GameNetworkingManager");
         cc.utils.gameNetworkingManager = new gameNetworkingManager();

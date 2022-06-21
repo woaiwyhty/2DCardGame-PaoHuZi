@@ -37,12 +37,20 @@ cc.Class({
             cc.utils.net.test(function (ret) {
                 if (ret) {
                     //cc.director.loadScene('hall');
-                    let roomId = cc.utils.roomInfo.room_id;
-                    if (roomId != null) {
-                        cc.utils.joinRoom(roomId);
+                    if (ret.errcode === 0) {
+                        let roomId = cc.utils.roomInfo.room_id;
+                        if (roomId != null) {
+                            cc.utils.joinRoom(roomId);
+                        }
+                    } else {
+                        cc.utils.wc.hide();
+                        cc.utils.roomInfo = null;
+                        cc.director.loadScene('RoomChoice');
                     }
+                    
                 }
                 else {
+                    console.log("setTimeout(fnTestServerOn, 5000)");
                     setTimeout(fnTestServerOn, 5000);
                 }
             });

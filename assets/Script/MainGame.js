@@ -766,6 +766,20 @@ cc.Class({
                                     false,
                                     data.ti_wei_pao_result.from_wei_or_peng,
                               );
+                              if (['ti', 'wei'].indexOf(data.ti_wei_pao_result.type) >= 0) {
+                                    // check hu
+                                    console.log("need to check hu in ti wei case!!!");
+                                    this.sessionKey = data.sessionKey;
+                                    this.currentState = 3;
+                                    let actionList = this.calculateAvailableActions(null, false, data.op_seat_id, true);
+                                    if (actionList.length > 0) {
+                                          this.showTimer(cc.utils.roomInfo.my_seat_id);
+                                          this.renderActionsList(actionList);
+                                    } else {
+                                          cc.utils.gameNetworkingManager.takeGuoAction(false, this.sessionKey);
+                                          this.sessionKey = null;
+                                    }
+                              }
                         } else {
                               local_seat_id = data.ti_wei_pao_result.op_seat_id === this.nextPlayerId ? 2 : 0;
                               let target = this.cardsAlreadyUsedPrev;
@@ -1297,13 +1311,13 @@ cc.Class({
       onGuoClicked: function() {
             cc.utils.gameNetworkingManager.takeGuoAction(true, this.sessionKey);
 
-            if (this.currentState === 3) {
-                  this.currentState = 1; // need shoot
-                  return;
-            }
-            if (cc.utils.roomInfo.currentCard) {
+            if (cc.utils.roomInfo.currentCard && this.currentState !== 3) {
                   this.cardsAlreadyChoseToNotUse.push(cc.utils.roomInfo.currentCard);
                   cc.utils.roomInfo.currentCard = null;
+            }
+
+            if (this.currentState === 3) {
+                  this.currentState = 0;
             }
 
             this.hideActionList();

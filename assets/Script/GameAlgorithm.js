@@ -569,7 +569,7 @@ cc.Class({
             }
         },
     
-        checkHuHelper: function(cardsOnHand, alreadyNeedJiang, currentXi, cardsAlreadyUsed) {
+        checkHuHelper: function(cardsOnHand, alreadyNeedJiang, currentCard, isDealedBySelf, cardsAlreadyUsed) {
             let tempCardSet = new Map(JSON.parse(
                 JSON.stringify(Array.from(cardsOnHand))
             ));
@@ -593,25 +593,49 @@ cc.Class({
                     type: 'ti',
                     xi: this.calculateXi('ti', ti)
                 })
-                currentXi += groupResult[groupResult.length - 1].xi;
                 tempCardSet.set(ti, 0);
             }
+            let maxHu = null, found = false;
             let weiResult = this.checkWei(null, tempCardSet);
             for (let wei of weiResult) {
+                if (currentCard && wei === currentCard) {
+                    if (!isDealedBySelf) {
+                        found = true;
+                        continue;
+                    }
+                }
                 groupResult.push({
                     cards: [wei, wei, wei],
                     type: 'wei',
                     xi: this.calculateXi('wei', wei)
                 });
-                currentXi += groupResult[groupResult.length - 1].xi;
                 tempCardSet.set(wei, 0);
             }
-    
             let numOfCards = 0;
             for (const [key, value] of tempCardSet.entries()) {
                 numOfCards += value;
             }
-            let maxHu = null;
+
+            if (found) {
+                tempCardSet.set(currentCard, 1);
+                let finalResult = [], currentResult = [];
+                this.groupCardsBy3Dfs(tempCardSet, numOfCards - 2, finalResult, currentResult);
+                for (let res of finalResult) {
+                    let calcResult = this.calculateFanAndTun(groupResult, res, currentCard);
+                    if (!maxHu || (calcResult.status === true
+                        && calcResult.fan * calcResult.tun > maxHu.fan * maxHu.tun)) {
+                        maxHu = calcResult;
+                    }
+                }
+                tempCardSet.set(currentCard, 0);
+                groupResult.push({
+                    cards: [currentCard, currentCard, currentCard],
+                    type: 'peng',
+                    xi: this.calculateXi('peng', currentCard)
+                });
+                numOfCards -= 3;
+            }
+
             if (alreadyNeedJiang) {
                 for (const a of tempCardSet.entries()) {
                     let key = a[0];
@@ -653,7 +677,7 @@ cc.Class({
             return maxHu;
         },
     
-        checkHu: function(cardsAlreadyUsed, cardsOnHand, currentCard) {
+        checkHu: function(cardsAlreadyUsed, cardsOnHand, currentCard, isDealedBySelf = false) {
             // tian, di, wang should be added later.
             let tempCardSet = new Map(JSON.parse(
                 JSON.stringify(Array.from(cardsOnHand))
@@ -687,14 +711,13 @@ cc.Class({
             for (const a of cardsOnHand.entries()) {
                   sumOfCardOnHand += a[1];
             }
-            let currentXi = 0, needJiang = false;
+            let needJiang = false;
             for (let cardsUsed of tempCardsAlreadyUsed) {
-                currentXi += cardsUsed.xi;
                 if (['pao', 'ti'].indexOf(cardsUsed.type) >= 0) {
                     needJiang = true;
                 }
             }
-            let resultForJiangHu = this.checkHuHelper(tempCardSet, needJiang, currentXi, tempCardsAlreadyUsed);
+            let resultForJiangHu = this.checkHuHelper(tempCardSet, needJiang, currentCard, isDealedBySelf, tempCardsAlreadyUsed);
             if (resultWithPao && resultWithPao.status === true) {
                 if (!resultForJiangHu || resultForJiangHu.status === false ||
                     resultWithPao.fan * resultWithPao.tun > resultForJiangHu.fan * resultForJiangHu.tun) {
