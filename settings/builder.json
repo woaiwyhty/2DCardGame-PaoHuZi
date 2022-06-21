@@ -25,7 +25,7 @@
   "mergeStartScene": false,
   "optimizeHotUpdate": false,
   "orientation": {
-    "landscapeLeft": false,
+    "landscapeLeft": true,
     "landscapeRight": true,
     "portrait": false,
     "upsideDown": false
@@ -50,7 +50,7 @@
   "zipCompressJs": true,
   "mainCompressionType": "default",
   "mainIsRemote": false,
-  "nativeMd5Cache": true,
+  "nativeMd5Cache": false,
   "android": {
     "packageName": "org.cocos2d.demo",
     "REMOTE_SERVER_ROOT": ""

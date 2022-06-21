@@ -1,4 +1,4 @@
-window.boot = function () {
+!function(){if("object"==typeof window.jsb){var e=localStorage.getItem("HotUpdateSearchPaths");if(e){var i=JSON.parse(e);jsb.fileUtils.setSearchPaths(i);var s=[],t=i[0]||"",l=t+"_temp/",r=l.length;jsb.fileUtils.isDirectoryExist(l)&&!jsb.fileUtils.isFileExist(l+"project.manifest.temp")&&(jsb.fileUtils.listFilesRecursively(l,s),s.forEach(e=>{var i=e.substr(r),s=t+i;"/"===e[e.length]?jsb.fileUtils.createDirectory(s):(jsb.fileUtils.isFileExist(s)&&jsb.fileUtils.removeFile(s),jsb.fileUtils.renameFile(e,s))}),jsb.fileUtils.removeDirectory(l))}}}();window.boot = function () {
     var settings = window._CCSettings;
     window._CCSettings = undefined;
     var onProgress = null;
@@ -123,7 +123,7 @@ window.boot = function () {
 if (window.jsb) {
     var isRuntime = (typeof loadRuntime === 'function');
     if (isRuntime) {
-        require('src/settings.4c262.js');
+        require('src/settings.js');
         require('src/cocos2d-runtime.js');
         if (CC_PHYSICS_BUILTIN || CC_PHYSICS_CANNON) {
             require('src/physics.js');
@@ -131,8 +131,8 @@ if (window.jsb) {
         require('jsb-adapter/engine/index.js');
     }
     else {
-        require('src/settings.4c262.js');
-        require('src/cocos2d-jsb.afe8a.js');
+        require('src/settings.js');
+        require('src/cocos2d-jsb.js');
         if (CC_PHYSICS_BUILTIN || CC_PHYSICS_CANNON) {
             require('src/physics.js');
         }

@@ -1,0 +1,14 @@
+{
+    "version": "1.0.0",
+    "serverRootDir": "http://43.138.67.153:8001",
+    "resourceRootDir": "E:\\Cocos2dProjects\\PaoHuZi\\build\\jsb-link",
+    "genManifestDir": "",
+    "hotAddressArray": [
+        "http://",
+        "http://169.254.154.70",
+        "http://43.138.67.153:8001"
+    ],
+    "buildTime": null,
+    "genTime": null,
+    "genVersion": null
+}
