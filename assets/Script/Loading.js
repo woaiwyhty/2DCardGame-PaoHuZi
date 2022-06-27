@@ -34,8 +34,10 @@ cc.Class({
     },
 
     onDestroy: function () {
-        this._am.setEventCallback(null);
-        this._am = null;
+        if (this._am) {
+            this._am.setEventCallback(null);
+            this._am = null;
+        }
     },
 
     testGameAlgorithm: function() {
